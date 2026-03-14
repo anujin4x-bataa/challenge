@@ -22,6 +22,7 @@
 :root{
 --bg:#0a0a0a;--bg2:#111;--bg3:#161616;--bg4:#1e1e1e;--bg5:#282828;
 --acc:#c8ff00;--acc2:#a8d900;--accd:#c8ff0012;--accg:0 0 24px #c8ff0033;
+--acc-t:#000;
 --t1:#f0f0f0;--t2:#888;--t3:#4a4a4a;
 --brd:#1c1c1c;--brd2:#2a2a2a;
 --red:#ff4757;--yel:#ffc107;--cyan:#00d4ff;--purple:#a855f7;
@@ -31,6 +32,7 @@
 [data-theme="light"]{
 --bg:#f5f5f0;--bg2:#eaeae5;--bg3:#fff;--bg4:#f0f0eb;--bg5:#e2e2dc;
 --acc:#5cb800;--acc2:#4a9600;--accd:#5cb80018;--accg:0 0 20px #5cb80033;
+--acc-t:#fff;
 --t1:#111;--t2:#555;--t3:#999;
 --brd:#d5d5d0;--brd2:#c5c5c0;
 }
@@ -42,7 +44,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .app{min-height:100dvh;padding-bottom:72px}
 .topbar{position:sticky;top:0;z-index:100;background:var(--bg);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
 .topbar-left{display:flex;align-items:center;gap:10px}
-.logo{width:32px;height:32px;background:var(--acc);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#000}
+.logo{width:32px;height:32px;background:var(--acc);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:var(--acc-t)}
 .topbar h1{font-size:1rem;font-weight:800;color:var(--acc)}
 .topbar .sub{font-size:.6rem;color:var(--t3);font-family:var(--fm)}
 .topbar-right{display:flex;gap:6px}
@@ -96,7 +98,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .habit:active{transform:scale(.98)}
 .habit.done{border-color:var(--acc);background:var(--accd)}
 .hchk{width:26px;height:26px;border-radius:50%;border:2px solid var(--t3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;font-size:13px}
-.habit.done .hchk{background:var(--acc);border-color:var(--acc);color:#000}
+.habit.done .hchk{background:var(--acc);border-color:var(--acc);color:var(--acc-t)}
 .h-info{flex:1;min-width:0}
 .h-name{font-weight:600;font-size:.85rem}
 .h-desc{font-size:.65rem;color:var(--t3)}
@@ -156,8 +158,8 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .heatmap{display:grid;grid-template-columns:repeat(9,1fr);gap:3px}
 .hc{aspect-ratio:1;border-radius:4px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.45rem;color:transparent;transition:.1s}
 .hc:active{transform:scale(1.15)}
-.hc.s{background:var(--acc);color:#000}
-.hc.p{background:var(--yel);color:#000}
+.hc.s{background:var(--acc);color:var(--acc-t)}
+.hc.p{background:var(--yel);color:var(--acc-t)}
 .hc.f{background:var(--red);color:#fff}
 .hc.fu{opacity:.15}
 .hc.td{box-shadow:0 0 0 2px var(--acc);animation:p2 2s infinite}
@@ -188,7 +190,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:13px 22px;border-radius:var(--r4);font-family:var(--fb);font-size:.78rem;font-weight:700;cursor:pointer;border:none;transition:.15s;-webkit-tap-highlight-color:transparent}
 .btn:active{transform:scale(.96)}
-.btn-p{background:var(--acc);color:#000}
+.btn-p{background:var(--acc);color:var(--acc-t)}
 .btn-s{background:var(--bg4);color:var(--t1);border:1px solid var(--brd2)}
 .btn-d{background:var(--red);color:#fff}
 .btn-full{width:100%}
@@ -212,7 +214,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .meal-card .mc-macros span{background:var(--bg5);padding:2px 6px;border-radius:99px}
 .meal-card .mc-cal{font-family:var(--fm);font-size:1rem;font-weight:700;color:var(--acc);flex-shrink:0}
 .meal-card .mc-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:.8rem;padding:4px;flex-shrink:0}
-.scan-btn{background:var(--acc);color:#000;border:none;border-radius:50%;width:52px;height:52px;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--accg);transition:.15s;margin:0 auto}
+.scan-btn{background:var(--acc);color:var(--acc-t);border:none;border-radius:50%;width:52px;height:52px;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--accg);transition:.15s;margin:0 auto}
 .scan-btn:active{transform:scale(.9)}
 .scan-preview{width:100%;max-height:180px;object-fit:cover;border-radius:var(--r2);margin-bottom:12px}
 .ai-loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:var(--t2);font-size:.8rem}
@@ -223,7 +225,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .cal-ring{position:relative;width:100px;height:100px;margin:0 auto}
 .meal-type-row{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
 .meal-type-btn{padding:7px 14px;border-radius:99px;background:var(--bg4);font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;border:none;color:var(--t1);font-family:var(--fb);transition:.15s}
-.meal-type-btn.sel{background:var(--acc);color:#000}
+.meal-type-btn.sel{background:var(--acc);color:var(--acc-t)}
 .meal-type-btn:active{transform:scale(.95)}
 .body-stats-setup{background:var(--bg4);border-radius:var(--r2);padding:16px;margin-bottom:14px}
 .body-stats-setup .bss-title{font-size:.65rem;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
@@ -254,7 +256,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 /* Workout types */
 .wt-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .wt{padding:7px 14px;border-radius:99px;background:var(--bg4);font-size:.72rem;font-weight:600;cursor:pointer;transition:.15s;user-select:none}
-.wt.sel{background:var(--acc);color:#000}
+.wt.sel{background:var(--acc);color:var(--acc-t)}
 .wt:active{transform:scale(.95)}
 
 /* Table */
@@ -342,7 +344,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .ex-name{font-weight:600;font-size:.85rem}
 .ex-detail{font-size:.68rem;color:var(--t3);margin-top:1px;font-family:var(--fm)}
 .ex-check{width:28px;height:28px;border-radius:50%;border:2px solid var(--t3);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:.15s;font-size:12px}
-.ex-check.done{background:var(--acc);border-color:var(--acc);color:#000}
+.ex-check.done{background:var(--acc);border-color:var(--acc);color:var(--acc-t)}
 .wk-finisher{background:var(--accd);border-radius:var(--r1);padding:10px 14px;margin-top:12px;font-size:.82rem;font-weight:600;color:var(--acc);text-align:center}
 
 /* Weekly plan */
@@ -369,7 +371,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .gym-chip.sel{background:var(--accd);border-color:var(--acc);color:var(--acc)}
 .gym-chip:active{transform:scale(.95)}
 
-.ai-gen-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000;border:none;border-radius:var(--r4);padding:14px 24px;font-family:var(--fb);font-size:.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;transition:.15s;box-shadow:var(--accg)}
+.ai-gen-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--acc-t);border:none;border-radius:var(--r4);padding:14px 24px;font-family:var(--fb);font-size:.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;transition:.15s;box-shadow:var(--accg)}
 .ai-gen-btn:active{transform:scale(.97)}
 .ai-gen-btn:disabled{opacity:.5;cursor:not-allowed}
 
@@ -857,12 +859,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 const DEFAULT_HABITS=[{id:'steps',name:'10,000 Steps',icon:'🚶',desc:'Walk or run 10k steps'},{id:'workout',name:'45 Min Workout',icon:'💪',desc:'45 min exercise',detail:true},{id:'water',name:'2–2.5L Water',icon:'💧',desc:'Stay hydrated'},{id:'sleep',name:'7–8h Sleep',icon:'😴',desc:'Quality rest',detail:true},{id:'no_sugar',name:'No Sugar',icon:'🚫',desc:'Zero added sugar'},{id:'healthy_eat',name:'Healthy Eating',icon:'🥗',desc:'Clean whole foods only'}];
 const DEFAULT_DETOX=[{id:'no_social',name:'No Social Media',icon:'📵',desc:'No Instagram, TikTok, Twitter'},{id:'no_junk',name:'No Junk Food',icon:'🚫',desc:'No chips, candy, fast food'},{id:'no_youtube',name:'No YouTube',icon:'📺',desc:'No mindless scrolling'}];
 
-// Dynamic habits — user can add/edit/delete
-function getHabits(){return L.g('custom_habits')||[...DEFAULT_HABITS]}
-function saveHabitsConfig(h){L.s('custom_habits',h)}
-function getDetoxHabits(){return L.g('custom_detox')||[...DEFAULT_DETOX]}
-function saveDetoxConfig(h){L.s('custom_detox',h)}
-
+// Dynamic habits — functions defined in DATA LAYER below (Supabase synced)
 // For backward compat — HABITS and DETOX_HABITS are now functions
 const HABITS_F=()=>getHabits();
 const DETOX_F=()=>getDetoxHabits();
@@ -1005,8 +1002,8 @@ const TH=4,TD=45;
 // ║  ЭНД ӨӨРИЙН SUPABASE МЭДЭЭЛЛИЙГ ОРУУЛНА                    ║
 // ║  Supabase Dashboard → Settings → API хэсгээс авна          ║
 // ╚══════════════════════════════════════════════════════════════╝
-const SUPABASE_URL = '';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
-const SUPABASE_KEY = '';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'
+const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'
 // SECRET KEY-г хэзээ ч энд оруулахгүй!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
@@ -1065,32 +1062,80 @@ const dSt=s=>s>=TH/HABITS_F().length?'s':s>0?'p':'f';
 function toast(m,i='✅'){const b=document.getElementById('tBox'),t=document.createElement('div');t.className='toast';t.innerHTML=`<span>${i}</span><span>${m}</span>`;b.appendChild(t);setTimeout(()=>t.remove(),4200)}
 function celebrate(){const o=document.createElement('div');o.className='confetti';document.body.appendChild(o);const c=['#c8ff00','#a8d900','#ffc107','#00d4ff','#ff8c42'];for(let i=0;i<30;i++){const p=document.createElement('div');p.className='ptc';p.style.left=Math.random()*100+'%';p.style.top='-10px';p.style.background=c[Math.floor(Math.random()*c.length)];p.style.animationDelay=Math.random()*.5+'s';p.style.animationDuration=(1+Math.random())+'s';o.appendChild(p)}setTimeout(()=>o.remove(),2500)}
 
-// === DATA LAYER (unchanged) ===
-const gU=()=>L.g('user');const sU=u=>{L.s('user',u);return u};
+// === DATA LAYER (Supabase synced) ===
+// Every save: localStorage first (instant) → Supabase background sync
+// Every load: localStorage (fast) + Supabase pull on app start
+
+const gU=()=>L.g('user');
+const sU=u=>{L.s('user',u);DB.save('users',u);return u};
+
 function gH(d){const a=L.g('hab')||[];let r=a.find(h=>h.date===d);if(!r){r={date:d,rest:false,jnl:'',cs:0,detox:false};HABITS_F().forEach(h=>r[h.id]=false)}return r}
-function sH(d,data){const a=L.g('hab')||[];data.cs=cS(data);data.ts=new Date().toISOString();const i=a.findIndex(h=>h.date===d);if(i>=0)a[i]={...a[i],...data,date:d};else a.push({...data,date:d,id:d});L.s('hab',a)}
+function sH(d,data){const a=L.g('hab')||[];data.cs=cS(data);data.ts=new Date().toISOString();const i=a.findIndex(h=>h.date===d);if(i>=0)a[i]={...a[i],...data,date:d};else a.push({...data,date:d,id:d});L.s('hab',a);DB.save('hab',a)}
 const gAH=()=>L.g('hab')||[];
+
 const gSl=d=>(L.g('slp')||[]).find(s=>s.date===d)||null;
-function sSl(d,data){const a=L.g('slp')||[];const i=a.findIndex(s=>s.date===d);if(i>=0)a[i]={...data,date:d};else a.push({...data,date:d});L.s('slp',a)}
+function sSl(d,data){const a=L.g('slp')||[];const i=a.findIndex(s=>s.date===d);if(i>=0)a[i]={...data,date:d};else a.push({...data,date:d});L.s('slp',a);DB.save('slp',a)}
 const gAS=()=>L.g('slp')||[];
+
 const gWo=d=>(L.g('wo')||[]).find(w=>w.date===d)||null;
-function sWo(d,data){const a=L.g('wo')||[];const i=a.findIndex(w=>w.date===d);if(i>=0)a[i]={...data,date:d};else a.push({...data,date:d});L.s('wo',a)}
+function sWo(d,data){const a=L.g('wo')||[];const i=a.findIndex(w=>w.date===d);if(i>=0)a[i]={...data,date:d};else a.push({...data,date:d});L.s('wo',a);DB.save('wo',a)}
 const gAW=()=>L.g('wo')||[];
+
 const gAB=()=>L.g('body')||[];
-function sBE(d,data){const a=gAB();const i=a.findIndex(e=>e.date===d);if(i>=0)a[i]={...a[i],...data,date:d};else a.push({...data,date:d,id:d});L.s('body',a)}
+function sBE(d,data){const a=gAB();const i=a.findIndex(e=>e.date===d);if(i>=0)a[i]={...a[i],...data,date:d};else a.push({...data,date:d,id:d});L.s('body',a);DB.save('body',a)}
+
 const gAch=()=>L.g('ach')||[];
-function uAch(def){const a=gAch();if(a.find(x=>x.id===def.id))return false;a.push({...def,du:td()});L.s('ach',a);return true}
+function uAch(def){const a=gAch();if(a.find(x=>x.id===def.id))return false;a.push({...def,du:td()});L.s('ach',a);DB.save('ach',a);return true}
+
 function cStrk(u){const a=gAH();if(!a.length||!u)return{c:0,l:0};const dn=gCD(u.start_date);const dates=dR(u.start_date,dn);let t=0,l=0;const today=td();for(const d of dates){const rec=a.find(h=>h.date===d);const sc=rec?rec.cs:0;const rest=rec?rec.rest:false;if(sc>=TH/HABITS_F().length||rest){t++;l=Math.max(l,t)}else if(d<today){t=0}}return{c:t,l}}
+
 function getDH(date){const saved=L.g('detox_'+date);if(saved)return saved;const def={};DETOX_F().forEach(h=>def[h.id]=false);return def}
-function sDH(date,data){L.s('detox_'+date,data)}
+function sDH(date,data){L.s('detox_'+date,data);DB.save('detox',{date,data})}
+
 function getReflection(date){return L.g('ref_'+date)||null}
-function saveReflectionData(date,data){L.s('ref_'+date,data)}
+function saveReflectionData(date,data){L.s('ref_'+date,data);DB.save('reflections',{date,data})}
+
 function getNutSettings(){return L.g('nutset')||null}
-function saveNutSettingsData(d){L.s('nutset',d)}
+function saveNutSettingsData(d){L.s('nutset',d);DB.save('nutset',d)}
+
 function getMeals(date){return(L.g('meals')||[]).filter(m=>m.date===date)}
 function getAllMeals(){return L.g('meals')||[]}
-function addMeal(meal){const a=L.g('meals')||[];meal.id=Date.now().toString(36);a.push(meal);L.s('meals',a)}
-function delMeal(id){const a=(L.g('meals')||[]).filter(m=>m.id!==id);L.s('meals',a)}
+function addMeal(meal){const a=L.g('meals')||[];meal.id=Date.now().toString(36);a.push(meal);L.s('meals',a);DB.save('meals',a)}
+function delMeal(id){const a=(L.g('meals')||[]).filter(m=>m.id!==id);L.s('meals',a);DB.save('meals',a)}
+
+// Gym data (also synced)
+function getGymProfile(){return L.g('gymprof')||null}
+function saveGymProfileData(d){L.s('gymprof',d);DB.save('gymprof',d)}
+function getTodayWo(){return L.g('gym_wo_'+td())||null}
+function saveTodayWo(d){L.s('gym_wo_'+td(),d);DB.save('gymhist_today',{date:td(),data:d})}
+function getWeekPlan(){return L.g('weekplan')||null}
+function saveWeekPlanData(d){L.s('weekplan',d);DB.save('weekplan',d)}
+function getPRs(){return L.g('prs')||[]}
+function savePRs(d){L.s('prs',d);DB.save('prs',d)}
+function getGymHistory(){return L.g('gymhist')||[]}
+function addGymHistory(entry){const a=getGymHistory();a.unshift(entry);if(a.length>50)a.length=50;L.s('gymhist',a);DB.save('gymhist',a)}
+
+// Custom habits config (synced)
+function getHabits(){return L.g('custom_habits')||[...DEFAULT_HABITS]}
+function saveHabitsConfig(h){L.s('custom_habits',h);DB.save('custom_habits',h)}
+function getDetoxHabits(){return L.g('custom_detox')||[...DEFAULT_DETOX]}
+function saveDetoxConfig(h){L.s('custom_detox',h);DB.save('custom_detox',h)}
+
+// === SUPABASE INITIAL SYNC ===
+// On app start, pull latest data from Supabase into localStorage
+async function syncFromSupabase(){
+  if(!sbClient){console.log('📦 No Supabase — using localStorage');return}
+  console.log('🔄 Syncing from Supabase...');
+  const tables=['users','hab','slp','wo','body','ach','meals','nutset','gymprof','weekplan','prs','gymhist','custom_habits','custom_detox'];
+  let synced=0;
+  for(const t of tables){
+    try{
+      const result=await DB.load(t);
+      if(result)synced++;
+    }catch(e){}
+  }
+  console.log(`✅ Synced ${synced} tables from Supabase`);
+}
 
 // === RING HELPER ===
 function setRing(id,pct){const el=document.getElementById(id);if(!el)return;const r=52,circ=2*Math.PI*r;el.style.strokeDasharray=circ;el.style.strokeDashoffset=circ-(circ*Math.min(pct,100)/100)}
@@ -1316,17 +1361,7 @@ const GYM_EQUIP=['Full Gym','Dumbbells Only','Bodyweight','Home Gym','Resistance
 const GYM_TIMES=['30','45','60','75','90'];
 const DAYS_SHORT=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-// Gym data
-function getGymProfile(){return L.g('gymprof')||null}
-function saveGymProfileData(d){L.s('gymprof',d)}
-function getTodayWo(){return L.g('gym_wo_'+td())||null}
-function saveTodayWo(d){L.s('gym_wo_'+td(),d)}
-function getWeekPlan(){return L.g('weekplan')||null}
-function saveWeekPlanData(d){L.s('weekplan',d)}
-function getPRs(){return L.g('prs')||[]}
-function savePRs(d){L.s('prs',d)}
-function getGymHistory(){return L.g('gymhist')||[]}
-function addGymHistory(entry){const a=getGymHistory();a.unshift(entry);if(a.length>50)a.length=50;L.s('gymhist',a)}
+// Gym data functions are in the DATA LAYER above (Supabase synced)
 
 let gymGoal='Hypertrophy',gymExp='Intermediate',gymEquip='Full Gym',gymTime='60';
 
@@ -1659,7 +1694,7 @@ function renderGymHist(){
   el.innerHTML=html;
 }
 
-function initApp(){initTh();const u=gU();if(!u){document.getElementById('setup').classList.add('on');return}document.getElementById('topBadge').textContent=`Day ${gCD(u.start_date)} / ${TD}`;showMorningGreeting();renderD();checkWeeklyReport()}
+async function initApp(){initTh();const u=gU();if(!u){document.getElementById('setup').classList.add('on');return}document.getElementById('topBadge').textContent=`Day ${gCD(u.start_date)} / ${TD}`;showMorningGreeting();renderD();checkWeeklyReport();await syncFromSupabase();renderD()}
 initApp();
 </script>
 </body>
