@@ -810,17 +810,17 @@ const TH=4,TD=45;
 // ║  ЭНД ӨӨРИЙН SUPABASE МЭДЭЭЛЛИЙГ ОРУУЛНА                    ║
 // ║  Supabase Dashboard → Settings → API хэсгээс авна          ║
 // ╚══════════════════════════════════════════════════════════════╝
-const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'
+const SUPABASE_URL = '';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
+const SUPABASE_KEY = '';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'
 // SECRET KEY-г хэзээ ч энд оруулахгүй!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
 
 // Initialize Supabase client (if configured)
-let supabase = null;
+let sbClient = null;
 if (STORAGE_MODE === 'supabase' && window.supabase) {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   console.log('✅ Supabase connected:', SUPABASE_URL);
 } else {
   console.log('📦 Using localStorage (Supabase not configured)');
@@ -836,49 +836,25 @@ const L={
 
 // Supabase sync layer — reads/writes to Supabase, caches in localStorage
 const DB = {
-  // Save to both localStorage and Supabase
   async save(table, data) {
-    // Always save to localStorage first (instant)
     L.s(table, data);
-    // Then sync to Supabase if available
-    if (!supabase) return;
+    if (!sbClient) return;
     try {
-      if (Array.isArray(data)) {
-        // For array data (habits, meals, etc), upsert each record
-        for (const item of data) {
-          await supabase.from(table).upsert(item, { onConflict: 'id' });
-        }
-      } else {
-        // For single object (user, settings)
-        await supabase.from(table).upsert({ id: 'default', data }, { onConflict: 'id' });
-      }
+      await sbClient.from(table).upsert({ id: 'default', data: JSON.stringify(data) }, { onConflict: 'id' });
     } catch (e) { console.warn('Supabase sync error:', e); }
   },
-
-  // Load from Supabase (or localStorage fallback)
   async load(table) {
-    if (!supabase) return L.g(table);
+    if (!sbClient) return L.g(table);
     try {
-      const { data, error } = await supabase.from(table).select('*');
+      const { data, error } = await sbClient.from(table).select('*').eq('id','default').single();
       if (error) throw error;
-      if (data && data.length > 0) {
-        // If it's a single-object table, unwrap
-        if (data.length === 1 && data[0].data) {
-          L.s(table, data[0].data); // cache
-          return data[0].data;
-        }
-        L.s(table, data); // cache
-        return data;
+      if (data && data.data) {
+        const parsed = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
+        L.s(table, parsed);
+        return parsed;
       }
     } catch (e) { console.warn('Supabase load error:', e); }
-    return L.g(table); // fallback to localStorage
-  },
-
-  // Delete from both
-  async remove(table, id) {
-    if (supabase) {
-      try { await supabase.from(table).delete().eq('id', id); } catch(e) {}
-    }
+    return L.g(table);
   }
 };
 const td=()=>new Date().toISOString().split('T')[0];
