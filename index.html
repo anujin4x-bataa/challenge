@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LOCK-IN 45</title>
+<meta name="description" content="45-Day Self-Improvement Challenge Tracker">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup" class="setup-bg">
+<div class="setup-c">
+  <div style="font-size:2.5rem;margin-bottom:10px">🔒</div>
+  <h1>LOCK-IN 45</h1>
+  <p class="tg">45 Days. No Excuses. Total Transformation.</p>
+  <div class="f-grp" style="text-align:left"><label class="f-label">Your Name</label><input type="text" id="s-name" class="f-input" placeholder="Enter your name..."></div>
+  <div class="f-grp" style="text-align:left"><label class="f-label">Start Date</label><input type="date" id="s-date" class="f-input"></div>
+  <button class="btn btn-p btn-full" onclick="doSetup()" style="margin-top:8px">Start Challenge →</button>
+</div>
+</div>
+
+<!-- MORNING GREETING -->
+<div class="greeting-overlay" id="greetOv">
+  <div class="greeting-box">
+    <div class="gr-emoji">🌅</div>
+    <div class="gr-hello">Good morning</div>
+    <div class="gr-name" id="grName">—</div>
+    <div class="gr-day" id="grDay">Day — of your Lock-In</div>
+    <div class="gr-msg" id="grMsg">Let's win today.</div>
+    <button class="btn btn-p" onclick="dismissGreeting()" style="margin-top:8px">Let's Go →</button>
+  </div>
+</div>
+
+<!-- REFLECTION MODAL -->
+<div class="modal-bg" id="reflectM">
+<div class="modal-sh">
+  <div class="modal-h"></div>
+  <div class="sec-h">🌙 Daily Reflection</div>
+  <p style="font-size:.78rem;color:var(--t3);margin-bottom:14px">1 minute. 3 questions. Close the day with intention.</p>
+  <div class="reflect-q"><label>✅ Today I did well at:</label><input type="text" id="ref-good" class="f-input" placeholder="e.g. Completed all my workouts"></div>
+  <div class="reflect-q"><label>📈 Tomorrow I will improve:</label><input type="text" id="ref-improve" class="f-input" placeholder="e.g. Drink more water earlier"></div>
+  <div class="reflect-q"><label>⚡ Energy level:</label><div class="energy-stars" id="energyStars"></div></div>
+  <button class="btn btn-p btn-full" onclick="saveReflection()" style="margin-top:8px">Save Reflection</button>
+  <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeM('reflectM')">Skip</button>
+</div>
+</div>
+
+<!-- WEEKLY REPORT MODAL -->
+<div class="modal-bg" id="weekReportM">
+<div class="modal-sh">
+  <div class="modal-h"></div>
+  <div class="sec-h">📊 Weekly Report</div>
+  <div id="weekReportContent"></div>
+  <button class="btn btn-p btn-full" style="margin-top:12px" onclick="closeM('weekReportM')">Got It 💪</button>
+</div>
+</div>
+
+<!-- SLEEP MODAL -->
+<div class="modal-bg" id="sleepM">
+<div class="modal-sh">
+  <div class="modal-h"></div>
+  <div class="sec-h">😴 Sleep Details</div>
+  <div class="f-grp"><label class="f-label">Sleep Score (0–100)</label><input type="number" id="sl-sc" class="f-input" placeholder="75" min="0" max="100"></div>
+  <div class="f-row">
+    <div><label class="f-label">Duration</label><input type="text" id="sl-dur" class="f-input" placeholder="7h 53m"></div>
+    <div><label class="f-label">Quality</label><select id="sl-q" class="f-input f-select"><option value="">Select</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select></div>
+  </div>
+  <div class="f-row3">
+    <div><label class="f-label">Deep</label><input type="text" id="sl-deep" class="f-input" placeholder="49m"></div>
+    <div><label class="f-label">REM</label><input type="text" id="sl-rem" class="f-input" placeholder="58m"></div>
+    <div><label class="f-label">Light</label><input type="text" id="sl-light" class="f-input" placeholder="6h 6m"></div>
+  </div>
+  <div class="f-grp"><label class="f-label">Notes</label><input type="text" id="sl-notes" class="f-input" placeholder="e.g. 50 restless moments"></div>
+  <button class="btn btn-p btn-full" onclick="saveSleep()">Save Sleep</button>
+  <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeM('sleepM')">Cancel</button>
+</div>
+</div>
+
+<!-- WORKOUT MODAL -->
+<div class="modal-bg" id="workM">
+<div class="modal-sh">
+  <div class="modal-h"></div>
+  <div class="sec-h">💪 Workout Details</div>
+  <div class="f-grp"><label class="f-label">Type</label><div class="wt-grid" id="wtList"></div></div>
+  <div class="f-row">
+    <div><label class="f-label">Duration (min)</label><input type="number" id="wo-dur" class="f-input" placeholder="45"></div>
+    <div><label class="f-label">Intensity</label><select id="wo-int" class="f-input f-select"><option value="">Select</option><option>Light</option><option>Moderate</option><option>Intense</option><option>Max Effort</option></select></div>
+  </div>
+  <div class="f-grp"><label class="f-label">Notes</label><textarea id="wo-notes" class="f-input" placeholder="Bench 80kg x5, Squat 100kg x5..."></textarea></div>
+  <button class="btn btn-p btn-full" onclick="saveWorkout()">Save Workout</button>
+  <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeM('workM')">Cancel</button>
+</div>
+</div>
+
+<!-- FOOD SCAN MODAL -->
+<div class="modal-bg" id="foodScanM">
+<div class="modal-sh">
+  <div class="modal-h"></div>
+  <div class="sec-h">📷 Scan Food</div>
+  <div class="upload-zone" id="foodUpZone" onclick="document.getElementById('foodPhIn').click()">
+    <input type="file" id="foodPhIn" accept="image/*" capture="environment" onchange="handleFoodPhoto(this)">
+    <div style="font-size:1.8rem;margin-bottom:4px">📸</div>
+    <div style="font-size:.82rem">Take a photo of your meal</div>
+    <div style="font-size:.65rem;color:var(--t3);margin-top:4px">AI analyzes calories & macros</div>
+  </div>
+  <img id="foodPreview" class="scan-preview" style="display:none">
+  <div id="aiLoading" class="ai-loading" style="display:none"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Analyzing...</span></div>
+  <div id="aiResult" style="display:none">
+    <div class="f-grp"><label class="f-label">Food Name</label><input type="text" id="fd-name" class="f-input"></div>
+    <div class="meal-type-row" id="fdMealType"></div>
+    <div class="f-row"><div><label class="f-label">Calories</label><input type="number" id="fd-cal" class="f-input"></div><div><label class="f-label">Protein (g)</label><input type="number" id="fd-p" class="f-input"></div></div>
+    <div class="f-row"><div><label class="f-label">Carbs (g)</label><input type="number" id="fd-c" class="f-input"></div><div><label class="f-label">Fat (g)</label><input type="number" id="fd-f" class="f-input"></div></div>
+    <div class="f-grp"><label class="f-label">Notes</label><input type="text" id="fd-notes" class="f-input" placeholder="Optional..."></div>
+    <button class="btn btn-p btn-full" onclick="saveFoodEntry()">Save Meal</button>
+  </div>
+  <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeM('foodScanM')">Cancel</button>
+</div>
+</div>
+
+<!-- ==================== APP ==================== -->
+<div class="app">
+<header class="topbar">
+  <div class="topbar-left"><div class="logo">45</div><div><h1>LOCK-IN</h1><div class="sub" id="topBadge">—</div></div></div>
+  <div class="topbar-right"><button class="t-btn" onclick="exportCSV()">📥</button><button class="t-btn" id="thB" onclick="toggleTheme()">☀️</button></div>
+</header>
+
+<!-- ==================== DASHBOARD ==================== -->
+<div class="page active" id="pg-d">
+
+  <!-- ZONE 1: STATUS — progress ring + score + key stats -->
+  <div class="hero-dual">
+    <div class="hero-ring" id="heroRing">
+      <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fill" cx="60" cy="60" r="52" id="heroRingFill"/></svg>
+      <div class="ring-center"><div class="rv" id="heroDay">1</div><div class="rl">of 45 days</div></div>
+    </div>
+    <div class="hero-col">
+      <div class="hero-stat"><span class="hl">🔥 Streak</span><span class="hv" id="hStreak">0</span></div>
+      <div class="hero-stat"><span class="hl">⭐ Best</span><span class="hv" id="hBest">0</span></div>
+      <div class="hero-stat"><span class="hl">✅ Today</span><span class="hv" id="hToday">0%</span></div>
+      <div class="hero-stat">
+        <span class="hl">📊 Score</span>
+        <div class="score-mini">
+          <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fill" cx="60" cy="60" r="52" id="dsRingFill"/></svg>
+          <div class="ring-center" id="dsVal" style="font-size:.75rem">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZONE 2: COACH — compact inline -->
+  <div class="coach-inline">
+    <div class="ci-icon">🤖</div>
+    <div class="ci-text" id="coachMsg">Loading...</div>
+  </div>
+
+  <!-- ZONE 3: TOGGLES — rest + detox side by side -->
+  <div class="toggles-row">
+    <div class="toggle-card">
+      <div><div class="tc-l">😴 Rest Day</div></div>
+      <label class="tgl"><input type="checkbox" id="restT" onchange="toggleRest(this.checked)"><span class="tgl-s"></span></label>
+    </div>
+    <div class="toggle-card" id="detoxCard">
+      <div><div class="tc-l">🧠 Detox</div></div>
+      <label class="tgl"><input type="checkbox" id="detoxT" onchange="toggleDetox(this.checked)"><span class="tgl-s"></span></label>
+    </div>
+  </div>
+
+  <!-- ZONE 4: ACTION — habits (core interaction) -->
+  <div class="zone">
+    <div class="zone-label">Today's Habits</div>
+    <div id="habList"></div>
+  </div>
+
+  <!-- ZONE 5: INSIGHTS — collapsible sections -->
+  <div class="zone">
+
+    <!-- Sleep & Workout summaries (inline mini) -->
+    <div id="slpCard"></div>
+    <div id="woCard"></div>
+
+    <!-- Journal (collapsible) -->
+    <div class="insight-group">
+      <div class="insight-header" onclick="toggleInsight(this)">
+        <div class="ih-left"><span class="ih-icon">📝</span><span class="ih-title">Journal & Reflection</span></div>
+        <span class="ih-arrow">▾</span>
+      </div>
+      <div class="insight-body" id="journalBody">
+        <div class="insight-body-inner">
+          <textarea id="jInput" class="j-input" placeholder="Reflections, wins, struggles..."></textarea>
+          <div style="margin-top:10px" id="reflectArea">
+            <button class="btn btn-s btn-sm btn-full" onclick="openReflection()" id="reflectBtn">🌙 Daily Reflection</button>
+            <div id="reflectSummary" style="display:none;margin-top:10px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly report card -->
+    <div id="weeklyReportCard" style="display:none"></div>
+
+    <!-- Heatmap (collapsible) -->
+    <div class="insight-group">
+      <div class="insight-header" onclick="toggleInsight(this)">
+        <div class="ih-left"><span class="ih-icon">🗓️</span><span class="ih-title">45-Day Heatmap</span></div>
+        <span class="ih-arrow">▾</span>
+      </div>
+      <div class="insight-body" id="heatmapBody">
+        <div class="insight-body-inner">
+          <div class="hm-legend"><span><i style="background:var(--acc)"></i>Success</span><span><i style="background:var(--yel)"></i>Partial</span><span><i style="background:var(--red)"></i>Missed</span></div>
+          <div class="heatmap" id="hm1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements (collapsible) -->
+    <div class="insight-group">
+      <div class="insight-header" onclick="toggleInsight(this)">
+        <div class="ih-left"><span class="ih-icon">🏆</span><span class="ih-title">Achievements</span></div>
+        <span class="ih-badge" id="achCount">0/12</span>
+        <span class="ih-arrow">▾</span>
+      </div>
+      <div class="insight-body">
+        <div class="insight-body-inner">
+          <div class="badges" id="bd1"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== NUTRITION ==================== -->
+<div class="page" id="pg-n">
+  <div class="sec-h">🍽️ Nutrition</div>
+  <div class="card" style="text-align:center">
+    <div class="card-t"><span>Today's Intake</span><span class="mono" style="font-size:.6rem;text-transform:none;letter-spacing:0" id="nutDate"></span></div>
+    <div class="cal-ring hero-ring" style="width:100px;height:100px">
+      <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fill" cx="60" cy="60" r="52" id="calRingFill"/></svg>
+      <div class="ring-center"><div class="rv" id="calTotal" style="font-size:1.4rem">0</div><div class="rl" id="calGoalLabel">/ — kcal</div></div>
+    </div>
+    <div class="macro-bars" id="macroBars">
+      <div class="macro-bar"><span class="mb-label" style="color:#ff6b6b">P</span><div class="mb-track"><div class="mb-fill" id="mbP" style="background:#ff6b6b;width:0%"></div></div><span class="mb-val" id="mvP">0g</span></div>
+      <div class="macro-bar"><span class="mb-label" style="color:#ffd43b">C</span><div class="mb-track"><div class="mb-fill" id="mbC" style="background:#ffd43b;width:0%"></div></div><span class="mb-val" id="mvC">0g</span></div>
+      <div class="macro-bar"><span class="mb-label" style="color:#69db7c">F</span><div class="mb-track"><div class="mb-fill" id="mbF" style="background:#69db7c;width:0%"></div></div><span class="mb-val" id="mvF">0g</span></div>
+    </div>
+  </div>
+  <div class="body-stats-setup" id="bodySetup" style="display:none">
+    <div class="bss-title">⚙️ Set Body Stats for Calorie Goal</div>
+    <div class="f-row"><div><label class="f-label">Weight (kg)</label><input type="number" id="ns-w" class="f-input" placeholder="75" step=".1"></div><div><label class="f-label">Height (cm)</label><input type="number" id="ns-h" class="f-input" placeholder="175"></div></div>
+    <div class="f-row"><div><label class="f-label">Age</label><input type="number" id="ns-age" class="f-input" placeholder="25"></div><div><label class="f-label">Activity</label><select id="ns-act" class="f-input f-select"><option value="1.2">Sedentary</option><option value="1.375">Light</option><option value="1.55" selected>Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option></select></div></div>
+    <div class="f-grp"><label class="f-label">Goal</label><select id="ns-goal" class="f-input f-select"><option value="-500">Cut (-500)</option><option value="-250">Slow Cut</option><option value="0" selected>Maintain</option><option value="250">Lean Bulk</option><option value="500">Bulk (+500)</option></select></div>
+    <button class="btn btn-p btn-full" onclick="saveNutSettings()">Calculate Goal</button>
+  </div>
+  <div style="text-align:center;margin-bottom:14px"><button class="scan-btn" onclick="openFoodScan()">📷</button><div style="font-size:.65rem;color:var(--t3);margin-top:4px">Scan food</div></div>
+  <button class="btn btn-s btn-full btn-sm" onclick="openManualFood()" style="margin-bottom:14px">+ Add Manually</button>
+  <div id="mealsList"></div>
+  <div class="card" id="calChartCard" style="display:none"><div class="card-t">Weekly Calories</div><div class="chart-wrap"><canvas id="calChart"></canvas></div></div>
+</div>
+
+<!-- ==================== PROGRESS ==================== -->
+<div class="page" id="pg-p">
+  <div class="sec-h">📈 Progress</div>
+  <div class="stats-row" id="pStats"></div>
+  <div class="card"><div class="card-t">Weekly Success</div><div class="chart-wrap"><canvas id="wkChart"></canvas></div></div>
+  <div class="card"><div class="card-t">Habit Breakdown</div><div class="chart-wrap"><canvas id="hbChart"></canvas></div></div>
+  <div class="card"><div class="card-t">Daily Score</div><div class="chart-wrap"><canvas id="dsChart"></canvas></div></div>
+  <div class="card" id="slpChC"><div class="card-t">😴 Sleep Score</div><div class="chart-wrap"><canvas id="slpCh"></canvas></div></div>
+  <div class="card"><div class="card-t">Heatmap</div>
+    <div class="hm-legend"><span><i style="background:var(--acc)"></i>Success</span><span><i style="background:var(--yel)"></i>Partial</span><span><i style="background:var(--red)"></i>Missed</span></div>
+    <div class="heatmap" id="hm2"></div>
+  </div>
+</div>
+
+<!-- ==================== BODY ==================== -->
+<div class="page" id="pg-b">
+  <div class="sec-h">💪 Body Tracker</div>
+  <div class="card" id="bChC"><div class="card-t">Progress</div><div class="chart-wrap"><canvas id="bCh"></canvas></div></div>
+  <div id="bSum"></div>
+  <div class="card">
+    <div class="card-t">Log Measurement</div>
+    <div class="f-grp"><label class="f-label">Date</label><input type="date" id="bD" class="f-input"></div>
+    <div class="f-row"><div><label class="f-label">Weight (kg)</label><input type="number" id="bW" class="f-input" placeholder="75" step=".1"></div><div><label class="f-label">Waist (cm)</label><input type="number" id="bWa" class="f-input" placeholder="82" step=".1"></div></div>
+    <div class="f-grp"><label class="f-label">Body Fat %</label><input type="number" id="bF" class="f-input" placeholder="18" step=".1"></div>
+    <button class="btn btn-p btn-full" onclick="saveBody()">Save</button>
+  </div>
+  <div class="card" id="bEntr"></div>
+  <div class="card"><div class="card-t">📸 Photos</div>
+    <div class="upload-zone" onclick="document.getElementById('phIn').click()"><input type="file" id="phIn" accept="image/*" capture="environment" onchange="handlePhoto(this)"><div style="font-size:1.5rem;margin-bottom:4px">📸</div><div style="font-size:.78rem">Tap to upload</div></div>
+    <div class="photo-grid" id="phG"></div>
+  </div>
+</div>
+
+<!-- ==================== PROFILE ==================== -->
+<div class="page" id="pg-pr">
+  <div class="sec-h">👤 Profile</div>
+  <div class="card" style="display:flex;align-items:center;gap:14px">
+    <div style="width:52px;height:52px;border-radius:50%;background:var(--accd);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🔒</div>
+    <div><div style="font-size:1rem;font-weight:700;color:var(--acc)" id="prName">—</div><div style="font-size:.7rem;color:var(--t3)" id="prDay">—</div></div>
+  </div>
+  <div class="stats-row" id="prStats" style="margin-top:14px"></div>
+  <div class="card"><div class="card-t">Edit</div>
+    <div class="f-grp"><label class="f-label">Name</label><input type="text" id="eName" class="f-input"></div>
+    <div class="f-grp"><label class="f-label">Start Date</label><input type="date" id="eDate" class="f-input"></div>
+    <button class="btn btn-p btn-sm" onclick="saveProf()">Save</button>
+  </div>
+  <div class="card"><div class="card-t">Achievements</div><div class="badges" id="bd2"></div></div>
+  <div class="card"><div class="card-t">Settings</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-s btn-sm" onclick="reqNotifs()">🔔 Notifications</button>
+      <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+      <button class="btn btn-d btn-sm" onclick="resetAll()">⚠️ Reset All</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-tab active" data-page="pg-d"><span class="ni">📊</span>Home</button>
+  <button class="nav-tab" data-page="pg-n"><span class="ni">🍽️</span>Food</button>
+  <button class="nav-tab" data-page="pg-p"><span class="ni">📈</span>Stats</button>
+  <button class="nav-tab" data-page="pg-b"><span class="ni">💪</span>Body</button>
+  <button class="nav-tab" data-page="pg-pr"><span class="ni">👤</span>Me</button>
+</nav>
+</div>
+<div class="toast-box" id="tBox"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

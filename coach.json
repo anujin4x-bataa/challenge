@@ -1,0 +1,46 @@
+{
+  "morning": [
+    "New day. Let's go.",
+    "Rise and grind.",
+    "Lock in. No distractions.",
+    "Discipline over motivation.",
+    "Build the person you want to become.",
+    "Every rep, every step — it compounds.",
+    "Champions don't hit snooze on their goals.",
+    "Day by day, you're becoming unstoppable."
+  ],
+  "completion": [
+    "PERFECT DAY. Elite.",
+    "All habits done. Locked in.",
+    "100%. This is discipline.",
+    "Every box checked. Champion.",
+    "Dominated the day. That's the standard."
+  ],
+  "partial": [
+    "Not perfect, but you showed up.",
+    "Progress > perfection.",
+    "Bounce back tomorrow.",
+    "Partial beats zero. Keep going.",
+    "Even elite athletes have off days."
+  ],
+  "streak": [
+    "🔥 {s} days! Unstoppable.",
+    "🔥 {s} day streak!",
+    "🔥 {s} days locked in."
+  ],
+  "milestone": {
+    "7": "ONE WEEK. The hardest part is done.",
+    "14": "TWO WEEKS. This is a lifestyle.",
+    "21": "21 DAYS. Habit formed.",
+    "30": "30 DAYS. Different person.",
+    "45": "COMPLETE. Legendary."
+  },
+  "encouragement": [
+    "Your only competition is yesterday.",
+    "Hard choices, easy life.",
+    "Consistency > intensity.",
+    "Don't break the chain.",
+    "Small daily improvements → staggering results.",
+    "Motivation fades. Discipline stays."
+  ]
+}
