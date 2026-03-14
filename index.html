@@ -399,6 +399,21 @@ textarea.f-input{resize:vertical;min-height:60px}
 
 /* === GYM TRAINER === */
 
+/* Running tracker */
+.run-card{background:var(--bg3);border-radius:var(--r3);padding:18px;margin-bottom:12px;border:1px solid var(--brd)}
+.run-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.run-stat{background:var(--bg4);border-radius:var(--r1);padding:12px;text-align:center}
+.run-stat .rs-val{font-family:var(--fm);font-size:1.2rem;font-weight:700;color:var(--acc);line-height:1}
+.run-stat .rs-unit{font-size:.55rem;color:var(--t3);margin-top:2px}
+.run-stat .rs-label{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-top:4px}
+.run-history-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--brd)}
+.run-history-item:last-child{border-bottom:none}
+.run-history-item .rhi-date{font-family:var(--fm);font-size:.6rem;color:var(--t3);width:50px;flex-shrink:0}
+.run-history-item .rhi-info{flex:1}
+.run-history-item .rhi-main{font-weight:600;font-size:.82rem}
+.run-history-item .rhi-detail{font-size:.65rem;color:var(--t3);font-family:var(--fm)}
+.run-history-item .rhi-pace{font-family:var(--fm);font-size:.78rem;font-weight:700;color:var(--cyan);flex-shrink:0}
+
 /* Custom habit management */
 .hab-actions{display:flex;gap:6px;margin-top:8px}
 .hab-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;background:var(--bg4);border:1px dashed var(--brd2);border-radius:var(--r2);color:var(--t3);font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;font-family:var(--fb)}
@@ -1029,6 +1044,27 @@ textarea.f-input{resize:vertical;min-height:60px}
   <!-- Today's workout -->
   <div id="todayWorkout"></div>
 
+  <!-- RUNNING TRACKER -->
+  <div class="insight-group">
+    <div class="insight-header" onclick="toggleInsight(this)">
+      <div class="ih-left"><span class="ih-icon">🏃</span><span class="ih-title">Running</span></div>
+      <span class="ih-badge" id="runCount">0</span>
+      <span class="ih-arrow">▾</span>
+    </div>
+    <div class="insight-body">
+      <div class="insight-body-inner">
+        <!-- Today's run summary (if logged) -->
+        <div id="todayRunSummary"></div>
+        <!-- Log run button -->
+        <button class="btn btn-s btn-sm btn-full" onclick="openLogRun()" style="margin-bottom:10px">🏃 Log Run</button>
+        <!-- Run history -->
+        <div id="runHistory"><p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">No runs logged yet.</p></div>
+        <!-- Run chart -->
+        <div id="runChartCard" style="display:none;margin-top:12px"><div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:8px">Distance Over Time</div><div class="chart-wrap" style="height:160px"><canvas id="runChart"></canvas></div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Weekly plan -->
   <div class="insight-group">
     <div class="insight-header" onclick="toggleInsight(this)">
@@ -1070,6 +1106,26 @@ textarea.f-input{resize:vertical;min-height:60px}
       </div>
     </div>
   </div>
+</div>
+
+<!-- LOG RUN MODAL -->
+<div class="modal-bg" id="runModal">
+<div class="modal-sh">
+  <div class="modal-h"></div>
+  <div class="sec-h">🏃 Log Run</div>
+  <div class="f-grp"><label class="f-label">Date</label><input type="date" id="run-date" class="f-input"></div>
+  <div class="f-row">
+    <div><label class="f-label">Distance (km)</label><input type="number" id="run-km" class="f-input" placeholder="5.0" step=".1"></div>
+    <div><label class="f-label">Time (minutes)</label><input type="number" id="run-time" class="f-input" placeholder="30"></div>
+  </div>
+  <div class="f-grp"><label class="f-label">Average Speed (km/h) — auto</label><input type="text" id="run-speed" class="f-input" readonly style="color:var(--acc)"></div>
+  <div class="f-grp"><label class="f-label">Type</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap" id="runTypeChips"></div>
+  </div>
+  <div class="f-grp"><label class="f-label">Notes</label><input type="text" id="run-notes" class="f-input" placeholder="e.g. Felt easy, 2 hills"></div>
+  <button class="btn btn-p btn-full" onclick="saveRun()">Save Run</button>
+  <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeM('runModal')">Cancel</button>
+</div>
 </div>
 
 <!-- LOG PR MODAL -->
@@ -1252,7 +1308,6 @@ const TH=4,TD=45;
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
-// SECRET KEY-г хэзээ ч энд оруулахгүй!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -1818,7 +1873,7 @@ function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cS
   }else{ns.textContent='Not supported in this browser'}
 }
 function saveProf(){const n=document.getElementById('eName').value.trim(),d=document.getElementById('eDate').value;if(!n){toast('Name?','⚠️');return}const u=gU();u.name=n;u.start_date=d;sU(u);toast('✅ Saved!');renderProf();document.getElementById('topBadge').textContent=`Day ${gCD(d)} / ${TD}`}
-function resetAll(){if(!confirm('Delete ALL data?'))return;if(!confirm('PERMANENT. Sure?'))return;['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist'].forEach(k=>L.r(k));for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(k.startsWith('li_ref_')||k.startsWith('li_detox_')||k.startsWith('li_gym_wo_')))localStorage.removeItem(k)}localStorage.removeItem('li_lastgreet');localStorage.removeItem('li_lastreport');location.reload()}
+function resetAll(){if(!confirm('Delete ALL data?'))return;if(!confirm('PERMANENT. Sure?'))return;['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs'].forEach(k=>L.r(k));for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(k.startsWith('li_ref_')||k.startsWith('li_detox_')||k.startsWith('li_gym_wo_')))localStorage.removeItem(k)}localStorage.removeItem('li_lastgreet');localStorage.removeItem('li_lastreport');location.reload()}
 function exportCSV(){const h=gAH(),sl=gAS(),w=gAW();let csv='date,steps,workout,water,sleep,no_sugar,no_noodles,score,rest,sleep_score,sleep_dur,deep,rem,wo_type,wo_dur,wo_int,journal\n';h.forEach(r=>{const s=sl.find(x=>x.date===r.date)||{};const wo=w.find(x=>x.date===r.date)||{};csv+=`${r.date},${r.steps||0},${r.workout||0},${r.water||0},${r.sleep||0},${r.no_sugar||0},${r.no_noodles||0},${r.cs||0},${r.rest||0},${s.sc||''},${s.dur||''},${s.deep||''},${s.rem||''},${wo.type||''},${wo.dur||''},${wo.int||''},"${(r.jnl||'').replace(/"/g,'""')}"\n`});const b=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='lockin45.csv';a.click();toast('📊 Exported!')}
 // ==================== NOTIFICATION SYSTEM ====================
 const NOTIF_ICON='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔒</text></svg>';
@@ -2212,6 +2267,145 @@ function generateWeeklyAIReport(){
   el.innerHTML=html;
 }
 
+// ==================== RUNNING TRACKER ====================
+const RUN_TYPES=['Easy Run','Tempo','Intervals','Long Run','Trail','Treadmill','Sprint','Recovery Jog'];
+let selRunType='Easy Run';
+
+function getRuns(){return L.g('runs')||[]}
+function saveRuns(d){L.s('runs',d);DB.save('runs',d)}
+
+function openLogRun(){
+  document.getElementById('run-date').value=td();
+  document.getElementById('run-km').value='';
+  document.getElementById('run-time').value='';
+  document.getElementById('run-speed').value='';
+  document.getElementById('run-notes').value='';
+  selRunType='Easy Run';
+  renderRunTypeChips();
+  openM('runModal');
+}
+
+function renderRunTypeChips(){
+  const el=document.getElementById('runTypeChips');el.innerHTML='';
+  RUN_TYPES.forEach(t=>{
+    const c=document.createElement('div');
+    c.className=`gym-chip ${t===selRunType?'sel':''}`;
+    c.textContent=t;
+    c.addEventListener('click',()=>{selRunType=t;renderRunTypeChips()});
+    el.appendChild(c);
+  });
+}
+
+// Auto-calculate speed when km or time changes
+document.addEventListener('DOMContentLoaded',()=>{
+  const calcSpeed=()=>{
+    const km=parseFloat(document.getElementById('run-km')?.value)||0;
+    const min=parseFloat(document.getElementById('run-time')?.value)||0;
+    const speedEl=document.getElementById('run-speed');
+    if(speedEl&&km>0&&min>0){
+      const speed=(km/(min/60)).toFixed(1);
+      const pace=min/km;
+      const paceMin=Math.floor(pace);
+      const paceSec=Math.round((pace-paceMin)*60);
+      speedEl.value=`${speed} km/h · ${paceMin}:${paceSec.toString().padStart(2,'0')} /km pace`;
+    }else if(speedEl){speedEl.value=''}
+  };
+  document.getElementById('run-km')?.addEventListener('input',calcSpeed);
+  document.getElementById('run-time')?.addEventListener('input',calcSpeed);
+});
+
+function saveRun(){
+  const date=document.getElementById('run-date').value||td();
+  const km=parseFloat(document.getElementById('run-km').value);
+  const time=parseInt(document.getElementById('run-time').value);
+  if(!km||!time){toast('KM болон хугацаа оруул','⚠️');return}
+
+  const speed=parseFloat((km/(time/60)).toFixed(1));
+  const pace=time/km;
+  const paceMin=Math.floor(pace);
+  const paceSec=Math.round((pace-paceMin)*60);
+
+  const run={
+    id:Date.now().toString(36),
+    date,
+    km,
+    time,
+    speed,
+    pace:`${paceMin}:${paceSec.toString().padStart(2,'0')}`,
+    type:selRunType,
+    notes:document.getElementById('run-notes').value.trim()
+  };
+
+  const runs=getRuns();
+  runs.push(run);
+  saveRuns(runs);
+  closeM('runModal');
+  toast('🏃 Run logged!');
+  renderRunSection();
+}
+
+function renderRunSection(){
+  const runs=getRuns();
+  document.getElementById('runCount').textContent=runs.length;
+
+  // Today's run summary
+  const todayRun=runs.filter(r=>r.date===td());
+  const summEl=document.getElementById('todayRunSummary');
+  if(todayRun.length>0){
+    const latest=todayRun[todayRun.length-1];
+    summEl.innerHTML=`<div class="run-card" style="border-color:var(--cyan)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-weight:700;font-size:.88rem">🏃 Today's Run</div>
+        <div style="font-size:.65rem;color:var(--t3)">${latest.type||''}</div>
+      </div>
+      <div class="run-stats">
+        <div class="run-stat"><div class="rs-val">${latest.km}</div><div class="rs-unit">km</div><div class="rs-label">Distance</div></div>
+        <div class="run-stat"><div class="rs-val">${latest.time}</div><div class="rs-unit">min</div><div class="rs-label">Time</div></div>
+        <div class="run-stat"><div class="rs-val" style="color:var(--cyan)">${latest.pace}</div><div class="rs-unit">/km</div><div class="rs-label">Pace</div></div>
+      </div>
+      ${latest.notes?`<div style="font-size:.72rem;color:var(--t3);margin-top:8px">💬 ${latest.notes}</div>`:''}
+    </div>`;
+  }else{summEl.innerHTML=''}
+
+  // Run history
+  const histEl=document.getElementById('runHistory');
+  const sorted=[...runs].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!sorted.length){histEl.innerHTML='<p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">No runs logged yet.</p>';return}
+
+  let html='';
+  sorted.slice(0,15).forEach(r=>{
+    html+=`<div class="run-history-item">
+      <div class="rhi-date">${fs(r.date)}</div>
+      <div class="rhi-info"><div class="rhi-main">${r.km} km · ${r.time} min</div><div class="rhi-detail">${r.type||''} ${r.notes?'· '+r.notes:''}</div></div>
+      <div class="rhi-pace">${r.pace}/km</div>
+    </div>`;
+  });
+  histEl.innerHTML=html;
+
+  // Run chart
+  renderRunChart(sorted);
+}
+
+function renderRunChart(sorted){
+  if(charts.runCh){charts.runCh.destroy();delete charts.runCh}
+  if(!sorted||sorted.length<2){document.getElementById('runChartCard').style.display='none';return}
+  document.getElementById('runChartCard').style.display='';
+  const recent=[...sorted].reverse().slice(-14);
+  const cc=chC();
+  charts.runCh=new Chart(document.getElementById('runChart'),{
+    type:'line',
+    data:{
+      labels:recent.map(r=>fs(r.date)),
+      datasets:[{
+        label:'km',data:recent.map(r=>r.km),
+        borderColor:'#00d4ff',backgroundColor:'#00d4ff22',
+        fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#00d4ff'
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cc.grid},ticks:{color:cc.t,callback:v=>v+'km'}},x:{grid:{display:false},ticks:{color:cc.t}}}}
+  });
+}
+
 // ==================== GYM TRAINER ====================
 const GYM_GOALS=['Strength','Hypertrophy','Fat Loss','Endurance','General Fitness'];
 const GYM_EXP=['Beginner','Intermediate','Advanced'];
@@ -2229,6 +2423,7 @@ function renderGym(){
   renderGymChips();
   renderRecovery();
   renderTodayWorkout();
+  renderRunSection();
   renderWeekPlan();
   renderPRTracker();
   renderGymHist();
