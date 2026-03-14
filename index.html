@@ -1585,7 +1585,7 @@ async function syncFromSupabase(){
   if(!sbClient){console.log('📦 No Supabase — using localStorage');return}
   console.log('🔄 Syncing from Supabase...');
   // Only sync tables that exist in Supabase schema
-  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist'];
+  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs'];
   let synced=0;
   for(const t of tables){
     try{
