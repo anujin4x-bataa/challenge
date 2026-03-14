@@ -520,23 +520,21 @@ textarea.f-input{resize:vertical;min-height:60px}
 
   <div class="auth-error" id="authError"></div>
 
-  <!-- Step 1: Auth -->
+  <!-- Step 1: Login / Register -->
   <div id="authStep">
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+      <button class="auth-tab active" id="tabSignup" onclick="switchAuthTab('signup')">Register</button>
       <button class="auth-tab" id="tabLogin" onclick="switchAuthTab('login')">Log In</button>
     </div>
-    <div class="f-grp" style="text-align:left"><label class="f-label">Email</label><input type="email" id="auth-email" class="f-input" placeholder="you@example.com" autocomplete="email"></div>
-    <div class="f-grp" style="text-align:left"><label class="f-label">Password</label><input type="password" id="auth-pass" class="f-input" placeholder="Min 6 characters" autocomplete="current-password"></div>
-    <button class="btn btn-p btn-full" id="authBtn" onclick="handleAuth()">Create Account</button>
-    <div class="auth-divider">or</div>
-    <button class="btn btn-s btn-full" onclick="skipAuth()" style="font-size:.7rem">Continue without account</button>
+    <div class="f-grp" style="text-align:left"><label class="f-label">Username</label><input type="text" id="auth-user" class="f-input" placeholder="Choose a username" autocomplete="username"></div>
+    <div class="f-grp" style="text-align:left"><label class="f-label">Password</label><input type="password" id="auth-pass" class="f-input" placeholder="Min 4 characters" autocomplete="current-password"></div>
+    <button class="btn btn-p btn-full" id="authBtn" onclick="handleAuth()">Register</button>
   </div>
 
-  <!-- Step 2: Challenge setup -->
+  <!-- Step 2: Challenge setup (first time only) -->
   <div id="challengeStep" style="display:none">
-    <div style="font-size:.85rem;color:var(--t2);margin-bottom:16px">✅ Account ready! Set up your challenge:</div>
-    <div class="f-grp" style="text-align:left"><label class="f-label">Your Name</label><input type="text" id="s-name" class="f-input" placeholder="Enter your name..." autocomplete="name"></div>
+    <div style="font-size:.85rem;color:var(--t2);margin-bottom:16px">✅ Welcome! Set up your challenge:</div>
+    <div class="f-grp" style="text-align:left"><label class="f-label">Display Name</label><input type="text" id="s-name" class="f-input" placeholder="Your name" autocomplete="name"></div>
     <div class="f-grp" style="text-align:left"><label class="f-label">Start Date</label><input type="date" id="s-date" class="f-input"></div>
     <button class="btn btn-p btn-full" onclick="doSetup()" style="margin-top:8px">Start Challenge →</button>
   </div>
@@ -1253,7 +1251,8 @@ const TH=4,TD=45;
 // ║  Supabase Dashboard → Settings → API хэсгээс авна          ║
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'
+const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
+// SECRET KEY-г хэзээ ч энд оруулахгүй!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -1305,14 +1304,16 @@ const DB = {
 };
 
 // ==================== AUTH SYSTEM ====================
+// Simple username + password — stored in Supabase 'accounts' table
+// No email verification needed. Browser saves session in localStorage.
 let currentAuthMode='signup';
-let authUser=null;
+let authUser=null; // {username, id}
 
 function switchAuthTab(mode){
   currentAuthMode=mode;
   document.getElementById('tabSignup').classList.toggle('active',mode==='signup');
   document.getElementById('tabLogin').classList.toggle('active',mode==='login');
-  document.getElementById('authBtn').textContent=mode==='signup'?'Create Account':'Log In';
+  document.getElementById('authBtn').textContent=mode==='signup'?'Register':'Log In';
   hideAuthError();
 }
 
@@ -1322,98 +1323,134 @@ function showAuthError(msg){
 }
 function hideAuthError(){document.getElementById('authError').classList.remove('show')}
 
+// Simple hash function for password (not cryptographic — good enough for personal app)
+function simpleHash(str){let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0}return 'h'+Math.abs(h).toString(36)}
+
 async function handleAuth(){
-  const email=document.getElementById('auth-email').value.trim();
+  const username=document.getElementById('auth-user').value.trim().toLowerCase();
   const pass=document.getElementById('auth-pass').value;
-  if(!email||!email.includes('@')){showAuthError('Enter a valid email');return}
-  if(!pass||pass.length<6){showAuthError('Password must be at least 6 characters');return}
+  if(!username||username.length<2){showAuthError('Username хамгийн багадаа 2 тэмдэгт');return}
+  if(!pass||pass.length<4){showAuthError('Password хамгийн багадаа 4 тэмдэгт');return}
   hideAuthError();
 
   const btn=document.getElementById('authBtn');
   btn.disabled=true;btn.textContent='Loading...';
+  const passHash=simpleHash(pass);
 
-  if(!sbClient){
-    // No Supabase — save locally and proceed
-    L.s('auth_email',email);
-    L.s('auth_pass_hash',btoa(pass)); // Simple obfuscation (not real security)
-    authUser={email};
-    btn.disabled=false;
-    showChallengeStep();
-    return;
-  }
-
-  try{
-    let result;
+  if(sbClient){
+    // Supabase mode
+    try{
+      if(currentAuthMode==='signup'){
+        // Check if username exists
+        const{data:existing}=await sbClient.from('accounts').select('*').eq('username',username);
+        if(existing&&existing.length>0){showAuthError('Username аль хэдийн бүртгэлтэй. Log In дарна уу.');btn.disabled=false;btn.textContent='Register';return}
+        // Create account
+        const{error}=await sbClient.from('accounts').insert({username,pass_hash:passHash,created:new Date().toISOString()});
+        if(error)throw error;
+        toast('✅ Бүртгэл амжилттай!');
+      }else{
+        // Login — check username + password
+        const{data,error}=await sbClient.from('accounts').select('*').eq('username',username);
+        if(error)throw error;
+        if(!data||data.length===0){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent='Log In';return}
+        if(data[0].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent='Log In';return}
+        toast('✅ Нэвтэрлээ!');
+      }
+      // Save session
+      authUser={username};
+      L.s('auth_session',{username,hash:passHash});
+      // Load user data scoped to this username
+      const userData=await loadUserData(username);
+      if(userData&&userData.name){
+        L.s('user',userData);
+        document.getElementById('setup').classList.remove('on');
+        btn.disabled=false;
+        initApp();return;
+      }else{
+        showChallengeStep();
+      }
+    }catch(e){
+      showAuthError(e.message||'Алдаа гарлаа');
+    }
+  }else{
+    // localStorage mode
+    const accounts=L.g('accounts')||{};
     if(currentAuthMode==='signup'){
-      result=await sbClient.auth.signUp({email,password:pass});
-      if(result.error)throw result.error;
-      toast('✅ Account created!');
+      if(accounts[username]){showAuthError('Username аль хэдийн бүртгэлтэй');btn.disabled=false;btn.textContent='Register';return}
+      accounts[username]={pass_hash:passHash,created:new Date().toISOString()};
+      L.s('accounts',accounts);
+      toast('✅ Бүртгэл амжилттай!');
     }else{
-      result=await sbClient.auth.signInWithPassword({email,password:pass});
-      if(result.error)throw result.error;
-      toast('✅ Logged in!');
+      if(!accounts[username]){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent='Log In';return}
+      if(accounts[username].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent='Log In';return}
+      toast('✅ Нэвтэрлээ!');
     }
-    authUser=result.data.user;
-    // Check if user already has challenge data
-    const existingUser=await DB.load('users');
-    if(existingUser&&existingUser.name){
-      // Returning user — skip setup, go straight to app
-      L.s('user',existingUser);
+    authUser={username};
+    L.s('auth_session',{username,hash:passHash});
+    // Check for existing user data
+    const existing=L.g('user_'+username);
+    if(existing){
+      L.s('user',existing);
       document.getElementById('setup').classList.remove('on');
-      initApp();
-    }else{
-      showChallengeStep();
+      btn.disabled=false;
+      initApp();return;
     }
-  }catch(e){
-    showAuthError(e.message||'Authentication failed. Try again.');
+    showChallengeStep();
   }
   btn.disabled=false;
-  btn.textContent=currentAuthMode==='signup'?'Create Account':'Log In';
+  btn.textContent=currentAuthMode==='signup'?'Register':'Log In';
 }
 
-function skipAuth(){
-  authUser=null;
-  const u=gU();
-  if(u){
-    // Already has local data — just proceed
-    document.getElementById('setup').classList.remove('on');
-    initApp();
-  }else{
-    showChallengeStep();
-  }
+// Load user-specific data from Supabase
+async function loadUserData(username){
+  if(!sbClient)return L.g('user_'+username);
+  try{
+    const{data}=await sbClient.from('userdata').select('*').eq('username',username);
+    if(data&&data.length>0&&data[0].data){
+      const parsed=typeof data[0].data==='string'?JSON.parse(data[0].data):data[0].data;
+      L.s('user_'+username,parsed);
+      return parsed;
+    }
+  }catch(e){}
+  return L.g('user_'+username);
+}
+
+// Save user-specific data
+async function saveUserData(username,userData){
+  L.s('user_'+username,userData);
+  if(!sbClient)return;
+  try{
+    await sbClient.from('userdata').upsert({username,data:JSON.stringify(userData)},{onConflict:'username'});
+  }catch(e){}
 }
 
 function showChallengeStep(){
   document.getElementById('authStep').style.display='none';
   document.getElementById('challengeStep').style.display='';
   document.getElementById('s-date').value=td();
+  // Pre-fill name with username
+  if(authUser)document.getElementById('s-name').value=authUser.username;
 }
 
 async function handleLogout(){
   if(!confirm('Log out?'))return;
-  if(sbClient){
-    try{await sbClient.auth.signOut()}catch(e){}
-  }
   authUser=null;
+  L.r('auth_session');
   toast('Logged out','ℹ️');
-  // Show setup
   document.getElementById('authStep').style.display='';
   document.getElementById('challengeStep').style.display='none';
+  document.getElementById('auth-user').value='';
+  document.getElementById('auth-pass').value='';
   document.getElementById('setup').classList.add('on');
 }
 
-// Check existing session on load
-async function checkExistingSession(){
-  if(!sbClient)return null;
-  try{
-    const{data}=await sbClient.auth.getSession();
-    if(data&&data.session&&data.session.user){
-      authUser=data.session.user;
-      console.log('🔐 Session restored:',authUser.email);
-      return authUser;
-    }
-  }catch(e){}
-  return null;
+// Check saved session on app load
+function checkSavedSession(){
+  const session=L.g('auth_session');
+  if(!session||!session.username)return null;
+  authUser={username:session.username};
+  console.log('🔐 Session restored:',session.username);
+  return authUser;
 }
 
 const td=()=>new Date().toISOString().split('T')[0];
@@ -1524,8 +1561,9 @@ let cPg='pg-d';const charts={};
 document.querySelectorAll('.nav-tab').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));b.classList.add('active');const pg=b.dataset.page;document.getElementById(pg).classList.add('active');cPg=pg;if(pg==='pg-d')renderD();if(pg==='pg-g')renderGym();if(pg==='pg-n')renderNut();if(pg==='pg-p')renderProg();if(pg==='pg-b')renderBody();if(pg==='pg-pr')renderProf();window.scrollTo(0,0)})});
 
 // === SETUP ===
-function doSetup(){const n=document.getElementById('s-name').value.trim(),d=document.getElementById('s-date').value;if(!n){toast('Enter name','⚠️');return}if(!d){toast('Pick date','⚠️');return}sU({id:'u1',name:n,start_date:d});document.getElementById('setup').classList.remove('on');initApp()}
+function doSetup(){const n=document.getElementById('s-name').value.trim(),d=document.getElementById('s-date').value;if(!n){toast('Нэр оруул','⚠️');return}if(!d){toast('Огноо сонго','⚠️');return}const userData={id:'u1',name:n,start_date:d};sU(userData);if(authUser)saveUserData(authUser.username,userData);document.getElementById('setup').classList.remove('on');initApp()}
 document.getElementById('s-name').addEventListener('keypress',e=>{if(e.key==='Enter')doSetup()});
+document.getElementById('auth-pass').addEventListener('keypress',e=>{if(e.key==='Enter')handleAuth()});
 document.getElementById('s-date').value=td();
 
 // === COACH ===
@@ -2516,16 +2554,17 @@ function renderGymHist(){
 
 async function initApp(){
   initTh();
-  // Check for existing auth session
-  const session=await checkExistingSession();
+  // Check saved session
+  const session=checkSavedSession();
   if(session){
-    // Update profile UI
     const bar=document.getElementById('authUserBar');
-    if(bar){bar.style.display='';document.getElementById('authUserEmail').textContent=session.email}
+    if(bar){bar.style.display='';document.getElementById('authUserEmail').textContent='@'+session.username}
+    // Load user-specific data
+    const userData=L.g('user_'+session.username);
+    if(userData)L.s('user',userData);
   }
   const u=gU();
   if(!u){
-    // No user data — check if logged in but needs challenge setup
     if(session){showChallengeStep();document.getElementById('setup').classList.add('on')}
     else{document.getElementById('setup').classList.add('on')}
     return;
