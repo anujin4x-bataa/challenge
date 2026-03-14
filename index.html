@@ -60,6 +60,19 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .nav-tab.active{color:var(--acc)}
 .nav-tab:active{transform:scale(.92)}
 
+/* === AUTH === */
+.auth-tabs{display:flex;margin-bottom:20px;border-radius:var(--r1);overflow:hidden;background:var(--bg4)}
+.auth-tab{flex:1;padding:10px;text-align:center;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--t3);transition:.15s;border:none;background:none;font-family:var(--fb)}
+.auth-tab.active{background:var(--acc);color:var(--acc-t)}
+.auth-tab:active{opacity:.8}
+.auth-error{background:#ff475718;border:1px solid #ff475744;border-radius:var(--r1);padding:10px 14px;font-size:.78rem;color:var(--red);margin-bottom:12px;display:none}
+.auth-error.show{display:block}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--t3);font-size:.7rem}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--brd)}
+.auth-user-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);border-radius:var(--r1);margin-bottom:10px;font-size:.75rem}
+.auth-user-bar .aub-email{color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-user-bar .aub-out{color:var(--red);cursor:pointer;font-weight:600;font-size:.7rem;flex-shrink:0}
+
 /* === MOMENTUM BAR (top progress) === */
 .momentum{padding:0 0 6px;margin-bottom:4px}
 .momentum-track{height:4px;background:var(--bg4);border-radius:99px;overflow:hidden}
@@ -178,12 +191,18 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .habit.detox-h.done{border-color:var(--red);background:#ff475712}
 .habit.detox-h.done .hchk{background:var(--red);border-color:var(--red)}
 
-/* === TOGGLES ROW — side by side === */
-.toggles-row{display:flex;gap:8px;margin-bottom:12px}
-.toggle-card{flex:1;background:var(--bg3);border-radius:var(--r2);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
-.toggle-card .tc-l{font-size:.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.toggle-card .tc-s{font-size:.58rem;color:var(--t3)}
-.toggle-card.detox-on{border:1px solid var(--red);background:#ff475708}
+/* === TOGGLES — unified vertical list === */
+.toggles-list{background:var(--bg3);border-radius:var(--r2);overflow:hidden;margin-bottom:12px}
+.toggle-item{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--brd)}
+.toggle-item:last-child{border-bottom:none}
+.toggle-item .ti-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.toggle-item .ti-icon{font-size:1rem;flex-shrink:0;width:22px;text-align:center}
+.toggle-item .ti-text{flex:1;min-width:0}
+.toggle-item .ti-name{font-size:.82rem;font-weight:600}
+.toggle-item .ti-desc{font-size:.6rem;color:var(--t3);margin-top:1px}
+.toggle-item.active-rest{background:#a855f708}
+.toggle-item.active-detox{background:#ff475708}
+.toggle-item.active-lockin{background:#ff475710;border-color:#ff475722}
 .tgl{position:relative;width:42px;height:24px;cursor:pointer;flex-shrink:0}
 .tgl input{display:none}
 .tgl-s{position:absolute;inset:0;background:var(--bg5);border-radius:99px;transition:.15s}
@@ -453,12 +472,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .ai-insight .ai-loading-dots span:nth-child(2){animation-delay:.2s}
 .ai-insight .ai-loading-dots span:nth-child(3){animation-delay:.4s}
 
-/* Lock-in mode */
-.lockin-mode{background:linear-gradient(135deg,#1a0a0a,#2a0a0a);border:1px solid #3a1a1a;border-radius:var(--r2);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.lockin-mode.active-lm{border-color:var(--red);box-shadow:0 0 16px #ff475715}
-[data-theme="light"] .lockin-mode{background:linear-gradient(135deg,#fff,#fff5f5);border-color:#e5c5c5}
-.lockin-mode .lm-info .lm-l{font-size:.82rem;font-weight:700;color:var(--red)}
-.lockin-mode .lm-info .lm-s{font-size:.6rem;color:var(--t3);margin-top:1px}
+/* Lock-in mode alert */
 .discipline-alert{background:var(--red);color:#fff;border-radius:var(--r1);padding:10px 14px;font-size:.78rem;font-weight:600;text-align:center;margin-bottom:10px;animation:fadeIn .3s ease}
 
 /* Pattern card */
@@ -503,9 +517,29 @@ textarea.f-input{resize:vertical;min-height:60px}
   <div style="font-size:2.5rem;margin-bottom:10px">🔒</div>
   <h1>LOCK-IN 45</h1>
   <p class="tg">45 Days. No Excuses. Total Transformation.</p>
-  <div class="f-grp" style="text-align:left"><label class="f-label">Your Name</label><input type="text" id="s-name" class="f-input" placeholder="Enter your name..."></div>
-  <div class="f-grp" style="text-align:left"><label class="f-label">Start Date</label><input type="date" id="s-date" class="f-input"></div>
-  <button class="btn btn-p btn-full" onclick="doSetup()" style="margin-top:8px">Start Challenge →</button>
+
+  <div class="auth-error" id="authError"></div>
+
+  <!-- Step 1: Auth -->
+  <div id="authStep">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+      <button class="auth-tab" id="tabLogin" onclick="switchAuthTab('login')">Log In</button>
+    </div>
+    <div class="f-grp" style="text-align:left"><label class="f-label">Email</label><input type="email" id="auth-email" class="f-input" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="f-grp" style="text-align:left"><label class="f-label">Password</label><input type="password" id="auth-pass" class="f-input" placeholder="Min 6 characters" autocomplete="current-password"></div>
+    <button class="btn btn-p btn-full" id="authBtn" onclick="handleAuth()">Create Account</button>
+    <div class="auth-divider">or</div>
+    <button class="btn btn-s btn-full" onclick="skipAuth()" style="font-size:.7rem">Continue without account</button>
+  </div>
+
+  <!-- Step 2: Challenge setup -->
+  <div id="challengeStep" style="display:none">
+    <div style="font-size:.85rem;color:var(--t2);margin-bottom:16px">✅ Account ready! Set up your challenge:</div>
+    <div class="f-grp" style="text-align:left"><label class="f-label">Your Name</label><input type="text" id="s-name" class="f-input" placeholder="Enter your name..." autocomplete="name"></div>
+    <div class="f-grp" style="text-align:left"><label class="f-label">Start Date</label><input type="date" id="s-date" class="f-input"></div>
+    <button class="btn btn-p btn-full" onclick="doSetup()" style="margin-top:8px">Start Challenge →</button>
+  </div>
 </div>
 </div>
 
@@ -714,18 +748,27 @@ textarea.f-input{resize:vertical;min-height:60px}
   <!-- DISCIPLINE ALERT (shown when Lock-In mode + habits missed) -->
   <div id="disciplineAlert"></div>
 
-  <!-- ZONE 3: TOGGLES — rest + detox + lock-in -->
-  <div class="toggles-row">
-    <div class="toggle-card">
-      <div><div class="tc-l">😴 Rest</div></div>
+  <!-- ZONE 3: TOGGLES — unified list -->
+  <div class="toggles-list" id="togglesList">
+    <div class="toggle-item" id="restItem">
+      <div class="ti-left">
+        <span class="ti-icon">😴</span>
+        <div class="ti-text"><div class="ti-name">Rest Day</div><div class="ti-desc">1 per week · counts for streak</div></div>
+      </div>
       <label class="tgl"><input type="checkbox" id="restT" onchange="toggleRest(this.checked)"><span class="tgl-s"></span></label>
     </div>
-    <div class="toggle-card" id="detoxCard">
-      <div><div class="tc-l">🧠 Detox</div></div>
+    <div class="toggle-item" id="detoxItem">
+      <div class="ti-left">
+        <span class="ti-icon">🧠</span>
+        <div class="ti-text"><div class="ti-name">Dopamine Detox</div><div class="ti-desc">No social media, junk food, YouTube</div></div>
+      </div>
       <label class="tgl"><input type="checkbox" id="detoxT" onchange="toggleDetox(this.checked)"><span class="tgl-s"></span></label>
     </div>
-    <div class="lockin-mode" id="lockinCard">
-      <div class="lm-info"><div class="lm-l">🔒 Lock-In</div></div>
+    <div class="toggle-item" id="lockinItem">
+      <div class="ti-left">
+        <span class="ti-icon">🔒</span>
+        <div class="ti-text"><div class="ti-name">Lock-In Mode</div><div class="ti-desc">Strict goals · alerts if discipline breaks</div></div>
+      </div>
       <label class="tgl"><input type="checkbox" id="lockinT" onchange="toggleLockin(this.checked)"><span class="tgl-s"></span></label>
     </div>
   </div>
@@ -915,6 +958,14 @@ textarea.f-input{resize:vertical;min-height:60px}
 <!-- ==================== PROFILE ==================== -->
 <div class="page" id="pg-pr">
   <div class="sec-h">👤 Profile</div>
+
+  <!-- Auth user bar -->
+  <div class="auth-user-bar" id="authUserBar" style="display:none">
+    <span>🔐</span>
+    <span class="aub-email" id="authUserEmail">—</span>
+    <span class="aub-out" onclick="handleLogout()">Log Out</span>
+  </div>
+
   <div class="card" style="display:flex;align-items:center;gap:14px">
     <div style="width:52px;height:52px;border-radius:50%;background:var(--accd);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🔒</div>
     <div><div style="font-size:1rem;font-weight:700;color:var(--acc)" id="prName">—</div><div style="font-size:.7rem;color:var(--t3)" id="prDay">—</div></div>
@@ -1203,7 +1254,6 @@ const TH=4,TD=45;
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'
-// SECRET KEY-г хэзээ ч энд оруулахгүй!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -1253,6 +1303,119 @@ const DB = {
     }
   }
 };
+
+// ==================== AUTH SYSTEM ====================
+let currentAuthMode='signup';
+let authUser=null;
+
+function switchAuthTab(mode){
+  currentAuthMode=mode;
+  document.getElementById('tabSignup').classList.toggle('active',mode==='signup');
+  document.getElementById('tabLogin').classList.toggle('active',mode==='login');
+  document.getElementById('authBtn').textContent=mode==='signup'?'Create Account':'Log In';
+  hideAuthError();
+}
+
+function showAuthError(msg){
+  const el=document.getElementById('authError');
+  el.textContent=msg;el.classList.add('show');
+}
+function hideAuthError(){document.getElementById('authError').classList.remove('show')}
+
+async function handleAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  if(!email||!email.includes('@')){showAuthError('Enter a valid email');return}
+  if(!pass||pass.length<6){showAuthError('Password must be at least 6 characters');return}
+  hideAuthError();
+
+  const btn=document.getElementById('authBtn');
+  btn.disabled=true;btn.textContent='Loading...';
+
+  if(!sbClient){
+    // No Supabase — save locally and proceed
+    L.s('auth_email',email);
+    L.s('auth_pass_hash',btoa(pass)); // Simple obfuscation (not real security)
+    authUser={email};
+    btn.disabled=false;
+    showChallengeStep();
+    return;
+  }
+
+  try{
+    let result;
+    if(currentAuthMode==='signup'){
+      result=await sbClient.auth.signUp({email,password:pass});
+      if(result.error)throw result.error;
+      toast('✅ Account created!');
+    }else{
+      result=await sbClient.auth.signInWithPassword({email,password:pass});
+      if(result.error)throw result.error;
+      toast('✅ Logged in!');
+    }
+    authUser=result.data.user;
+    // Check if user already has challenge data
+    const existingUser=await DB.load('users');
+    if(existingUser&&existingUser.name){
+      // Returning user — skip setup, go straight to app
+      L.s('user',existingUser);
+      document.getElementById('setup').classList.remove('on');
+      initApp();
+    }else{
+      showChallengeStep();
+    }
+  }catch(e){
+    showAuthError(e.message||'Authentication failed. Try again.');
+  }
+  btn.disabled=false;
+  btn.textContent=currentAuthMode==='signup'?'Create Account':'Log In';
+}
+
+function skipAuth(){
+  authUser=null;
+  const u=gU();
+  if(u){
+    // Already has local data — just proceed
+    document.getElementById('setup').classList.remove('on');
+    initApp();
+  }else{
+    showChallengeStep();
+  }
+}
+
+function showChallengeStep(){
+  document.getElementById('authStep').style.display='none';
+  document.getElementById('challengeStep').style.display='';
+  document.getElementById('s-date').value=td();
+}
+
+async function handleLogout(){
+  if(!confirm('Log out?'))return;
+  if(sbClient){
+    try{await sbClient.auth.signOut()}catch(e){}
+  }
+  authUser=null;
+  toast('Logged out','ℹ️');
+  // Show setup
+  document.getElementById('authStep').style.display='';
+  document.getElementById('challengeStep').style.display='none';
+  document.getElementById('setup').classList.add('on');
+}
+
+// Check existing session on load
+async function checkExistingSession(){
+  if(!sbClient)return null;
+  try{
+    const{data}=await sbClient.auth.getSession();
+    if(data&&data.session&&data.session.user){
+      authUser=data.session.user;
+      console.log('🔐 Session restored:',authUser.email);
+      return authUser;
+    }
+  }catch(e){}
+  return null;
+}
+
 const td=()=>new Date().toISOString().split('T')[0];
 const fs=d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
 const ff=d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
@@ -1433,8 +1596,10 @@ function renderD(){
   // Zone 3: Toggles
   document.getElementById('restT').checked=tH.rest||false;
   document.getElementById('detoxT').checked=tH.detox||false;
-  const dc=document.getElementById('detoxCard');
-  if(tH.detox)dc.classList.add('detox-on');else dc.classList.remove('detox-on');
+  const ri=document.getElementById('restItem');
+  if(tH.rest)ri.classList.add('active-rest');else ri.classList.remove('active-rest');
+  const di=document.getElementById('detoxItem');
+  if(tH.detox)di.classList.add('active-detox');else di.classList.remove('active-detox');
 
   // Zone 4: Habits
   const el=document.getElementById('habList');el.innerHTML='';
@@ -1481,8 +1646,8 @@ function renderD(){
 
   // AI features
   document.getElementById('lockinT').checked=tH.lockin||false;
-  if(tH.lockin)document.getElementById('lockinCard').classList.add('active-lm');
-  else document.getElementById('lockinCard').classList.remove('active-lm');
+  const li=document.getElementById('lockinItem');
+  if(tH.lockin)li.classList.add('active-lockin');else li.classList.remove('active-lockin');
   renderDisciplineAlert();
 
   // Generate daily insight (async, non-blocking)
@@ -1601,6 +1766,11 @@ function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim()
 
 // ==================== PROFILE ====================
 function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cStrk(u),rem=Math.max(0,TD-dn);document.getElementById('prName').textContent=u.name;document.getElementById('prDay').textContent=`Day ${dn}/${TD} · ${ff(u.start_date)}`;document.getElementById('prStats').innerHTML=`<div class="stat-card"><div class="s-val">🔥${st.c}</div><div class="s-label">Streak</div></div><div class="stat-card"><div class="s-val">${st.l}</div><div class="s-label">Best</div></div><div class="stat-card"><div class="s-val">${rem}</div><div class="s-label">Left</div></div>`;document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');
+  // Auth user display
+  const bar=document.getElementById('authUserBar');
+  if(authUser&&authUser.email){bar.style.display='';document.getElementById('authUserEmail').textContent=authUser.email}
+  else if(L.g('auth_email')){bar.style.display='';document.getElementById('authUserEmail').textContent=L.g('auth_email')}
+  else{bar.style.display='none'}
   // Notification status
   const ns=document.getElementById('notifStatus');const nb=document.getElementById('notifBtn');
   if('Notification' in window){
@@ -1893,9 +2063,9 @@ function predictBodyTransformation(){
 // FEATURE 4: LOCK-IN MODE
 function toggleLockin(checked){
   tH.lockin=checked;sH(td(),tH);
-  const card=document.getElementById('lockinCard');
-  if(checked){card.classList.add('active-lm');toast('🔒 LOCK-IN MODE activated. No excuses.','🔴')}
-  else{card.classList.remove('active-lm')}
+  const item=document.getElementById('lockinItem');
+  if(checked){item.classList.add('active-lockin');toast('🔒 LOCK-IN MODE activated. No excuses.','🔴')}
+  else{item.classList.remove('active-lockin')}
   renderDisciplineAlert();
 }
 
@@ -2344,7 +2514,27 @@ function renderGymHist(){
   el.innerHTML=html;
 }
 
-async function initApp(){initTh();const u=gU();if(!u){document.getElementById('setup').classList.add('on');return}document.getElementById('topBadge').textContent=`Day ${gCD(u.start_date)} / ${TD}`;showMorningGreeting();renderD();checkWeeklyReport();await syncFromSupabase();renderD();initNotifications();registerSW()}
+async function initApp(){
+  initTh();
+  // Check for existing auth session
+  const session=await checkExistingSession();
+  if(session){
+    // Update profile UI
+    const bar=document.getElementById('authUserBar');
+    if(bar){bar.style.display='';document.getElementById('authUserEmail').textContent=session.email}
+  }
+  const u=gU();
+  if(!u){
+    // No user data — check if logged in but needs challenge setup
+    if(session){showChallengeStep();document.getElementById('setup').classList.add('on')}
+    else{document.getElementById('setup').classList.add('on')}
+    return;
+  }
+  document.getElementById('topBadge').textContent=`Day ${gCD(u.start_date)} / ${TD}`;
+  showMorningGreeting();renderD();checkWeeklyReport();
+  await syncFromSupabase();renderD();
+  initNotifications();registerSW();
+}
 initApp();
 </script>
 </body>
