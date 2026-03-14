@@ -6,12 +6,11 @@
 <title>LOCK-IN 45</title>
 <meta name="description" content="45-Day Self-Improvement Challenge">
 <meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LOCK-IN 45">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%230a0a0a'/><text x='90' y='105' text-anchor='middle' font-size='80'>🔒</text></svg>">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
-<link rel="manifest" href="data:application/json,{%22name%22:%22LOCK-IN%2045%22,%22short_name%22:%22LOCK-IN%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230a0a0a%22,%22theme_color%22:%22%230a0a0a%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230a0a0a'/><text x='256' y='300' text-anchor='middle' font-size='250'>🔒</text></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1038,15 +1037,20 @@ const DB = {
   async load(table) {
     if (!sbClient) return L.g(table);
     try {
-      const { data, error } = await sbClient.from(table).select('*').eq('id','default').single();
+      const { data, error } = await sbClient.from(table).select('*').eq('id','default');
       if (error) throw error;
-      if (data && data.data) {
-        const parsed = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
+      if (data && data.length > 0 && data[0].data) {
+        const parsed = typeof data[0].data === 'string' ? JSON.parse(data[0].data) : data[0].data;
         L.s(table, parsed);
         return parsed;
       }
-    } catch (e) { console.warn('Supabase load error:', e); }
-    return L.g(table);
+      // Table exists but no data — return localStorage fallback
+      return L.g(table);
+    } catch (e) {
+      // Table might not exist (404) or other error — silent fallback
+      if(e.code !== 'PGRST205') console.warn('Supabase load error:', table, e.message||e);
+      return L.g(table);
+    }
   }
 };
 const td=()=>new Date().toISOString().split('T')[0];
@@ -1115,18 +1119,18 @@ function savePRs(d){L.s('prs',d);DB.save('prs',d)}
 function getGymHistory(){return L.g('gymhist')||[]}
 function addGymHistory(entry){const a=getGymHistory();a.unshift(entry);if(a.length>50)a.length=50;L.s('gymhist',a);DB.save('gymhist',a)}
 
-// Custom habits config (synced)
+// Custom habits config (localStorage only — no Supabase table needed)
 function getHabits(){return L.g('custom_habits')||[...DEFAULT_HABITS]}
-function saveHabitsConfig(h){L.s('custom_habits',h);DB.save('custom_habits',h)}
+function saveHabitsConfig(h){L.s('custom_habits',h)}
 function getDetoxHabits(){return L.g('custom_detox')||[...DEFAULT_DETOX]}
-function saveDetoxConfig(h){L.s('custom_detox',h);DB.save('custom_detox',h)}
+function saveDetoxConfig(h){L.s('custom_detox',h)}
 
 // === SUPABASE INITIAL SYNC ===
-// On app start, pull latest data from Supabase into localStorage
 async function syncFromSupabase(){
   if(!sbClient){console.log('📦 No Supabase — using localStorage');return}
   console.log('🔄 Syncing from Supabase...');
-  const tables=['users','hab','slp','wo','body','ach','meals','nutset','gymprof','weekplan','prs','gymhist','custom_habits','custom_detox'];
+  // Only sync tables that exist in Supabase schema
+  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist'];
   let synced=0;
   for(const t of tables){
     try{
