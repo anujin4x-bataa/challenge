@@ -1490,12 +1490,25 @@ const DB = {
     if (!sbClient) return L.g(table);
     const uid=authUser?authUser.username:'default';
     try {
+      // Try loading user-specific data first
       const { data, error } = await sbClient.from(table).select('*').eq('id',uid);
       if (error) throw error;
       if (data && data.length > 0 && data[0].data) {
         const parsed = typeof data[0].data === 'string' ? JSON.parse(data[0].data) : data[0].data;
         L.s(table, parsed);
         return parsed;
+      }
+      // Fallback: if no user-specific data, try loading 'default' (old data)
+      if(uid!=='default'){
+        const { data:defData } = await sbClient.from(table).select('*').eq('id','default');
+        if (defData && defData.length > 0 && defData[0].data) {
+          const parsed = typeof defData[0].data === 'string' ? JSON.parse(defData[0].data) : defData[0].data;
+          L.s(table, parsed);
+          // Auto-migrate: save this data under the user's ID
+          await sbClient.from(table).upsert({ id: uid, data: JSON.stringify(parsed) }, { onConflict: 'id' }).catch(()=>{});
+          console.log(`📦 Migrated Supabase ${table}: default → ${uid}`);
+          return parsed;
+        }
       }
       return L.g(table);
     } catch (e) {
