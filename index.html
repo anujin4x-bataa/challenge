@@ -16,7 +16,6 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&subset=cyrillic,latin&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -844,6 +843,8 @@ textarea.f-input{resize:vertical;min-height:60px}
   </div>
 </div>
 
+<!-- HIDDEN SHARE CARD (for screenshot) -->
+
 <!-- ==================== APP ==================== -->
 <div class="app">
 <header class="topbar">
@@ -1629,6 +1630,7 @@ const TH=4,TD=45;
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
+// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -2318,59 +2320,116 @@ function playWinSong(){
 }
 
 function shareWin(){
-  const card=document.getElementById('winCard');
   const btn=document.querySelector('.win-btn-share');
   btn.textContent='📸 Saving...';btn.disabled=true;
 
-  html2canvas(card,{
-    backgroundColor:null,
-    scale:2,
-    useCORS:true,
-    logging:false,
-    width:card.offsetWidth,
-    height:card.offsetHeight
-  }).then(canvas=>{
-    canvas.toBlob(blob=>{
-      if(!blob){fallbackShare();btn.textContent='📤 Share';btn.disabled=false;return}
+  const u=gU();if(!u){btn.textContent='📤 Share';btn.disabled=false;return}
+  const dn=gCD(u.start_date);
+  const st=cStrk(u);
+  const pct=Math.round(dn/TD*100);
+  const msg=document.getElementById('winMsg').textContent;
+  const sub=document.getElementById('winSub').textContent;
+  const habits=HABITS_F();
+  const song=currentWinSong;
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
 
-      const file=new File([blob],'lockin45-day.png',{type:'image/png'});
-      const u=gU();const dn=u?gCD(u.start_date):'?';const st=u?cStrk(u):{c:0};
-      const song=currentWinSong?`\n🎵 ${currentWinSong.title} — ${currentWinSong.artist}`:'';
-      const text=`🔒 LOCK-IN 45 — Day ${dn}/${TD}\n✅ All habits completed!\n🔥 ${st.c} day streak${song}\n\n💪 #LOCKIN45 #DisciplineWins`;
+  // Canvas 9:16 (1080x1920 Instagram Story)
+  const W=1080,H=1920;
+  const c=document.createElement('canvas');c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
 
-      // Try native share with image (mobile)
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        navigator.share({files:[file],title:'LOCK-IN 45',text}).then(()=>{
-          toast('📤 Shared!');
-        }).catch(()=>{
-          downloadImage(canvas);
-        });
-      }else{
-        // Desktop / fallback — download image
-        downloadImage(canvas);
-      }
-      btn.textContent='📤 Share';btn.disabled=false;
-    },'image/png');
-  }).catch(()=>{
-    fallbackShare();
-    btn.textContent='📤 Share';btn.disabled=false;
+  // Background gradient
+  const grad=ctx.createLinearGradient(0,0,W,H);
+  if(isDark){grad.addColorStop(0,'#020a02');grad.addColorStop(.4,'#0d2a0d');grad.addColorStop(1,'#020a02')}
+  else{grad.addColorStop(0,'#f0f9f0');grad.addColorStop(.4,'#e0f5e0');grad.addColorStop(1,'#f5fff5')}
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+
+  // Subtle glow
+  const glow=ctx.createRadialGradient(W/2,H*.3,0,W/2,H*.3,400);
+  glow.addColorStop(0,isDark?'rgba(200,255,0,.06)':'rgba(92,184,0,.08)');
+  glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+
+  const accent=isDark?'#c8ff00':'#5cb800';
+  const t1=isDark?'#ffffff':'#111111';
+  const t2=isDark?'rgba(255,255,255,.6)':'rgba(0,0,0,.45)';
+  const t3=isDark?'rgba(255,255,255,.25)':'rgba(0,0,0,.2)';
+  const barBg=isDark?'rgba(255,255,255,.1)':'rgba(0,0,0,.08)';
+
+  let y=320;
+  ctx.textAlign='center';
+
+  // Lock icon
+  ctx.font='120px serif';ctx.fillText('🔒',W/2,y);y+=60;
+
+  // Message
+  ctx.font='800 80px sans-serif';ctx.fillStyle=t1;
+  msg.split('\n').forEach(line=>{y+=90;ctx.fillText(line,W/2,y)});y+=50;
+
+  // Sub
+  ctx.font='600 36px sans-serif';ctx.fillStyle=accent;
+  ctx.fillText(sub,W/2,y);y+=100;
+
+  // Day number big
+  ctx.font='700 160px monospace';ctx.fillStyle=accent;
+  ctx.fillText(dn.toString(),W/2,y);y+=30;
+
+  // DAY / 45
+  ctx.font='700 24px monospace';ctx.fillStyle=t3;
+  ctx.fillText('DAY / '+TD,W/2,y);y+=70;
+
+  // Progress bar
+  const barW=W*.7,barH=16,barX=(W-barW)/2;
+  ctx.fillStyle=barBg;roundRect(ctx,barX,y,barW,barH,8);ctx.fill();
+  ctx.fillStyle=accent;roundRect(ctx,barX,y,barW*(pct/100),barH,8);ctx.fill();
+  y+=12;
+  ctx.font='600 22px monospace';ctx.fillStyle=t3;
+  ctx.textAlign='left';ctx.fillText('Start',barX,y+30);
+  ctx.textAlign='center';ctx.fillText(pct+'%',W/2,y+30);
+  ctx.textAlign='right';ctx.fillText('Day 45',barX+barW,y+30);
+  ctx.textAlign='center';y+=80;
+
+  // Habits
+  ctx.textAlign='left';
+  habits.forEach(h=>{
+    ctx.font='700 28px monospace';ctx.fillStyle=accent;ctx.fillText('✓',W*.18,y);
+    ctx.font='400 30px sans-serif';ctx.fillStyle=t2;ctx.fillText(h.icon+' '+h.name,W*.24,y);
+    y+=46;
   });
-}
+  ctx.textAlign='center';y+=20;
 
-function downloadImage(canvas){
-  const link=document.createElement('a');
-  link.download=`lockin45-day${gU()?gCD(gU().start_date):''}.png`;
-  link.href=canvas.toDataURL('image/png');
-  link.click();
-  toast('📸 Saved to photos!');
-}
+  // Streak
+  ctx.font='700 34px monospace';ctx.fillStyle=accent;
+  ctx.fillText('🔥 '+st.c+' day streak',W/2,y);y+=60;
 
-function fallbackShare(){
-  const u=gU();const dn=u?gCD(u.start_date):'?';const st=u?cStrk(u):{c:0};
-  const song=currentWinSong?`\n🎵 ${currentWinSong.title} — ${currentWinSong.artist}`:'';
-  const text=`🔒 LOCK-IN 45 — Day ${dn}/${TD}\n✅ All habits completed!\n🔥 ${st.c} day streak${song}\n\n💪 #LOCKIN45 #DisciplineWins`;
-  navigator.clipboard.writeText(text).then(()=>{toast('📋 Copied to clipboard!')}).catch(()=>{toast('Share manually','ℹ️')});
+  // Song
+  if(song){
+    ctx.font='700 18px sans-serif';ctx.fillStyle='#1DB954';
+    ctx.fillText('YOUR DAY SOUNDTRACK',W/2,y);y+=36;
+    ctx.font='700 32px sans-serif';ctx.fillStyle=t1;
+    ctx.fillText(song.title,W/2,y);y+=34;
+    ctx.font='400 26px sans-serif';ctx.fillStyle=t2;
+    ctx.fillText(song.artist,W/2,y);
+  }
+
+  // Brand
+  ctx.font='700 20px monospace';ctx.fillStyle=t3;
+  ctx.fillText('LOCK-IN 45',W/2,H-60);
+
+  // Export
+  c.toBlob(blob=>{
+    if(!blob){fallbackShare();btn.textContent='📤 Share';btn.disabled=false;return}
+    const file=new File([blob],'lockin45-day'+dn+'.png',{type:'image/png'});
+    const shareText='🔒 LOCK-IN 45 — Day '+dn+'/'+TD+'\n✅ All habits completed!\n🔥 '+st.c+' day streak'+(song?'\n🎵 '+song.title+' — '+song.artist:'')+'\n\n💪 #LOCKIN45 #DisciplineWins';
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:'LOCK-IN 45',text:shareText}).then(()=>{toast('📤 Shared!')}).catch(()=>{downloadCanvas(c,dn)});
+    }else{downloadCanvas(c,dn)}
+    btn.textContent='📤 Share';btn.disabled=false;
+  },'image/png');
 }
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function downloadCanvas(canvas,day){const a=document.createElement('a');a.download='lockin45-day'+day+'.png';a.href=canvas.toDataURL('image/png');a.click();toast('📸 Saved to photos!')}
+function fallbackShare(){const u=gU();const dn=u?gCD(u.start_date):'?';const st=u?cStrk(u):{c:0};const song=currentWinSong;navigator.clipboard.writeText('🔒 LOCK-IN 45 — Day '+dn+'/'+TD+'\n✅ All habits completed!\n🔥 '+st.c+' day streak'+(song?'\n🎵 '+song.title+' — '+song.artist:'')+'\n\n💪 #LOCKIN45 #DisciplineWins').then(()=>{toast('📋 Copied!')}).catch(()=>{toast('Share manually','ℹ️')})}
 function toggleRest(c){tH.rest=c;sH(td(),tH);renderD();if(c)toast('Rest day.','😴')}
 function toggleDetox(c){tH.detox=c;sH(td(),tH);renderD();if(c)toast('🧠 Detox ON','🔴')}
 function toggleDetoxH(id){const dh=getDH(td());dh[id]=!dh[id];sDH(td(),dh);renderD();if(dh[id])toast(`${DETOX_F().find(h=>h.id===id).icon} Done!`)}
