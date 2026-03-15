@@ -418,42 +418,85 @@ textarea.f-input{resize:vertical;min-height:60px}
 .hist-empty{text-align:center;padding:24px;color:var(--t3);font-size:.82rem}
 
 /* === DAILY WIN SUCCESS SCREEN === */
-.win-overlay{display:none;position:fixed;inset:0;z-index:2500;background:#000;animation:winFadeIn .5s ease}
+.win-overlay{display:none;position:fixed;inset:0;z-index:2500;animation:winFadeIn .5s ease}
 .win-overlay.on{display:flex;align-items:center;justify-content:center}
 @keyframes winFadeIn{from{opacity:0}to{opacity:1}}
-.win-card{width:100%;max-width:400px;min-height:100dvh;background:linear-gradient(160deg,#020a02 0%,#0a1f0a 25%,#071507 50%,#0d2a0d 75%,#020a02 100%);background-size:200% 200%;animation:winBgShift 8s ease-in-out infinite;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
+
+/* Dark mode win */
+.win-overlay{background:#000}
+.win-card{width:100%;max-width:400px;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#020a02 0%,#0a1f0a 30%,#071507 60%,#020a02 100%);background-size:200% 200%;animation:winBgShift 8s ease-in-out infinite}
+.win-card .win-msg{color:#fff}
+.win-card .win-hab-row{color:#fffc}
+.win-card .win-day-label{color:#fff5}
+.win-card .wp-bar{background:#ffffff12}
+.win-card .wp-label{color:#fff4}
+.win-card .win-btn-close{background:#ffffff10;color:#fff;border:1px solid #ffffff18}
+.win-card .win-brand{color:#fff2}
+.win-particle{background:#c8ff00}
+
+/* Light mode win */
+[data-theme="light"] .win-overlay{background:#fff}
+[data-theme="light"] .win-card{background:linear-gradient(160deg,#f0f9f0 0%,#e0f5e0 30%,#f5fff5 60%,#f0f9f0 100%);background-size:200% 200%}
+[data-theme="light"] .win-card::before{background:radial-gradient(circle,#5cb80018 0%,#5cb80008 30%,transparent 70%)}
+[data-theme="light"] .win-card::after{background:radial-gradient(ellipse,#5cb8000a 0%,transparent 70%)}
+[data-theme="light"] .win-card .win-msg{color:#111}
+[data-theme="light"] .win-card .win-sub{color:#5cb800}
+[data-theme="light"] .win-card .win-day{color:#5cb800;text-shadow:0 0 30px #5cb80033}
+[data-theme="light"] .win-card .win-hab-row{color:#333}
+[data-theme="light"] .win-card .whr-check{color:#5cb800;text-shadow:0 0 8px #5cb80044}
+[data-theme="light"] .win-card .win-day-label{color:#0005}
+[data-theme="light"] .win-card .wp-bar{background:#00000010}
+[data-theme="light"] .win-card .wp-fill{background:linear-gradient(90deg,#4a9600,#5cb800,#7dd600);box-shadow:0 0 12px #5cb80044}
+[data-theme="light"] .win-card .wp-label{color:#0004}
+[data-theme="light"] .win-card .win-streak{background:#5cb80012;border-color:#5cb80030;color:#5cb800;box-shadow:0 0 16px #5cb80015}
+[data-theme="light"] .win-card .win-btn-share{background:linear-gradient(135deg,#5cb800,#4a9600);color:#fff;box-shadow:0 0 20px #5cb80033}
+[data-theme="light"] .win-card .win-btn-close{background:#00000008;color:#333;border:1px solid #00000015}
+[data-theme="light"] .win-card .win-brand{color:#0002}
+[data-theme="light"] .win-card .win-lock{filter:drop-shadow(0 0 20px #5cb80033)}
+[data-theme="light"] .win-particle{background:#5cb800}
+[data-theme="light"] .win-card .win-spotify{background:#00000005;border-color:#00000010}
+[data-theme="light"] .win-card .ws-title{color:#111}
+[data-theme="light"] .win-card .ws-artist{color:#666}
+
 @keyframes winBgShift{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}
-/* Animated glow orb */
-.win-card::before{content:'';position:absolute;top:15%;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,#c8ff0015 0%,#c8ff0008 30%,transparent 70%);border-radius:50%;animation:winGlow 4s ease-in-out infinite;pointer-events:none}
-@keyframes winGlow{0%,100%{opacity:.4;transform:translateX(-50%) scale(.8)}50%{opacity:.8;transform:translateX(-50%) scale(1.2)}}
-/* Bottom glow */
+.win-card::before{content:'';position:absolute;top:12%;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,#c8ff0015 0%,#c8ff0008 30%,transparent 70%);border-radius:50%;animation:winGlow 4s ease-in-out infinite;pointer-events:none}
+@keyframes winGlow{0%,100%{opacity:.4;transform:translateX(-50%) scale(.8)}50%{opacity:.7;transform:translateX(-50%) scale(1.2)}}
 .win-card::after{content:'';position:absolute;bottom:-20%;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,#c8ff000a 0%,transparent 70%);pointer-events:none}
-/* Floating particles */
 .win-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.win-particle{position:absolute;width:3px;height:3px;border-radius:50%;background:#c8ff00;opacity:0;animation:winFloat linear infinite}
-@keyframes winFloat{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.3}100%{opacity:0;transform:translateY(-20vh) scale(1)}}
+.win-particle{position:absolute;width:3px;height:3px;border-radius:50%;opacity:0;animation:winFloat linear infinite}
+@keyframes winFloat{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.5}90%{opacity:.2}100%{opacity:0;transform:translateY(-20vh) scale(1)}}
 .win-lock{font-size:3.5rem;margin-bottom:12px;animation:winBounce .6s ease .3s backwards;filter:drop-shadow(0 0 20px #c8ff0044);position:relative;z-index:1}
 @keyframes winBounce{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-.win-msg{font-family:var(--fb);font-size:2.2rem;font-weight:800;color:#fff;text-align:center;line-height:1.05;margin-bottom:6px;text-transform:uppercase;letter-spacing:-0.5px;animation:winSlideUp .5s ease .4s backwards;position:relative;z-index:1;text-shadow:0 0 40px #c8ff0022}
-.win-sub{font-size:.88rem;color:#c8ff00;font-weight:600;margin-bottom:36px;animation:winSlideUp .5s ease .5s backwards;position:relative;z-index:1;text-shadow:0 0 20px #c8ff0033}
+.win-msg{font-family:var(--fb);font-size:2.2rem;font-weight:800;text-align:center;line-height:1.05;margin-bottom:6px;text-transform:uppercase;letter-spacing:-0.5px;animation:winSlideUp .5s ease .4s backwards;position:relative;z-index:1;white-space:pre-line}
+.win-sub{font-size:.88rem;color:#c8ff00;font-weight:600;margin-bottom:32px;animation:winSlideUp .5s ease .5s backwards;position:relative;z-index:1}
 @keyframes winSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .win-day{font-family:var(--fm);font-size:4rem;font-weight:700;color:#c8ff00;line-height:1;animation:winScale .5s ease .6s backwards;position:relative;z-index:1;text-shadow:0 0 30px #c8ff0044}
 @keyframes winScale{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.win-day-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#fff5;margin-top:4px;margin-bottom:28px;position:relative;z-index:1}
-.win-progress{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .7s backwards;position:relative;z-index:1}
-.win-progress .wp-bar{height:5px;background:#ffffff12;border-radius:99px;overflow:hidden;margin-bottom:6px}
+.win-day-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-top:4px;margin-bottom:24px;position:relative;z-index:1}
+.win-progress{width:80%;max-width:280px;margin-bottom:24px;animation:winSlideUp .5s ease .7s backwards;position:relative;z-index:1}
+.win-progress .wp-bar{height:5px;border-radius:99px;overflow:hidden;margin-bottom:6px}
 .win-progress .wp-fill{height:100%;background:linear-gradient(90deg,#5cb800,#c8ff00,#e0ff66);border-radius:99px;transition:width 1.5s cubic-bezier(.22,1,.36,1);box-shadow:0 0 12px #c8ff0055}
-.win-progress .wp-label{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.6rem;color:#fff4}
-.win-habits{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .8s backwards;position:relative;z-index:1}
-.win-hab-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.8rem;color:#fffb}
-.win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:18px;text-shadow:0 0 8px #c8ff0066}
-.win-streak{background:linear-gradient(135deg,#c8ff0012,#c8ff0008);border:1px solid #c8ff0025;border-radius:99px;padding:10px 24px;font-family:var(--fm);font-size:.88rem;color:#c8ff00;font-weight:700;margin-bottom:32px;animation:winSlideUp .5s ease .9s backwards;position:relative;z-index:1;box-shadow:0 0 20px #c8ff0015}
+.win-progress .wp-label{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.6rem}
+.win-habits{width:80%;max-width:280px;margin-bottom:20px;animation:winSlideUp .5s ease .8s backwards;position:relative;z-index:1}
+.win-hab-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.78rem}
+.win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:18px;text-shadow:0 0 8px #c8ff0055}
+.win-streak{background:linear-gradient(135deg,#c8ff0012,#c8ff0008);border:1px solid #c8ff0025;border-radius:99px;padding:10px 24px;font-family:var(--fm);font-size:.85rem;color:#c8ff00;font-weight:700;margin-bottom:20px;animation:winSlideUp .5s ease .85s backwards;position:relative;z-index:1;box-shadow:0 0 16px #c8ff0012}
+/* Spotify song card */
+.win-spotify{width:80%;max-width:280px;background:#ffffff08;border:1px solid #ffffff12;border-radius:16px;padding:14px;margin-bottom:24px;animation:winSlideUp .5s ease .9s backwards;position:relative;z-index:1;display:flex;align-items:center;gap:12px}
+.ws-icon{font-size:1.8rem;flex-shrink:0}
+.ws-info{flex:1;min-width:0}
+.ws-label{font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1DB954;margin-bottom:3px}
+.ws-title{font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-artist{font-size:.68rem;color:#fff8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-play{width:36px;height:36px;border-radius:50%;background:#1DB954;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:.15s;border:none;color:#fff;font-size:.9rem}
+.ws-play:active{transform:scale(.9)}
 .win-actions{display:flex;gap:10px;animation:winSlideUp .5s ease 1s backwards;position:relative;z-index:1}
 .win-btn{padding:14px 28px;border-radius:99px;font-family:var(--fb);font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:.15s}
 .win-btn:active{transform:scale(.93)}
 .win-btn-share{background:linear-gradient(135deg,#c8ff00,#a8d900);color:#000;box-shadow:0 0 20px #c8ff0033}
-.win-btn-close{background:#ffffff10;color:#fff;border:1px solid #ffffff15}
-.win-brand{position:absolute;bottom:24px;font-family:var(--fm);font-size:.5rem;color:#fff2;letter-spacing:3px;text-transform:uppercase}
+.win-btn-close{background:transparent}
+.win-brand{position:absolute;bottom:20px;font-family:var(--fm);font-size:.5rem;letter-spacing:3px;text-transform:uppercase}
 
 /* Clickable heatmap cells */
 .heatmap .hc{cursor:pointer;transition:.15s}
@@ -764,6 +807,15 @@ textarea.f-input{resize:vertical;min-height:60px}
     <div class="win-progress"><div class="wp-bar"><div class="wp-fill" id="winProgressFill" style="width:0%"></div></div><div class="wp-label"><span>Start</span><span id="winPct">0%</span><span>Day 45</span></div></div>
     <div class="win-habits" id="winHabits"></div>
     <div class="win-streak" id="winStreak">🔥 0 day streak</div>
+    <div class="win-spotify" id="winSpotify">
+      <div class="ws-icon">🎵</div>
+      <div class="ws-info">
+        <div class="ws-label">Your Day Soundtrack</div>
+        <div class="ws-title" id="wsSongTitle">—</div>
+        <div class="ws-artist" id="wsSongArtist">—</div>
+      </div>
+      <button class="ws-play" onclick="playWinSong()" id="wsPlayBtn">▶</button>
+    </div>
     <div class="win-actions">
       <button class="win-btn win-btn-share" onclick="shareWin()">📤 Share</button>
       <button class="win-btn win-btn-close" onclick="closeWin()">Continue</button>
@@ -2068,15 +2120,64 @@ const WIN_MESSAGES=[
   {msg:'DISCIPLINE\nWINS',sub:'You showed up again'},
   {msg:'DAY\nDOMINATED',sub:'Nothing was skipped'},
   {msg:'ANOTHER DAY\nSTRONGER',sub:'Consistency is key'},
-  {msg:'YOU SHOWED\nUP TODAY',sub:'That\'s what matters'},
+  {msg:'YOU SHOWED\nUP TODAY',sub:"That's what matters"},
   {msg:'PERFECT\nEXECUTION',sub:'Every box checked'},
   {msg:'NO EXCUSES\nJUST RESULTS',sub:'The grind pays off'},
-  {msg:'ELITE\nPERFORMANCE',sub:'Built different'},
-  {msg:'100%\nCOMPLETION',sub:'Flawless day'}
+  {msg:'ELITE\nDAY',sub:'Built different'},
+  {msg:'100%\nCLEAR',sub:'Flawless execution'}
 ];
 
+const WIN_SONGS=[
+  {title:'Unstoppable',artist:'Sia',url:'https://open.spotify.com/track/1yvMUkIOTeUNtNWlWRgANS'},
+  {title:'Lose Yourself',artist:'Eminem',url:'https://open.spotify.com/track/5Z01UMMf7V1o0MzF86s6WJ'},
+  {title:'Stronger',artist:'Kanye West',url:'https://open.spotify.com/track/4fzsfWzRhPawzqhX8Qt9F3'},
+  {title:'Eye of the Tiger',artist:'Survivor',url:'https://open.spotify.com/track/2KH16WveTQWT6KOG9Rg6e2'},
+  {title:'Till I Collapse',artist:'Eminem ft. Nate Dogg',url:'https://open.spotify.com/track/7lQ8MOhq6IN2w8EYcFNSUk'},
+  {title:'Believer',artist:'Imagine Dragons',url:'https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP'},
+  {title:'Remember The Name',artist:'Fort Minor',url:'https://open.spotify.com/track/6BCsfbRsgIoOEcFSbKwMvP'},
+  {title:'Warriors',artist:'Imagine Dragons',url:'https://open.spotify.com/track/1Lmqfv2kQBOuBBa7GRxdaW'},
+  {title:"Can't Hold Us",artist:'Macklemore & Ryan Lewis',url:'https://open.spotify.com/track/3bidbhpOYeV4knp8AIu8Xn'},
+  {title:'Hall of Fame',artist:'The Script ft. will.i.am',url:'https://open.spotify.com/track/11LmqTE2naFULdEP94AUBa'},
+  {title:'Whatever It Takes',artist:'Imagine Dragons',url:'https://open.spotify.com/track/6wVWJl64yoUwCCkXqG00AJ'},
+  {title:'Legends Never Die',artist:'Against The Current',url:'https://open.spotify.com/track/4sLtOBOzn4s3GDUv3c5oJa'},
+  {title:'Run This Town',artist:'JAY-Z ft. Rihanna',url:'https://open.spotify.com/track/2igMPLjGSYsh0QMRsl3I5u'},
+  {title:'Power',artist:'Kanye West',url:'https://open.spotify.com/track/2gZUPNdnz5Y45eiGxpHGSc'},
+  {title:'Centuries',artist:'Fall Out Boy',url:'https://open.spotify.com/track/2EzS0rl9mKaFqmNLcKMjgR'},
+  {title:'Natural',artist:'Imagine Dragons',url:'https://open.spotify.com/track/2NkAx5fGNSnNRnWTEdEpGn'},
+  {title:'Born For This',artist:'The Score',url:'https://open.spotify.com/track/0MC9AGjTC21mPloqlWIrNK'},
+  {title:'Radioactive',artist:'Imagine Dragons',url:'https://open.spotify.com/track/69yfbpvmkIaB3KkKl3p3jR'},
+  {title:'HUMBLE.',artist:'Kendrick Lamar',url:'https://open.spotify.com/track/7KXjTSCq5nL1LoYtL7XAwS'},
+  {title:'Victorious',artist:'Panic! At The Disco',url:'https://open.spotify.com/track/45gBVnwaS0OsP3oBguZMiR'},
+  {title:'Champion',artist:'Fall Out Boy',url:'https://open.spotify.com/track/0NYL3FDpMhnzkPxQoGLiPX'},
+  {title:'The Search',artist:'NF',url:'https://open.spotify.com/track/1j56Stt8s1a5g3JJZL1qQa'},
+  {title:'Not Afraid',artist:'Eminem',url:'https://open.spotify.com/track/5Z01UMMf7V1o0MzF86s6WJ'},
+  {title:'Thunder',artist:'Imagine Dragons',url:'https://open.spotify.com/track/1zB4vmk8tFRmM9UULNzbLB'},
+  {title:'Survival',artist:'Eminem',url:'https://open.spotify.com/track/75JFxkI2RXiU7L9VXzMkle'},
+  {title:'Walk',artist:'Foo Fighters',url:'https://open.spotify.com/track/3SPnhKAIbNFmJFcOZzMxzB'},
+  {title:'We Will Rock You',artist:'Queen',url:'https://open.spotify.com/track/54flyrjcdnQdco2300avMJ'},
+  {title:"Don't Stop Me Now",artist:'Queen',url:'https://open.spotify.com/track/5T8EDUDqKcs6OSOwEsfqG7'},
+  {title:'Start Me Up',artist:'The Rolling Stones',url:'https://open.spotify.com/track/1kswy6PFPhHUi1YLZ5NO7a'},
+  {title:'Harder Better Faster Stronger',artist:'Daft Punk',url:'https://open.spotify.com/track/5W3cjX2J3tjhG8zb6u0qHn'},
+  {title:'Industry Baby',artist:'Lil Nas X & Jack Harlow',url:'https://open.spotify.com/track/27NovPIUIRrONiAfikTYOC'},
+  {title:'DNA.',artist:'Kendrick Lamar',url:'https://open.spotify.com/track/6HZILIRieu8S0iqY8kQ5xA'},
+  {title:'Pump It',artist:'The Black Eyed Peas',url:'https://open.spotify.com/track/5ElmHkj2EhPPPCzS4yrqqI'},
+  {title:'Titanium',artist:'David Guetta ft. Sia',url:'https://open.spotify.com/track/0lHAMNU8RGiIObScrsRgmP'},
+  {title:'Fight Song',artist:'Rachel Platten',url:'https://open.spotify.com/track/02LXQHP2OaBaLsaxLMebDm'},
+  {title:'Counting Stars',artist:'OneRepublic',url:'https://open.spotify.com/track/2tpWsVSb9UEmDRxAl1zhX1'},
+  {title:'On Top of the World',artist:'Imagine Dragons',url:'https://open.spotify.com/track/0X5JYAF20W4c3YKUGHcrEg'},
+  {title:'Rise Up',artist:'Andra Day',url:'https://open.spotify.com/track/56AYpPiAOygMcJcGBCOhUd'},
+  {title:'Gangsta\'s Paradise',artist:'Coolio',url:'https://open.spotify.com/track/1DIXPcTDzTj8ZMHt3PDt8p'},
+  {title:'Numb',artist:'Linkin Park',url:'https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h'},
+  {title:'In The End',artist:'Linkin Park',url:'https://open.spotify.com/track/60a0Rd6pjrkxjPbaKzXjfq'},
+  {title:'Welcome to the Jungle',artist:"Guns N' Roses",url:'https://open.spotify.com/track/0IA0Hj3iwtBJpODTRfHlYz'},
+  {title:'Viva La Vida',artist:'Coldplay',url:'https://open.spotify.com/track/1mea3bSkSGXuIRvnydlB5b'},
+  {title:'Levels',artist:'Avicii',url:'https://open.spotify.com/track/0mHyaJj3FQbNHfmIoLWoXR'},
+  {title:'We Are The Champions',artist:'Queen',url:'https://open.spotify.com/track/7ccI9cSJmI2yYeTSMOLeEz'}
+];
+
+let currentWinSong=null;
+
 function showDailyWin(){
-  // Don't show twice
   const winKey='win_'+td();
   if(L.g(winKey))return;
   L.s(winKey,true);
@@ -2102,10 +2203,16 @@ function showDailyWin(){
   });
   document.getElementById('winHabits').innerHTML=habHtml;
 
+  // Song of the day — each day gets a unique song
+  currentWinSong=WIN_SONGS[(dn-1)%WIN_SONGS.length];
+  document.getElementById('wsSongTitle').textContent=currentWinSong.title;
+  document.getElementById('wsSongArtist').textContent=currentWinSong.artist;
+
   // Show overlay
   document.getElementById('winOverlay').classList.add('on');
 
-  // Generate floating particles
+  // Theme-aware particles
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
   const pContainer=document.getElementById('winParticles');
   pContainer.innerHTML='';
   for(let i=0;i<20;i++){
@@ -2114,44 +2221,31 @@ function showDailyWin(){
     p.style.left=Math.random()*100+'%';
     p.style.animationDuration=(4+Math.random()*6)+'s';
     p.style.animationDelay=(Math.random()*4)+'s';
-    p.style.width=(2+Math.random()*3)+'px';
-    p.style.height=p.style.width;
-    p.style.background=Math.random()>.5?'#c8ff00':'#ffffff';
+    const size=(2+Math.random()*3)+'px';
+    p.style.width=size;p.style.height=size;
+    p.style.background=isDark?(Math.random()>.5?'#c8ff00':'#ffffff'):(Math.random()>.5?'#5cb800':'#a8d900');
     p.style.opacity=0;
     pContainer.appendChild(p);
   }
 
-  // Animate progress bar after showing
-  setTimeout(()=>{
-    document.getElementById('winProgressFill').style.width=pct+'%';
-  },800);
+  // Animate progress bar
+  setTimeout(()=>{document.getElementById('winProgressFill').style.width=pct+'%'},800);
 }
 
-function closeWin(){
-  document.getElementById('winOverlay').classList.remove('on');
+function closeWin(){document.getElementById('winOverlay').classList.remove('on')}
+
+function playWinSong(){
+  if(currentWinSong&&currentWinSong.url)window.open(currentWinSong.url,'_blank');
 }
 
 function shareWin(){
   const u=gU();if(!u)return;
   const dn=gCD(u.start_date);
   const st=cStrk(u);
-
-  // Try native share API (mobile)
-  if(navigator.share){
-    navigator.share({
-      title:'LOCK-IN 45',
-      text:`🔒 Day ${dn}/${TD} — All habits completed!\n🔥 ${st.c} day streak\n💪 #LOCKIN45 #DisciplineWins`
-    }).catch(()=>{});
-    return;
-  }
-
-  // Fallback: copy to clipboard
-  const text=`🔒 LOCK-IN 45 — Day ${dn}/${TD}\n✅ All habits completed!\n🔥 ${st.c} day streak\n💪 #LOCKIN45 #DisciplineWins`;
-  navigator.clipboard.writeText(text).then(()=>{
-    toast('📋 Copied to clipboard!');
-  }).catch(()=>{
-    toast('Share manually','ℹ️');
-  });
+  const song=currentWinSong?`\n🎵 ${currentWinSong.title} — ${currentWinSong.artist}`:'';
+  const text=`🔒 LOCK-IN 45 — Day ${dn}/${TD}\n✅ All habits completed!\n🔥 ${st.c} day streak${song}\n\n💪 #LOCKIN45 #DisciplineWins`;
+  if(navigator.share){navigator.share({title:'LOCK-IN 45',text}).catch(()=>{});return}
+  navigator.clipboard.writeText(text).then(()=>{toast('📋 Copied to clipboard!')}).catch(()=>{toast('Share manually','ℹ️')});
 }
 function toggleRest(c){tH.rest=c;sH(td(),tH);renderD();if(c)toast('Rest day.','😴')}
 function toggleDetox(c){tH.detox=c;sH(td(),tH);renderD();if(c)toast('🧠 Detox ON','🔴')}
