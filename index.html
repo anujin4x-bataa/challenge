@@ -418,99 +418,78 @@ textarea.f-input{resize:vertical;min-height:60px}
 .hist-empty{text-align:center;padding:24px;color:var(--t3);font-size:.82rem}
 
 /* === DAILY WIN SUCCESS SCREEN === */
-.win-overlay{display:none;position:fixed;inset:0;z-index:2500;animation:winFadeIn .5s ease}
+.win-overlay{display:none;position:fixed;inset:0;z-index:2500;animation:winFadeIn .4s ease}
 .win-overlay.on{display:flex;align-items:center;justify-content:center}
 @keyframes winFadeIn{from{opacity:0}to{opacity:1}}
 
-/* Dark mode win */
+/* Dark mode */
 .win-overlay{background:#000}
-.win-card{width:100%;max-width:400px;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;
-  background:linear-gradient(160deg,#020a02 0%,#0a1f0a 30%,#071507 60%,#020a02 100%);background-size:200% 200%;animation:winBgShift 8s ease-in-out infinite}
+.win-card{width:100%;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;position:relative;overflow:hidden;box-sizing:border-box;background:linear-gradient(180deg,#050f05 0%,#0a1f0a 50%,#050f05 100%)}
 .win-card .win-msg{color:#fff}
-.win-card .win-hab-row{color:#fffc}
+.win-card .win-hab-row{color:#fffb}
 .win-card .win-day-label{color:#fff5}
 .win-card .wp-bar{background:#ffffff12}
 .win-card .wp-label{color:#fff4}
-.win-card .win-btn-close{background:#ffffff10;color:#fff;border:1px solid #ffffff18}
+.win-card .win-btn-close{background:#ffffff10;color:#fff;border:1px solid #ffffff15}
 .win-card .win-brand{color:#fff2}
-.win-particle{background:#c8ff00}
 
-/* Light mode win */
+/* Light mode */
 [data-theme="light"] .win-overlay{background:#fff}
-[data-theme="light"] .win-card{background:linear-gradient(160deg,#f0f9f0 0%,#e0f5e0 30%,#f5fff5 60%,#f0f9f0 100%);background-size:200% 200%}
-[data-theme="light"] .win-card::before{background:radial-gradient(circle,#5cb80018 0%,#5cb80008 30%,transparent 70%)}
-[data-theme="light"] .win-card::after{background:radial-gradient(ellipse,#5cb8000a 0%,transparent 70%)}
+[data-theme="light"] .win-card{background:linear-gradient(180deg,#f5fff5 0%,#e8f5e8 50%,#f5fff5 100%)}
 [data-theme="light"] .win-card .win-msg{color:#111}
 [data-theme="light"] .win-card .win-sub{color:#5cb800}
-[data-theme="light"] .win-card .win-day{color:#5cb800;text-shadow:0 0 30px #5cb80033}
+[data-theme="light"] .win-card .win-day{color:#5cb800;text-shadow:none}
 [data-theme="light"] .win-card .win-hab-row{color:#333}
-[data-theme="light"] .win-card .whr-check{color:#5cb800;text-shadow:0 0 8px #5cb80044}
+[data-theme="light"] .win-card .whr-check{color:#5cb800;text-shadow:none}
 [data-theme="light"] .win-card .win-day-label{color:#0005}
 [data-theme="light"] .win-card .wp-bar{background:#00000010}
-[data-theme="light"] .win-card .wp-fill{background:linear-gradient(90deg,#4a9600,#5cb800,#7dd600);box-shadow:0 0 12px #5cb80044}
+[data-theme="light"] .win-card .wp-fill{background:linear-gradient(90deg,#4a9600,#5cb800);box-shadow:none}
 [data-theme="light"] .win-card .wp-label{color:#0004}
-[data-theme="light"] .win-card .win-streak{background:#5cb80012;border-color:#5cb80030;color:#5cb800;box-shadow:0 0 16px #5cb80015}
-[data-theme="light"] .win-card .win-btn-share{background:linear-gradient(135deg,#5cb800,#4a9600);color:#fff;box-shadow:0 0 20px #5cb80033}
-[data-theme="light"] .win-card .win-btn-close{background:#00000008;color:#333;border:1px solid #00000015}
+[data-theme="light"] .win-card .win-streak{background:#5cb80010;border-color:#5cb80025;color:#5cb800}
+[data-theme="light"] .win-card .win-btn-close{background:#00000008;color:#333;border:1px solid #00000012}
 [data-theme="light"] .win-card .win-brand{color:#0002}
-[data-theme="light"] .win-card .win-lock{filter:drop-shadow(0 0 20px #5cb80033)}
-[data-theme="light"] .win-particle{background:#5cb800}
 [data-theme="light"] .win-card .win-spotify{background:#00000005;border-color:#00000010}
 [data-theme="light"] .win-card .ws-title{color:#111}
 [data-theme="light"] .win-card .ws-artist{color:#666}
 
-@keyframes winBgShift{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}
-.win-card::before{content:'';position:absolute;top:12%;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,#c8ff0015 0%,#c8ff0008 30%,transparent 70%);border-radius:50%;animation:winGlow 4s ease-in-out infinite;pointer-events:none}
-@keyframes winGlow{0%,100%{opacity:.4;transform:translateX(-50%) scale(.8)}50%{opacity:.7;transform:translateX(-50%) scale(1.2)}}
-.win-card::after{content:'';position:absolute;bottom:-20%;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,#c8ff000a 0%,transparent 70%);pointer-events:none}
-.win-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.win-particle{position:absolute;width:3px;height:3px;border-radius:50%;opacity:0;animation:winFloat linear infinite}
-@keyframes winFloat{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.5}90%{opacity:.2}100%{opacity:0;transform:translateY(-20vh) scale(1)}}
-.win-lock{font-size:3.5rem;margin-bottom:12px;animation:winBounce .6s ease .3s backwards;filter:drop-shadow(0 0 20px #c8ff0044);position:relative;z-index:1}
+/* Elements */
+.win-lock{font-size:3rem;margin-bottom:8px;animation:winBounce .6s ease .3s backwards;position:relative;z-index:1}
 @keyframes winBounce{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-.win-msg{font-family:var(--fb);font-size:2.2rem;font-weight:800;text-align:center;line-height:1.05;margin-bottom:6px;text-transform:uppercase;letter-spacing:-0.5px;animation:winSlideUp .5s ease .4s backwards;position:relative;z-index:1;white-space:pre-line}
-.win-sub{font-size:.88rem;color:#c8ff00;font-weight:600;margin-bottom:32px;animation:winSlideUp .5s ease .5s backwards;position:relative;z-index:1}
+.win-msg{font-family:var(--fb);font-size:2rem;font-weight:800;text-align:center;line-height:1.05;margin-bottom:4px;text-transform:uppercase;letter-spacing:-0.5px;animation:winSlideUp .5s ease .4s backwards;position:relative;z-index:1;white-space:pre-line}
+.win-sub{font-size:.82rem;color:#c8ff00;font-weight:600;margin-bottom:22px;animation:winSlideUp .5s ease .5s backwards;position:relative;z-index:1}
 @keyframes winSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.win-day{font-family:var(--fm);font-size:4rem;font-weight:700;color:#c8ff00;line-height:1;animation:winScale .5s ease .6s backwards;position:relative;z-index:1;text-shadow:0 0 30px #c8ff0044}
+.win-day{font-family:var(--fm);font-size:3.5rem;font-weight:700;color:#c8ff00;line-height:1;animation:winScale .5s ease .6s backwards;position:relative;z-index:1}
 @keyframes winScale{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.win-day-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-top:4px;margin-bottom:24px;position:relative;z-index:1}
-.win-progress{width:80%;max-width:280px;margin-bottom:24px;animation:winSlideUp .5s ease .7s backwards;position:relative;z-index:1}
-.win-progress .wp-bar{height:5px;border-radius:99px;overflow:hidden;margin-bottom:6px}
-.win-progress .wp-fill{height:100%;background:linear-gradient(90deg,#5cb800,#c8ff00,#e0ff66);border-radius:99px;transition:width 1.5s cubic-bezier(.22,1,.36,1);box-shadow:0 0 12px #c8ff0055}
-.win-progress .wp-label{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.6rem}
-.win-habits{width:80%;max-width:280px;margin-bottom:20px;animation:winSlideUp .5s ease .8s backwards;position:relative;z-index:1}
-.win-hab-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.78rem}
-.win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:18px;text-shadow:0 0 8px #c8ff0055}
-/* Run stats in win screen */
-.win-streak{background:linear-gradient(135deg,#c8ff0012,#c8ff0008);border:1px solid #c8ff0025;border-radius:99px;padding:10px 24px;font-family:var(--fm);font-size:.85rem;color:#c8ff00;font-weight:700;margin-bottom:20px;animation:winSlideUp .5s ease .85s backwards;position:relative;z-index:1;box-shadow:0 0 16px #c8ff0012}
-/* Spotify song card */
-.win-spotify{width:80%;max-width:280px;background:#ffffff08;border:1px solid #ffffff12;border-radius:16px;padding:14px;margin-bottom:24px;animation:winSlideUp .5s ease .9s backwards;position:relative;z-index:1;display:flex;align-items:center;gap:12px}
-.ws-icon{font-size:1.8rem;flex-shrink:0}
+.win-day-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-top:3px;margin-bottom:16px;position:relative;z-index:1}
+.win-progress{width:78%;max-width:260px;margin-bottom:16px;animation:winSlideUp .5s ease .7s backwards;position:relative;z-index:1}
+.win-progress .wp-bar{height:4px;border-radius:99px;overflow:hidden;margin-bottom:4px}
+.win-progress .wp-fill{height:100%;background:linear-gradient(90deg,#5cb800,#c8ff00);border-radius:99px;transition:width 1.5s cubic-bezier(.22,1,.36,1)}
+.win-progress .wp-label{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.5rem}
+.win-habits{width:78%;max-width:260px;margin-bottom:12px;animation:winSlideUp .5s ease .8s backwards;position:relative;z-index:1}
+.win-hab-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.7rem}
+.win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:14px}
+.win-streak{background:#c8ff000a;border:1px solid #c8ff0020;border-radius:99px;padding:7px 18px;font-family:var(--fm);font-size:.78rem;color:#c8ff00;font-weight:700;margin-bottom:12px;animation:winSlideUp .5s ease .85s backwards;position:relative;z-index:1}
+.win-spotify{width:78%;max-width:260px;background:#ffffff08;border:1px solid #ffffff10;border-radius:12px;padding:10px 12px;margin-bottom:16px;animation:winSlideUp .5s ease .9s backwards;position:relative;z-index:1;display:flex;align-items:center;gap:10px}
+.ws-icon{font-size:1.3rem;flex-shrink:0}
 .ws-info{flex:1;min-width:0}
-.ws-label{font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1DB954;margin-bottom:3px}
-.ws-title{font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ws-artist{font-size:.68rem;color:#fff8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ws-play{width:36px;height:36px;border-radius:50%;background:#1DB954;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:.15s;border:none;color:#fff;font-size:.9rem}
+.ws-label{font-size:.42rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1DB954;margin-bottom:2px}
+.ws-title{font-size:.72rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-artist{font-size:.6rem;color:#fff8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-play{width:30px;height:30px;border-radius:50%;background:#1DB954;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;color:#fff;font-size:.75rem}
 .ws-play:active{transform:scale(.9)}
-.win-actions{display:flex;gap:10px;animation:winSlideUp .5s ease 1s backwards;position:relative;z-index:1}
-.win-btn{padding:14px 28px;border-radius:99px;font-family:var(--fb);font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:.15s}
-.win-btn:active{transform:scale(.93)}
-.win-btn-share{background:linear-gradient(135deg,#c8ff00,#a8d900);color:#000;box-shadow:0 0 20px #c8ff0033}
-.win-btn-close{background:transparent}
-.win-brand{position:absolute;bottom:20px;font-family:var(--fm);font-size:.5rem;letter-spacing:3px;text-transform:uppercase}
+.win-btn-close{padding:12px 28px;border-radius:99px;font-family:var(--fb);font-size:.78rem;font-weight:700;cursor:pointer;border:none;background:transparent;animation:winSlideUp .5s ease 1s backwards;position:relative;z-index:1}
+.win-btn-close:active{transform:scale(.93)}
+.win-brand{position:absolute;bottom:12px;font-family:var(--fm);font-size:.42rem;letter-spacing:3px;text-transform:uppercase}
 
-/* Win celebration effects */
+/* Confetti */
 .win-confetti{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .win-confetti-piece{position:absolute;opacity:0;animation:winConfettiFall linear forwards}
 @keyframes winConfettiFall{0%{opacity:1;transform:translateY(-10vh) rotate(0deg) scale(1)}40%{opacity:.9}100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(.2)}}
-.win-stars{position:absolute;inset:0;pointer-events:none;z-index:2}
-.win-star{position:absolute;opacity:0;animation:winStarPop .9s ease forwards;pointer-events:none}
-@keyframes winStarPop{0%{opacity:0;transform:scale(0) rotate(-30deg)}30%{opacity:1;transform:scale(1.4) rotate(10deg)}70%{opacity:.8;transform:scale(1) rotate(-5deg)}100%{opacity:0;transform:scale(.3) translateY(-50px) rotate(20deg)}}
-.win-ring-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;border:2px solid #c8ff00;opacity:0;animation:winRingExpand 1.5s ease-out .4s forwards;pointer-events:none;z-index:0}
-[data-theme="light"] .win-ring-burst{border-color:#5cb800}
-@keyframes winRingExpand{0%{width:0;height:0;opacity:.7;border-width:3px}60%{opacity:.3}100%{width:500px;height:500px;opacity:0;border-width:0px}}
-.win-ring-burst:nth-child(4){animation-delay:.7s;border-style:dashed}
-.win-ring-burst:nth-child(5){animation-delay:1s;border-width:1px}
+
+/* Emoji star pops */
+.win-stars{position:absolute;inset:0;pointer-events:none;z-index:3}
+.win-star{position:absolute;opacity:0;animation:winStarPop .9s ease forwards}
+@keyframes winStarPop{0%{opacity:0;transform:scale(0) rotate(-30deg)}30%{opacity:1;transform:scale(1.4) rotate(10deg)}100%{opacity:0;transform:scale(.3) translateY(-50px)}}
 
 /* Clickable heatmap cells */
 .heatmap .hc{cursor:pointer;transition:.15s}
@@ -812,12 +791,8 @@ textarea.f-input{resize:vertical;min-height:60px}
 <!-- DAILY WIN SUCCESS SCREEN -->
 <div class="win-overlay" id="winOverlay">
   <div class="win-card" id="winCard">
-    <div class="win-particles" id="winParticles"></div>
     <div class="win-confetti" id="winConfetti"></div>
     <div class="win-stars" id="winStars"></div>
-    <div class="win-ring-burst"></div>
-    <div class="win-ring-burst"></div>
-    <div class="win-ring-burst"></div>
     <div class="win-lock">🔒</div>
     <div class="win-msg" id="winMsg">LOCKED IN</div>
     <div class="win-sub" id="winSub">All habits completed</div>
@@ -835,8 +810,7 @@ textarea.f-input{resize:vertical;min-height:60px}
       </div>
       <button class="ws-play" onclick="playWinSong()" id="wsPlayBtn">▶</button>
     </div>
-    <div class="win-actions">
-      <button class="win-btn win-btn-share" onclick="shareWin()">📤 Share</button>
+    <div style="animation:winSlideUp .5s ease 1s backwards;position:relative;z-index:1">
       <button class="win-btn win-btn-close" onclick="closeWin()">Continue</button>
     </div>
     <div class="win-brand">LOCK-IN 45</div>
@@ -1049,13 +1023,13 @@ textarea.f-input{resize:vertical;min-height:60px}
   <!-- AI Meal Plan -->
   <div class="insight-group">
     <div class="insight-header" onclick="toggleInsight(this)">
-      <div class="ih-left"><span class="ih-icon">🤖</span><span class="ih-title">AI Meal Plan</span></div>
+      <div class="ih-left"><span class="ih-icon">⚡</span><span class="ih-title">AI Meal Plan</span></div>
       <span class="ih-arrow">▾</span>
     </div>
     <div class="insight-body">
       <div class="insight-body-inner">
         <div id="mealPlanContent"><p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Generate a daily meal plan based on your calorie and macro goals.</p></div>
-        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">🤖 Generate Meal Plan</button>
+        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">⚡ Generate Meal Plan</button>
       </div>
     </div>
   </div>
@@ -1095,7 +1069,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
     <!-- AI Daily Summary -->
     <div class="ai-insight" id="histAiCard" style="display:none">
-      <div class="ai-tag">🤖 AI Day Summary</div>
+      <div class="ai-tag">⚡ AI Day Summary</div>
       <div class="ai-body" id="histAiText">—</div>
     </div>
 
@@ -1326,7 +1300,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
   <!-- Generate workout button -->
   <button class="ai-gen-btn" onclick="generateWorkout()" id="genWoBtn">
-    🤖 Generate Today's Workout
+    ⚡ Generate Today's Workout
   </button>
   <div style="height:12px"></div>
 
@@ -2258,24 +2232,8 @@ function showDailyWin(){
   // Show overlay
   document.getElementById('winOverlay').classList.add('on');
 
-  // Theme-aware particles (floating up slowly)
-  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
-  const pContainer=document.getElementById('winParticles');
-  pContainer.innerHTML='';
-  for(let i=0;i<20;i++){
-    const p=document.createElement('div');
-    p.className='win-particle';
-    p.style.left=Math.random()*100+'%';
-    p.style.animationDuration=(4+Math.random()*6)+'s';
-    p.style.animationDelay=(Math.random()*4)+'s';
-    const size=(2+Math.random()*3)+'px';
-    p.style.width=size;p.style.height=size;
-    p.style.background=isDark?(Math.random()>.5?'#c8ff00':'#ffffff'):(Math.random()>.5?'#5cb800':'#a8d900');
-    p.style.opacity=0;
-    pContainer.appendChild(p);
-  }
-
   // Confetti burst (falls from top)
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
   const confetti=document.getElementById('winConfetti');
   confetti.innerHTML='';
   const confettiColors=isDark?['#c8ff00','#a8d900','#00d4ff','#ff6b6b','#ffd43b','#ffffff','#a855f7']:['#5cb800','#4a9600','#00b4d8','#e63946','#fca311','#7c3aed','#333'];
@@ -2319,117 +2277,6 @@ function playWinSong(){
   if(currentWinSong&&currentWinSong.url)window.open(currentWinSong.url,'_blank');
 }
 
-function shareWin(){
-  const btn=document.querySelector('.win-btn-share');
-  btn.textContent='📸 Saving...';btn.disabled=true;
-
-  const u=gU();if(!u){btn.textContent='📤 Share';btn.disabled=false;return}
-  const dn=gCD(u.start_date);
-  const st=cStrk(u);
-  const pct=Math.round(dn/TD*100);
-  const msg=document.getElementById('winMsg').textContent;
-  const sub=document.getElementById('winSub').textContent;
-  const habits=HABITS_F();
-  const song=currentWinSong;
-  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
-
-  // Canvas 9:16 (1080x1920 Instagram Story)
-  const W=1080,H=1920;
-  const c=document.createElement('canvas');c.width=W;c.height=H;
-  const ctx=c.getContext('2d');
-
-  // Background gradient
-  const grad=ctx.createLinearGradient(0,0,W,H);
-  if(isDark){grad.addColorStop(0,'#020a02');grad.addColorStop(.4,'#0d2a0d');grad.addColorStop(1,'#020a02')}
-  else{grad.addColorStop(0,'#f0f9f0');grad.addColorStop(.4,'#e0f5e0');grad.addColorStop(1,'#f5fff5')}
-  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-
-  // Subtle glow
-  const glow=ctx.createRadialGradient(W/2,H*.3,0,W/2,H*.3,400);
-  glow.addColorStop(0,isDark?'rgba(200,255,0,.06)':'rgba(92,184,0,.08)');
-  glow.addColorStop(1,'transparent');
-  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
-
-  const accent=isDark?'#c8ff00':'#5cb800';
-  const t1=isDark?'#ffffff':'#111111';
-  const t2=isDark?'rgba(255,255,255,.6)':'rgba(0,0,0,.45)';
-  const t3=isDark?'rgba(255,255,255,.25)':'rgba(0,0,0,.2)';
-  const barBg=isDark?'rgba(255,255,255,.1)':'rgba(0,0,0,.08)';
-
-  let y=320;
-  ctx.textAlign='center';
-
-  // Lock icon
-  ctx.font='120px serif';ctx.fillText('🔒',W/2,y);y+=60;
-
-  // Message
-  ctx.font='800 80px sans-serif';ctx.fillStyle=t1;
-  msg.split('\n').forEach(line=>{y+=90;ctx.fillText(line,W/2,y)});y+=50;
-
-  // Sub
-  ctx.font='600 36px sans-serif';ctx.fillStyle=accent;
-  ctx.fillText(sub,W/2,y);y+=100;
-
-  // Day number big
-  ctx.font='700 160px monospace';ctx.fillStyle=accent;
-  ctx.fillText(dn.toString(),W/2,y);y+=30;
-
-  // DAY / 45
-  ctx.font='700 24px monospace';ctx.fillStyle=t3;
-  ctx.fillText('DAY / '+TD,W/2,y);y+=70;
-
-  // Progress bar
-  const barW=W*.7,barH=16,barX=(W-barW)/2;
-  ctx.fillStyle=barBg;roundRect(ctx,barX,y,barW,barH,8);ctx.fill();
-  ctx.fillStyle=accent;roundRect(ctx,barX,y,barW*(pct/100),barH,8);ctx.fill();
-  y+=12;
-  ctx.font='600 22px monospace';ctx.fillStyle=t3;
-  ctx.textAlign='left';ctx.fillText('Start',barX,y+30);
-  ctx.textAlign='center';ctx.fillText(pct+'%',W/2,y+30);
-  ctx.textAlign='right';ctx.fillText('Day 45',barX+barW,y+30);
-  ctx.textAlign='center';y+=80;
-
-  // Habits
-  ctx.textAlign='left';
-  habits.forEach(h=>{
-    ctx.font='700 28px monospace';ctx.fillStyle=accent;ctx.fillText('✓',W*.18,y);
-    ctx.font='400 30px sans-serif';ctx.fillStyle=t2;ctx.fillText(h.icon+' '+h.name,W*.24,y);
-    y+=46;
-  });
-  ctx.textAlign='center';y+=20;
-
-  // Streak
-  ctx.font='700 34px monospace';ctx.fillStyle=accent;
-  ctx.fillText('🔥 '+st.c+' day streak',W/2,y);y+=60;
-
-  // Song
-  if(song){
-    ctx.font='700 18px sans-serif';ctx.fillStyle='#1DB954';
-    ctx.fillText('YOUR DAY SOUNDTRACK',W/2,y);y+=36;
-    ctx.font='700 32px sans-serif';ctx.fillStyle=t1;
-    ctx.fillText(song.title,W/2,y);y+=34;
-    ctx.font='400 26px sans-serif';ctx.fillStyle=t2;
-    ctx.fillText(song.artist,W/2,y);
-  }
-
-  // Brand
-  ctx.font='700 20px monospace';ctx.fillStyle=t3;
-  ctx.fillText('LOCK-IN 45',W/2,H-60);
-
-  // Export
-  c.toBlob(blob=>{
-    if(!blob){fallbackShare();btn.textContent='📤 Share';btn.disabled=false;return}
-    const file=new File([blob],'lockin45-day'+dn+'.png',{type:'image/png'});
-    const shareText='🔒 LOCK-IN 45 — Day '+dn+'/'+TD+'\n✅ All habits completed!\n🔥 '+st.c+' day streak'+(song?'\n🎵 '+song.title+' — '+song.artist:'')+'\n\n💪 #LOCKIN45 #DisciplineWins';
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({files:[file],title:'LOCK-IN 45',text:shareText}).then(()=>{toast('📤 Shared!')}).catch(()=>{downloadCanvas(c,dn)});
-    }else{downloadCanvas(c,dn)}
-    btn.textContent='📤 Share';btn.disabled=false;
-  },'image/png');
-}
-function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
-function downloadCanvas(canvas,day){const a=document.createElement('a');a.download='lockin45-day'+day+'.png';a.href=canvas.toDataURL('image/png');a.click();toast('📸 Saved to photos!')}
-function fallbackShare(){const u=gU();const dn=u?gCD(u.start_date):'?';const st=u?cStrk(u):{c:0};const song=currentWinSong;navigator.clipboard.writeText('🔒 LOCK-IN 45 — Day '+dn+'/'+TD+'\n✅ All habits completed!\n🔥 '+st.c+' day streak'+(song?'\n🎵 '+song.title+' — '+song.artist:'')+'\n\n💪 #LOCKIN45 #DisciplineWins').then(()=>{toast('📋 Copied!')}).catch(()=>{toast('Share manually','ℹ️')})}
 function toggleRest(c){tH.rest=c;sH(td(),tH);renderD();if(c)toast('Rest day.','😴')}
 function toggleDetox(c){tH.detox=c;sH(td(),tH);renderD();if(c)toast('🧠 Detox ON','🔴')}
 function toggleDetoxH(id){const dh=getDH(td());dh[id]=!dh[id];sDH(td(),dh);renderD();if(dh[id])toast(`${DETOX_F().find(h=>h.id===id).icon} Done!`)}
@@ -3214,7 +3061,7 @@ Respond ONLY with JSON (no markdown):
       {time:'Snack',food:'Greek yogurt + nuts',cal:Math.round(cal*0.1),protein:Math.round(protein*0.1)}
     ],total_cal:cal,tip:'Focus on whole foods and eat protein with every meal.'});
   }
-  btn.disabled=false;btn.textContent='🤖 Generate Meal Plan';
+  btn.disabled=false;btn.textContent='⚡ Generate Meal Plan';
 }
 
 function renderMealPlan(plan){
@@ -3784,7 +3631,7 @@ Respond ONLY with JSON (no markdown, no backticks):
     toast('Generated workout (offline)','⚡');
     renderTodayWorkout();
   }
-  btn.disabled=false;btn.innerHTML='🤖 Generate Today\'s Workout';
+  btn.disabled=false;btn.innerHTML='⚡ Generate Today\'s Workout';
 }
 
 function generateFallbackWorkout(prof,recovery){
@@ -4033,7 +3880,7 @@ function renderPRTracker(){
     if(recent.length>=2){
       const avgIncrease=recent.length>=3?(recent[recent.length-1].weight-recent[0].weight)/(recent.length-1):2.5;
       const suggestion=Math.round((latest.weight+Math.max(avgIncrease,1.25))*4)/4; // Round to .25
-      html+=`<div class="pr-suggestion"><span class="ps-icon">🤖</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
+      html+=`<div class="pr-suggestion"><span class="ps-icon">⚡</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
     }
   });
   el.innerHTML=html;
