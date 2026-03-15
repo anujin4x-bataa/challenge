@@ -168,10 +168,9 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .score-mini .ring-fill{fill:none;stroke:var(--acc);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
 .score-mini .ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.85rem;font-weight:700}
 
-/* === COACH — inline compact === */
-.coach-inline{background:var(--bg3);border-radius:var(--r2);padding:14px 16px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start}
-.coach-inline .ci-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
-.coach-inline .ci-text{font-size:.85rem;color:var(--t2);line-height:1.55;font-style:italic;flex:1}
+/* === COACH — centered quote === */
+.coach-inline{background:var(--bg3);border-radius:var(--r2);padding:16px;margin-bottom:12px;text-align:center}
+.coach-inline .ci-text{font-size:.9rem;color:var(--t2);line-height:1.6;font-style:italic}
 
 /* === HABITS === */
 .habit{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--bg3);border-radius:var(--r2);margin-bottom:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;transition:all .15s;border:1px solid transparent}
@@ -875,8 +874,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
   <!-- ZONE 2: COACH — compact inline -->
   <div class="coach-inline">
-    <div class="ci-icon">⚡</div>
-    <div class="ci-text" id="coachMsg">Loading...</div>
+    <div class="ci-text" id="coachMsg">"Loading..."</div>
   </div>
 
   <!-- AI DAILY INSIGHT -->
@@ -1023,13 +1021,13 @@ textarea.f-input{resize:vertical;min-height:60px}
   <!-- AI Meal Plan -->
   <div class="insight-group">
     <div class="insight-header" onclick="toggleInsight(this)">
-      <div class="ih-left"><span class="ih-icon">⚡</span><span class="ih-title">AI Meal Plan</span></div>
+      <div class="ih-left"><span class="ih-icon">🤖</span><span class="ih-title">AI Meal Plan</span></div>
       <span class="ih-arrow">▾</span>
     </div>
     <div class="insight-body">
       <div class="insight-body-inner">
         <div id="mealPlanContent"><p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Generate a daily meal plan based on your calorie and macro goals.</p></div>
-        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">⚡ Generate Meal Plan</button>
+        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">🤖 Generate Meal Plan</button>
       </div>
     </div>
   </div>
@@ -1069,7 +1067,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
     <!-- AI Daily Summary -->
     <div class="ai-insight" id="histAiCard" style="display:none">
-      <div class="ai-tag">⚡ AI Day Summary</div>
+      <div class="ai-tag">🤖 AI Day Summary</div>
       <div class="ai-body" id="histAiText">—</div>
     </div>
 
@@ -1215,50 +1213,72 @@ textarea.f-input{resize:vertical;min-height:60px}
     <span class="aub-out" onclick="handleLogout()">Log Out</span>
   </div>
 
-  <div class="card" style="display:flex;align-items:center;gap:14px">
-    <div style="width:52px;height:52px;border-radius:50%;background:var(--accd);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🔒</div>
-    <div><div style="font-size:1rem;font-weight:700;color:var(--acc)" id="prName">—</div><div style="font-size:.7rem;color:var(--t3)" id="prDay">—</div></div>
+  <!-- Profile hero -->
+  <div class="card" style="text-align:center;padding:24px 20px">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--accd);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 10px">🔒</div>
+    <div style="font-size:1.15rem;font-weight:700;color:var(--acc)" id="prName">—</div>
+    <div style="font-size:.7rem;color:var(--t3);margin-top:2px" id="prDay">—</div>
+    <!-- Progress ring -->
+    <div id="prProgress" style="margin-top:14px"></div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px" id="prStats"></div>
-  <div class="card"><div class="card-t">Edit</div>
-    <div class="f-grp"><label class="f-label">Name</label><input type="text" id="eName" class="f-input"></div>
-    <div class="f-grp"><label class="f-label">Start Date</label><input type="date" id="eDate" class="f-input"></div>
-    <button class="btn btn-p btn-sm" onclick="saveProf()">Save</button>
-  </div>
-  <div class="card"><div class="card-t">Achievements</div><div class="badges" id="bd2"></div></div>
-  <div class="card"><div class="card-t">Settings</div>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-s btn-sm" onclick="reqNotifs()" id="notifBtn">🔔 Notifications</button>
-      <div id="notifStatus" style="font-size:.65rem;color:var(--t3);padding:0 4px"></div>
 
-      <!-- Notification Settings -->
-      <div class="insight-group" style="margin-top:6px">
-        <div class="insight-header" onclick="toggleInsight(this)">
-          <div class="ih-left"><span class="ih-icon">⏰</span><span class="ih-title">Notification Schedule</span></div>
-          <span class="ih-arrow">▾</span>
-        </div>
-        <div class="insight-body">
-          <div class="insight-body-inner">
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <!-- Morning -->
-              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">🌅</span><div class="ti-text"><div class="ti-name">Morning</div></div></div><input type="time" id="nf-morning" class="f-input" style="width:90px;text-align:center;padding:6px" value="07:00"><label class="tgl"><input type="checkbox" id="nf-morning-on" checked><span class="tgl-s"></span></label></div>
-              <!-- Water -->
-              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">💧</span><div class="ti-text"><div class="ti-name">Water</div><div class="ti-desc">Every 2h</div></div></div><input type="time" id="nf-water-start" class="f-input" style="width:90px;text-align:center;padding:6px" value="08:00"><label class="tgl"><input type="checkbox" id="nf-water-on" checked><span class="tgl-s"></span></label></div>
-              <!-- Workout -->
-              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">💪</span><div class="ti-text"><div class="ti-name">Workout</div></div></div><input type="time" id="nf-workout" class="f-input" style="width:90px;text-align:center;padding:6px" value="18:00"><label class="tgl"><input type="checkbox" id="nf-workout-on" checked><span class="tgl-s"></span></label></div>
-              <!-- Habit check -->
-              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">🔒</span><div class="ti-text"><div class="ti-name">Habit Check</div></div></div><input type="time" id="nf-habits" class="f-input" style="width:90px;text-align:center;padding:6px" value="20:00"><label class="tgl"><input type="checkbox" id="nf-habits-on" checked><span class="tgl-s"></span></label></div>
-              <!-- Sleep -->
-              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">😴</span><div class="ti-text"><div class="ti-name">Sleep</div></div></div><input type="time" id="nf-sleep" class="f-input" style="width:90px;text-align:center;padding:6px" value="23:00"><label class="tgl"><input type="checkbox" id="nf-sleep-on" checked><span class="tgl-s"></span></label></div>
+  <!-- 4 stat cards 2x2 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px" id="prStats"></div>
+
+  <!-- Edit (collapsible) -->
+  <div class="insight-group">
+    <div class="insight-header" onclick="toggleInsight(this)">
+      <div class="ih-left"><span class="ih-icon">✏️</span><span class="ih-title">Edit Profile</span></div>
+      <span class="ih-arrow">▾</span>
+    </div>
+    <div class="insight-body">
+      <div class="insight-body-inner">
+        <div class="f-grp"><label class="f-label">Name</label><input type="text" id="eName" class="f-input"></div>
+        <div class="f-grp"><label class="f-label">Start Date</label><input type="date" id="eDate" class="f-input"></div>
+        <button class="btn btn-p btn-sm btn-full" onclick="saveProf()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><div class="card-t">Achievements</div><div class="badges" id="bd2"></div></div>
+
+  <!-- Settings (collapsible) -->
+  <div class="insight-group">
+    <div class="insight-header" onclick="toggleInsight(this)">
+      <div class="ih-left"><span class="ih-icon">⚙️</span><span class="ih-title">Settings</span></div>
+      <span class="ih-arrow">▾</span>
+    </div>
+    <div class="insight-body">
+      <div class="insight-body-inner">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-s btn-sm" onclick="reqNotifs()" id="notifBtn">🔔 Notifications</button>
+          <div id="notifStatus" style="font-size:.65rem;color:var(--t3);padding:0 4px"></div>
+
+          <!-- Notification Settings -->
+          <div class="insight-group" style="margin-top:4px">
+            <div class="insight-header" onclick="toggleInsight(this)">
+              <div class="ih-left"><span class="ih-icon">⏰</span><span class="ih-title">Notification Schedule</span></div>
+              <span class="ih-arrow">▾</span>
             </div>
-            <button class="btn btn-p btn-sm btn-full" onclick="saveNotifSettings()" style="margin-top:10px">Save Schedule</button>
+            <div class="insight-body">
+              <div class="insight-body-inner">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div class="toggle-item"><div class="ti-left"><span class="ti-icon">🌅</span><div class="ti-text"><div class="ti-name">Morning</div></div></div><input type="time" id="nf-morning" class="f-input" style="width:90px;text-align:center;padding:6px" value="07:00"><label class="tgl"><input type="checkbox" id="nf-morning-on" checked><span class="tgl-s"></span></label></div>
+                  <div class="toggle-item"><div class="ti-left"><span class="ti-icon">💧</span><div class="ti-text"><div class="ti-name">Water</div><div class="ti-desc">Every 2h</div></div></div><input type="time" id="nf-water-start" class="f-input" style="width:90px;text-align:center;padding:6px" value="08:00"><label class="tgl"><input type="checkbox" id="nf-water-on" checked><span class="tgl-s"></span></label></div>
+                  <div class="toggle-item"><div class="ti-left"><span class="ti-icon">💪</span><div class="ti-text"><div class="ti-name">Workout</div></div></div><input type="time" id="nf-workout" class="f-input" style="width:90px;text-align:center;padding:6px" value="18:00"><label class="tgl"><input type="checkbox" id="nf-workout-on" checked><span class="tgl-s"></span></label></div>
+                  <div class="toggle-item"><div class="ti-left"><span class="ti-icon">🔒</span><div class="ti-text"><div class="ti-name">Habit Check</div></div></div><input type="time" id="nf-habits" class="f-input" style="width:90px;text-align:center;padding:6px" value="20:00"><label class="tgl"><input type="checkbox" id="nf-habits-on" checked><span class="tgl-s"></span></label></div>
+                  <div class="toggle-item"><div class="ti-left"><span class="ti-icon">😴</span><div class="ti-text"><div class="ti-name">Sleep</div></div></div><input type="time" id="nf-sleep" class="f-input" style="width:90px;text-align:center;padding:6px" value="23:00"><label class="tgl"><input type="checkbox" id="nf-sleep-on" checked><span class="tgl-s"></span></label></div>
+                </div>
+                <button class="btn btn-p btn-sm btn-full" onclick="saveNotifSettings()" style="margin-top:10px">Save Schedule</button>
+              </div>
+            </div>
           </div>
+          <button class="btn btn-s btn-sm" onclick="testNotification()">🧪 Test Notification</button>
+          <button class="btn btn-s btn-sm" onclick="L.r('win_'+td());showDailyWin()">🏆 Test Win Screen</button>
+          <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+          <button class="btn btn-d btn-sm" onclick="resetAll()">⚠️ Reset All</button>
         </div>
       </div>
-      <button class="btn btn-s btn-sm" onclick="testNotification()">🧪 Test Notification</button>
-      <button class="btn btn-s btn-sm" onclick="L.r('win_'+td());showDailyWin()">🏆 Test Win Screen</button>
-      <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 Export CSV</button>
-      <button class="btn btn-d btn-sm" onclick="resetAll()">⚠️ Reset All</button>
     </div>
   </div>
 </div>
@@ -1300,7 +1320,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
   <!-- Generate workout button -->
   <button class="ai-gen-btn" onclick="generateWorkout()" id="genWoBtn">
-    ⚡ Generate Today's Workout
+    🤖 Generate Today's Workout
   </button>
   <div style="height:12px"></div>
 
@@ -1593,7 +1613,73 @@ function renderHabEmojiPicker(elId,type){
   });
 }
 const ACHS=[{id:'d1',n:'Day One',i:'🎯',r:'d',v:1},{id:'s3',n:'3 Day',i:'🔥',r:'s',v:3},{id:'s7',n:'7 Day',i:'🔥',r:'s',v:7},{id:'s14',n:'14 Day',i:'⚡',r:'s',v:14},{id:'s21',n:'21 Day',i:'💎',r:'s',v:21},{id:'s30',n:'30 Day',i:'👑',r:'s',v:30},{id:'s45',n:'45 Day',i:'🏆',r:'s',v:45},{id:'pw',n:'Perfect Wk',i:'⭐',r:'pw',v:1},{id:'half',n:'Halfway',i:'🏔️',r:'d',v:23},{id:'done',n:'Complete',i:'🏆',r:'d',v:45},{id:'ph1',n:'First Photo',i:'📸',r:'ph',v:1},{id:'b5',n:'Body Track',i:'📏',r:'b',v:5}];
-const COACH={m:["New day. Let's go.","Rise and grind.","Lock in. No distractions.","Discipline over motivation.","Build the person you want to become."],d:["PERFECT DAY. Elite.","All habits done. Locked in.","100%. This is discipline.","Every box checked. Champion."],p:["Not perfect, but you showed up.","Progress > perfection.","Bounce back tomorrow.","Partial beats zero. Keep going."],s:["🔥 {s} days! Unstoppable.","🔥 {s} day streak!","🔥 {s} days locked in."],ms:{7:"ONE WEEK. The hardest part is done.",14:"TWO WEEKS. This is a lifestyle.",21:"21 DAYS. Habit formed.",30:"30 DAYS. Different person.",45:"COMPLETE. Legendary."},e:["Your only competition is yesterday.","Hard choices, easy life.","Consistency > intensity.","Don't break the chain."]};
+const COACH={m:[
+  "New day. Let's go.",
+  "Rise and grind.",
+  "Lock in. No distractions.",
+  "Discipline over motivation.",
+  "Build the person you want to become.",
+  "Today is yours. Take it.",
+  "Winners wake up early.",
+  "Your future self is watching.",
+  "Make today count.",
+  "No shortcuts. Just work."
+],d:[
+  "PERFECT DAY. Elite.",
+  "All habits done. Locked in.",
+  "100%. This is discipline.",
+  "Every box checked. Champion.",
+  "Flawless execution today.",
+  "You did what others won't.",
+  "Machine mode. Activated.",
+  "Zero excuses. Full send."
+],p:[
+  "Not perfect, but you showed up.",
+  "Progress > perfection.",
+  "Bounce back tomorrow.",
+  "Partial beats zero. Keep going.",
+  "Even 1% forward is forward.",
+  "Bad days build strong people.",
+  "Showing up is half the battle."
+],s:[
+  "🔥 {s} days! Unstoppable.",
+  "🔥 {s} day streak!",
+  "🔥 {s} days locked in.",
+  "🔥 {s} days of pure discipline.",
+  "🔥 {s} days. Don't stop now."
+],ms:{
+  7:"ONE WEEK. The hardest part is done.",
+  14:"TWO WEEKS. This is a lifestyle.",
+  21:"21 DAYS. Habit formed.",
+  30:"30 DAYS. Different person.",
+  45:"COMPLETE. Legendary."
+},e:[
+  "Your only competition is yesterday.",
+  "Hard choices, easy life.",
+  "Consistency > intensity.",
+  "Don't break the chain.",
+  "Suffer the pain of discipline, or suffer the pain of regret.",
+  "What you do today matters.",
+  "Small daily improvements lead to stunning results.",
+  "The secret is there is no secret. Just show up.",
+  "Motivation is temporary. Habits are forever.",
+  "You don't have to be extreme, just consistent.",
+  "Be addicted to bettering yourself.",
+  "Fall in love with the process.",
+  "One day or day one. You decide.",
+  "Push yourself because no one else will.",
+  "Great things never come from comfort zones.",
+  "It's not about being the best. It's about being better than yesterday.",
+  "The only bad workout is the one that didn't happen.",
+  "Success is the sum of small efforts repeated daily.",
+  "Discipline is choosing between what you want now and what you want most.",
+  "Your body hears everything your mind says. Stay positive.",
+  "Don't count the days. Make the days count.",
+  "Results happen over time, not overnight.",
+  "Champions train. Losers complain.",
+  "If it doesn't challenge you, it doesn't change you.",
+  "You are one decision away from a completely different life."
+]};
 const MEAL_TYPES=['Breakfast','Lunch','Dinner','Snack'];
 const TH=4,TD=45;
 
@@ -1604,7 +1690,6 @@ const TH=4,TD=45;
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
-// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -1999,7 +2084,7 @@ document.getElementById('auth-pass').addEventListener('keypress',e=>{if(e.key===
 document.getElementById('s-date').value=td();
 
 // === COACH ===
-function getCoach(h){const d=HABITS_F().filter(x=>h[x.id]).length,sc=d/HABITS_F().length,u=gU(),st=cStrk(u);if(st.c>0&&COACH.ms[st.c])return COACH.ms[st.c];if(st.c>=3)return rF(COACH.s).replace('{s}',st.c);if(sc===1)return rF(COACH.d);if(d>0)return rF(COACH.p);return new Date().getHours()<12?rF(COACH.m):rF(COACH.e)}
+function getCoach(h){const d=HABITS_F().filter(x=>h[x.id]).length,sc=d/HABITS_F().length,u=gU(),st=cStrk(u);let msg;if(st.c>0&&COACH.ms[st.c])msg=COACH.ms[st.c];else if(st.c>=3)msg=rF(COACH.s).replace('{s}',st.c);else if(sc===1)msg=rF(COACH.d);else if(d>0)msg=rF(COACH.p);else msg=new Date().getHours()<12?rF(COACH.m):rF(COACH.e);return '"'+msg+'"'}
 
 // ==================== DASHBOARD ====================
 let tH=null;
@@ -2599,26 +2684,24 @@ function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim()
 // ==================== PROFILE ====================
 function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cStrk(u),rem=Math.max(0,TD-dn);
   const a=gAH();const rate=a.length>0?Math.round(a.filter(h=>h.cs>=TH/HABITS_F().length).length/a.length*100):0;
-  document.getElementById('prName').textContent=u.name;document.getElementById('prDay').textContent=`Day ${dn}/${TD} · ${ff(u.start_date)}`;
+  document.getElementById('prName').textContent=u.name;document.getElementById('prDay').textContent=`Day ${dn} of ${TD} · Started ${ff(u.start_date)}`;
   const pct=Math.round(dn/TD*100);
-  const circ=2*Math.PI*44;const offset=circ-(circ*pct/100);
-  document.getElementById('prStats').innerHTML=`
-    <div style="grid-column:1/-1;display:flex;justify-content:center;margin-bottom:4px">
-      <div style="position:relative;width:90px;height:90px">
-        <svg viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg)">
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--bg5)" stroke-width="6"/>
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--acc)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 1s ease"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-          <div style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--acc);line-height:1">${pct}%</div>
-          <div style="font-size:.45rem;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px">Complete</div>
-        </div>
-      </div>
+  const r=40,circ=2*Math.PI*r,offset=circ-(circ*pct/100);
+  document.getElementById('prProgress').innerHTML=`<div style="position:relative;width:90px;height:90px;margin:0 auto">
+    <svg viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg)">
+      <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--bg5)" stroke-width="6"/>
+      <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--acc)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 1s ease"/>
+    </svg>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div style="font-family:var(--fm);font-size:1.3rem;font-weight:700;color:var(--acc);line-height:1">${pct}%</div>
+      <div style="font-size:.45rem;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:1px">Complete</div>
     </div>
-    <div class="stat-card"><div class="s-val">🔥 ${st.c}</div><div class="s-label">Streak</div></div>
-    <div class="stat-card"><div class="s-val">⭐ ${st.l}</div><div class="s-label">Best</div></div>
-    <div class="stat-card"><div class="s-val">📅 ${rem}</div><div class="s-label">Days Left</div></div>
-    <div class="stat-card"><div class="s-val">📊 ${rate}%</div><div class="s-label">Success Rate</div></div>`;
+  </div>`;
+  document.getElementById('prStats').innerHTML=`
+    <div class="stat-card"><div class="s-val" style="font-size:1.5rem">🔥 ${st.c}</div><div class="s-label">Streak</div></div>
+    <div class="stat-card"><div class="s-val" style="font-size:1.5rem">⭐ ${st.l}</div><div class="s-label">Best</div></div>
+    <div class="stat-card"><div class="s-val" style="font-size:1.5rem">📅 ${rem}</div><div class="s-label">Days Left</div></div>
+    <div class="stat-card"><div class="s-val" style="font-size:1.5rem">📊 ${rate}%</div><div class="s-label">Success Rate</div></div>`;
   document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');
   // Auth user display
   const bar=document.getElementById('authUserBar');
@@ -3061,7 +3144,7 @@ Respond ONLY with JSON (no markdown):
       {time:'Snack',food:'Greek yogurt + nuts',cal:Math.round(cal*0.1),protein:Math.round(protein*0.1)}
     ],total_cal:cal,tip:'Focus on whole foods and eat protein with every meal.'});
   }
-  btn.disabled=false;btn.textContent='⚡ Generate Meal Plan';
+  btn.disabled=false;btn.textContent='🤖 Generate Meal Plan';
 }
 
 function renderMealPlan(plan){
@@ -3631,7 +3714,7 @@ Respond ONLY with JSON (no markdown, no backticks):
     toast('Generated workout (offline)','⚡');
     renderTodayWorkout();
   }
-  btn.disabled=false;btn.innerHTML='⚡ Generate Today\'s Workout';
+  btn.disabled=false;btn.innerHTML='🤖 Generate Today\'s Workout';
 }
 
 function generateFallbackWorkout(prof,recovery){
@@ -3880,7 +3963,7 @@ function renderPRTracker(){
     if(recent.length>=2){
       const avgIncrease=recent.length>=3?(recent[recent.length-1].weight-recent[0].weight)/(recent.length-1):2.5;
       const suggestion=Math.round((latest.weight+Math.max(avgIncrease,1.25))*4)/4; // Round to .25
-      html+=`<div class="pr-suggestion"><span class="ps-icon">⚡</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
+      html+=`<div class="pr-suggestion"><span class="ps-icon">🤖</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
     }
   });
   el.innerHTML=html;
