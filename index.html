@@ -293,16 +293,12 @@ textarea.f-input{resize:vertical;min-height:60px}
 .macro-bar .mb-fill{height:100%;border-radius:99px;transition:width .6s ease}
 .macro-bar .mb-val{font-family:var(--fm);font-size:.65rem;color:var(--t2);width:55px;text-align:right}
 .meal-card{background:var(--bg4);border-radius:var(--r2);padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
-.meal-card img{width:50px;height:50px;border-radius:var(--r1);object-fit:cover;flex-shrink:0}
 .meal-card .mc-info{flex:1;min-width:0}
 .meal-card .mc-name{font-weight:600;font-size:.82rem}
 .meal-card .mc-macros{display:flex;gap:6px;margin-top:4px;font-family:var(--fm);font-size:.6rem;color:var(--t2)}
 .meal-card .mc-macros span{background:var(--bg5);padding:2px 6px;border-radius:99px}
 .meal-card .mc-cal{font-family:var(--fm);font-size:1rem;font-weight:700;color:var(--acc);flex-shrink:0}
 .meal-card .mc-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:.8rem;padding:4px;flex-shrink:0}
-.scan-btn{background:var(--acc);color:var(--acc-t);border:none;border-radius:50%;width:52px;height:52px;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--accg);transition:.15s;margin:0 auto}
-.scan-btn:active{transform:scale(.9)}
-.scan-preview{width:100%;max-height:180px;object-fit:cover;border-radius:var(--r2);margin-bottom:12px}
 .ai-loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:var(--t2);font-size:.8rem}
 .ai-loading .dot{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:aiDot 1.2s infinite}
 .ai-loading .dot:nth-child(2){animation-delay:.2s}
@@ -402,6 +398,28 @@ textarea.f-input{resize:vertical;min-height:60px}
 /* Running tracker */
 
 /* Editable workout */
+
+/* History daily report */
+.hist-report{background:var(--bg3);border-radius:var(--r3);padding:18px;margin-bottom:12px;border:1px solid var(--brd)}
+.hist-report .hr-date{font-family:var(--fm);font-size:.65rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.hist-report .hr-score{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.hist-report .hr-score-ring{position:relative;width:52px;height:52px;flex-shrink:0}
+.hist-report .hr-score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hist-report .hr-score-ring .ring-bg{fill:none;stroke:var(--bg5);stroke-width:5}
+.hist-report .hr-score-ring .ring-fill{fill:none;stroke:var(--acc);stroke-width:5;stroke-linecap:round}
+.hist-report .hr-score-ring .hrc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.85rem;font-weight:700}
+.hist-report .hr-habits{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.hist-report .hr-hab{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;font-size:.7rem;font-weight:600;background:var(--bg4);border:1px solid var(--brd)}
+.hist-report .hr-hab.done{background:var(--accd);border-color:var(--acc);color:var(--acc)}
+.hist-report .hr-hab.missed{opacity:.4}
+.hist-section{margin-bottom:10px}
+.hist-section .hs-label{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:4px}
+.hist-section .hs-content{font-size:.82rem;color:var(--t2);line-height:1.5}
+.hist-empty{text-align:center;padding:24px;color:var(--t3);font-size:.82rem}
+
+/* Clickable heatmap cells */
+.heatmap .hc{cursor:pointer;transition:.15s}
+.heatmap .hc:active{transform:scale(1.3)}
 .ex-actions{display:flex;gap:4px;flex-shrink:0}
 .ex-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--brd);background:var(--bg4);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.65rem;color:var(--t3);transition:.15s;-webkit-tap-highlight-color:transparent}
 .ex-btn:active{background:var(--bg5);color:var(--t1)}
@@ -681,27 +699,17 @@ textarea.f-input{resize:vertical;min-height:60px}
 </div>
 </div>
 
-<!-- FOOD SCAN MODAL -->
+<!-- ADD FOOD MODAL -->
 <div class="modal-bg" id="foodScanM">
 <div class="modal-sh">
   <div class="modal-h"></div>
-  <div class="sec-h">📷 Scan Food</div>
-  <div class="upload-zone" id="foodUpZone" onclick="document.getElementById('foodPhIn').click()">
-    <input type="file" id="foodPhIn" accept="image/*" capture="environment" onchange="handleFoodPhoto(this)">
-    <div style="font-size:1.8rem;margin-bottom:4px">📸</div>
-    <div style="font-size:.82rem">Take a photo of your meal</div>
-    <div style="font-size:.65rem;color:var(--t3);margin-top:4px">AI analyzes calories & macros</div>
-  </div>
-  <img id="foodPreview" class="scan-preview" style="display:none">
-  <div id="aiLoading" class="ai-loading" style="display:none"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Analyzing...</span></div>
-  <div id="aiResult" style="display:none">
-    <div class="f-grp"><label class="f-label">Food Name</label><input type="text" id="fd-name" class="f-input"></div>
-    <div class="meal-type-row" id="fdMealType"></div>
-    <div class="f-row"><div><label class="f-label">Calories</label><input type="number" id="fd-cal" class="f-input"></div><div><label class="f-label">Protein (g)</label><input type="number" id="fd-p" class="f-input"></div></div>
-    <div class="f-row"><div><label class="f-label">Carbs (g)</label><input type="number" id="fd-c" class="f-input"></div><div><label class="f-label">Fat (g)</label><input type="number" id="fd-f" class="f-input"></div></div>
-    <div class="f-grp"><label class="f-label">Notes</label><input type="text" id="fd-notes" class="f-input" placeholder="Optional..."></div>
-    <button class="btn btn-p btn-full" onclick="saveFoodEntry()">Save Meal</button>
-  </div>
+  <div class="sec-h">🍽️ Add Meal</div>
+  <div class="f-grp"><label class="f-label">Food Name</label><input type="text" id="fd-name" class="f-input" placeholder="e.g. Chicken + Rice"></div>
+  <div class="meal-type-row" id="fdMealType"></div>
+  <div class="f-row"><div><label class="f-label">Calories</label><input type="number" id="fd-cal" class="f-input" placeholder="500"></div><div><label class="f-label">Protein (g)</label><input type="number" id="fd-p" class="f-input" placeholder="30"></div></div>
+  <div class="f-row"><div><label class="f-label">Carbs (g)</label><input type="number" id="fd-c" class="f-input" placeholder="60"></div><div><label class="f-label">Fat (g)</label><input type="number" id="fd-f" class="f-input" placeholder="15"></div></div>
+  <div class="f-grp"><label class="f-label">Notes</label><input type="text" id="fd-notes" class="f-input" placeholder="Optional..."></div>
+  <button class="btn btn-p btn-full" onclick="saveFoodEntry()">Save Meal</button>
   <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeM('foodScanM')">Cancel</button>
 </div>
 </div>
@@ -883,15 +891,27 @@ textarea.f-input{resize:vertical;min-height:60px}
       <div class="macro-bar"><span class="mb-label" style="color:#69db7c">F</span><div class="mb-track"><div class="mb-fill" id="mbF" style="background:#69db7c;width:0%"></div></div><span class="mb-val" id="mvF">0g</span></div>
     </div>
   </div>
-  <div class="body-stats-setup" id="bodySetup" style="display:none">
-    <div class="bss-title">⚙️ Set Body Stats for Calorie Goal</div>
-    <div class="f-row"><div><label class="f-label">Weight (kg)</label><input type="number" id="ns-w" class="f-input" placeholder="75" step=".1"></div><div><label class="f-label">Height (cm)</label><input type="number" id="ns-h" class="f-input" placeholder="175"></div></div>
-    <div class="f-row"><div><label class="f-label">Age</label><input type="number" id="ns-age" class="f-input" placeholder="25"></div><div><label class="f-label">Activity</label><select id="ns-act" class="f-input f-select"><option value="1.2">Sedentary</option><option value="1.375">Light</option><option value="1.55" selected>Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option></select></div></div>
-    <div class="f-grp"><label class="f-label">Goal</label><select id="ns-goal" class="f-input f-select"><option value="-500">Cut (-500)</option><option value="-250">Slow Cut</option><option value="0" selected>Maintain</option><option value="250">Lean Bulk</option><option value="500">Bulk (+500)</option></select></div>
-    <button class="btn btn-p btn-full" onclick="saveNutSettings()">Calculate Goal</button>
+  <!-- Smart Nutrition Recommendation (from InBody) -->
+  <div id="nutRecommend" style="display:none"></div>
+    <div class="bss-title">⚙️ Nutrition Goal Setup</div>
+
+    <!-- Auto-fill from InBody notice -->
+    <div id="inbodyAutoFill" style="display:none;background:var(--accd);border-radius:var(--r1);padding:10px 14px;margin-bottom:12px;font-size:.78rem;color:var(--acc)">
+      ✅ InBody data-аас автоматаар бөглөгдлөө
+    </div>
+
+    <div class="f-row"><div><label class="f-label">Weight (kg)</label><input type="number" id="ns-w" class="f-input" placeholder="61" step=".1"></div><div><label class="f-label">Height (cm)</label><input type="number" id="ns-h" class="f-input" placeholder="164"></div></div>
+    <div class="f-row"><div><label class="f-label">Age</label><input type="number" id="ns-age" class="f-input" placeholder="22"></div><div><label class="f-label">Skeletal Muscle (kg)</label><input type="number" id="ns-sm" class="f-input" placeholder="22.6" step=".1"></div></div>
+    <div class="f-row"><div><label class="f-label">Body Fat %</label><input type="number" id="ns-bf" class="f-input" placeholder="32" step=".1"></div><div><label class="f-label">BMR (kcal) — InBody</label><input type="number" id="ns-bmr" class="f-input" placeholder="1260"></div></div>
+    <div class="f-row">
+      <div><label class="f-label">Activity Level</label><select id="ns-act" class="f-input f-select"><option value="1.2">Sedentary (бараг хөдлөхгүй)</option><option value="1.375">Light (7 хоног 1-2 удаа)</option><option value="1.55" selected>Moderate (7 хоног 3-5 удаа)</option><option value="1.725">Active (7 хоног 6-7 удаа)</option><option value="1.9">Very Active (өдөр 2 удаа)</option></select></div>
+      <div><label class="f-label">Goal</label><select id="ns-goal" class="f-input f-select"><option value="-500">Fat Loss (-500)</option><option value="-300">Slow Cut (-300)</option><option value="0" selected>Maintain</option><option value="200">Lean Bulk (+200)</option><option value="400">Muscle Gain (+400)</option></select></div>
+    </div>
+    <div class="f-grp"><label class="f-label">Protein Strategy</label><select id="ns-pstrat" class="f-input f-select"><option value="muscle" selected>Based on Muscle Mass (2g/kg muscle)</option><option value="weight">Based on Body Weight (1.6g/kg)</option><option value="lean">Based on Lean Mass (2.2g/kg lean)</option></select></div>
+    <button class="btn btn-p btn-full" onclick="saveNutSettings()">Calculate Smart Goal</button>
+    <button class="btn btn-s btn-full btn-sm" onclick="autoFillFromInBody()" style="margin-top:6px">🔄 InBody-аас бөглөх</button>
   </div>
-  <div style="text-align:center;margin-bottom:14px"><button class="scan-btn" onclick="openFoodScan()">📷</button><div style="font-size:.65rem;color:var(--t3);margin-top:4px">Scan food</div></div>
-  <button class="btn btn-s btn-full btn-sm" onclick="openManualFood()" style="margin-bottom:14px">+ Add Manually</button>
+  <button class="btn btn-p btn-full btn-sm" onclick="openAddFood()" style="margin-bottom:14px">+ Add Meal</button>
   <div id="mealsList"></div>
 
   <!-- AI Meal Plan -->
@@ -911,57 +931,98 @@ textarea.f-input{resize:vertical;min-height:60px}
   <div class="card" id="calChartCard" style="display:none"><div class="card-t">Weekly Calories</div><div class="chart-wrap"><canvas id="calChart"></canvas></div></div>
 </div>
 
-<!-- ==================== PROGRESS ==================== -->
+<!-- ==================== HISTORY & STATS ==================== -->
 <div class="page" id="pg-p">
-  <div class="sec-h">📈 Progress</div>
-  <div class="stats-row" id="pStats"></div>
+  <div class="sec-h">📅 History</div>
 
-  <!-- AI WEEKLY REPORT -->
-  <div class="insight-group">
-    <div class="insight-header" onclick="toggleInsight(this)">
-      <div class="ih-left"><span class="ih-icon">📊</span><span class="ih-title">AI Weekly Report</span></div>
-      <span class="ih-arrow">▾</span>
+  <!-- Sub-tabs: Daily / Stats -->
+  <div class="auth-tabs" style="margin-bottom:14px">
+    <button class="auth-tab active" id="htDaily" onclick="switchHistTab('daily')">📅 Daily</button>
+    <button class="auth-tab" id="htStats" onclick="switchHistTab('stats')">📈 Stats</button>
+  </div>
+
+  <!-- ====== DAILY TAB ====== -->
+  <div id="histDailyTab">
+
+    <!-- Date selector -->
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+      <button class="btn btn-s btn-sm" onclick="histNav(-1)" style="padding:8px 12px">◀</button>
+      <input type="date" id="histDate" class="f-input" style="flex:1;text-align:center;font-family:var(--fm);font-weight:700" onchange="renderHistory()">
+      <button class="btn btn-s btn-sm" onclick="histNav(1)" style="padding:8px 12px">▶</button>
+      <button class="btn btn-s btn-sm" onclick="histToday()" style="padding:8px 12px;font-size:.65rem">Today</button>
     </div>
-    <div class="insight-body">
-      <div class="insight-body-inner" id="aiWeeklyReport">
-        <p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Need 7+ days of data.</p>
-      </div>
+
+    <!-- Daily report card -->
+    <div id="histReport"></div>
+
+    <!-- Daily Reflection (editable for selected day) -->
+    <div class="card" id="histReflectCard">
+      <div class="card-t">🌙 Daily Reflection</div>
+      <div id="histReflectContent"></div>
+    </div>
+
+    <!-- AI Daily Summary -->
+    <div class="ai-insight" id="histAiCard" style="display:none">
+      <div class="ai-tag">🤖 AI Day Summary</div>
+      <div class="ai-body" id="histAiText">—</div>
+    </div>
+
+    <!-- 45-Day Heatmap (clickable) -->
+    <div class="card">
+      <div class="card-t">45-Day Heatmap</div>
+      <div style="font-size:.6rem;color:var(--t3);margin-bottom:8px">Өдөр дээр дарж тухайн өдрийн мэдээллийг харна</div>
+      <div class="heatmap" id="histHeatmap"></div>
     </div>
   </div>
 
-  <!-- AI HABIT ANALYSIS -->
-  <div class="insight-group">
-    <div class="insight-header" onclick="toggleInsight(this)">
-      <div class="ih-left"><span class="ih-icon">🔍</span><span class="ih-title">Habit Patterns</span></div>
-      <span class="ih-arrow">▾</span>
-    </div>
-    <div class="insight-body">
-      <div class="insight-body-inner" id="habitPatterns">
-        <p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Need 7+ days of data for pattern detection.</p>
+  <!-- ====== STATS TAB ====== -->
+  <div id="histStatsTab" style="display:none">
+
+    <div class="stats-row" id="pStats"></div>
+
+    <!-- AI WEEKLY REPORT -->
+    <div class="insight-group">
+      <div class="insight-header" onclick="toggleInsight(this)">
+        <div class="ih-left"><span class="ih-icon">📊</span><span class="ih-title">AI Weekly Report</span></div>
+        <span class="ih-arrow">▾</span>
+      </div>
+      <div class="insight-body">
+        <div class="insight-body-inner" id="aiWeeklyReport">
+          <p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Need 7+ days of data.</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- BODY PROJECTION -->
-  <div class="insight-group">
-    <div class="insight-header" onclick="toggleInsight(this)">
-      <div class="ih-left"><span class="ih-icon">📐</span><span class="ih-title">Body Projection</span></div>
-      <span class="ih-arrow">▾</span>
-    </div>
-    <div class="insight-body">
-      <div class="insight-body-inner" id="bodyProjection">
-        <p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Need 2+ body measurements for projection.</p>
+    <!-- AI HABIT ANALYSIS -->
+    <div class="insight-group">
+      <div class="insight-header" onclick="toggleInsight(this)">
+        <div class="ih-left"><span class="ih-icon">🔍</span><span class="ih-title">Habit Patterns</span></div>
+        <span class="ih-arrow">▾</span>
+      </div>
+      <div class="insight-body">
+        <div class="insight-body-inner" id="habitPatterns">
+          <p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Need 7+ days of data for pattern detection.</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="card"><div class="card-t">Weekly Success</div><div class="chart-wrap"><canvas id="wkChart"></canvas></div></div>
-  <div class="card"><div class="card-t">Habit Breakdown</div><div class="chart-wrap"><canvas id="hbChart"></canvas></div></div>
-  <div class="card"><div class="card-t">Daily Score</div><div class="chart-wrap"><canvas id="dsChart"></canvas></div></div>
-  <div class="card" id="slpChC"><div class="card-t">😴 Sleep Score</div><div class="chart-wrap"><canvas id="slpCh"></canvas></div></div>
-  <div class="card"><div class="card-t">Heatmap</div>
-    <div class="hm-legend"><span><i style="background:var(--acc)"></i>Success</span><span><i style="background:var(--yel)"></i>Partial</span><span><i style="background:var(--red)"></i>Missed</span></div>
-    <div class="heatmap" id="hm2"></div>
+    <!-- BODY PROJECTION -->
+    <div class="insight-group">
+      <div class="insight-header" onclick="toggleInsight(this)">
+        <div class="ih-left"><span class="ih-icon">📐</span><span class="ih-title">Body Projection</span></div>
+        <span class="ih-arrow">▾</span>
+      </div>
+      <div class="insight-body">
+        <div class="insight-body-inner" id="bodyProjection">
+          <p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Need 2+ body measurements for projection.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card"><div class="card-t">Weekly Success</div><div class="chart-wrap"><canvas id="wkChart"></canvas></div></div>
+    <div class="card"><div class="card-t">Habit Breakdown</div><div class="chart-wrap"><canvas id="hbChart"></canvas></div></div>
+    <div class="card"><div class="card-t">Daily Score</div><div class="chart-wrap"><canvas id="dsChart"></canvas></div></div>
+    <div class="card" id="slpChC"><div class="card-t">😴 Sleep Score</div><div class="chart-wrap"><canvas id="slpCh"></canvas></div></div>
   </div>
 </div>
 
@@ -1238,7 +1299,7 @@ textarea.f-input{resize:vertical;min-height:60px}
   <button class="nav-tab active" data-page="pg-d"><span class="ni">📊</span>Home</button>
   <button class="nav-tab" data-page="pg-g"><span class="ni">🏋️</span>Gym</button>
   <button class="nav-tab" data-page="pg-n"><span class="ni">🍽️</span>Food</button>
-  <button class="nav-tab" data-page="pg-p"><span class="ni">📈</span>Stats</button>
+  <button class="nav-tab" data-page="pg-p"><span class="ni">📅</span>History</button>
   <button class="nav-tab" data-page="pg-b"><span class="ni">💪</span>Body</button>
   <button class="nav-tab" data-page="pg-pr"><span class="ni">👤</span>Me</button>
 </nav>
@@ -1411,7 +1472,6 @@ const TH=4,TD=45;
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
-// SECRET KEY-г хэзээ ч энд оруулахгүй!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -1549,96 +1609,115 @@ async function handleAuth(){
   hideAuthError();
 
   const btn=document.getElementById('authBtn');
+  const origText=currentAuthMode==='signup'?'Register':'Log In';
   btn.disabled=true;btn.textContent='Loading...';
   const passHash=simpleHash(pass);
 
-  if(sbClient){
-    // Supabase mode
-    try{
+  try{
+    if(sbClient){
+      // Supabase mode
       if(currentAuthMode==='signup'){
-        // Check if username exists
         const{data:existing}=await sbClient.from('accounts').select('*').eq('username',username);
-        if(existing&&existing.length>0){showAuthError('Username аль хэдийн бүртгэлтэй. Log In дарна уу.');btn.disabled=false;btn.textContent='Register';return}
-        // Create account
+        if(existing&&existing.length>0){showAuthError('Username аль хэдийн бүртгэлтэй. Log In дарна уу.');btn.disabled=false;btn.textContent=origText;return}
         const{error}=await sbClient.from('accounts').insert({username,pass_hash:passHash,created:new Date().toISOString()});
         if(error)throw error;
         toast('✅ Бүртгэл амжилттай!');
       }else{
-        // Login — check username + password
         const{data,error}=await sbClient.from('accounts').select('*').eq('username',username);
         if(error)throw error;
-        if(!data||data.length===0){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent='Log In';return}
-        if(data[0].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent='Log In';return}
+        if(!data||data.length===0){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent=origText;return}
+        if(data[0].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent=origText;return}
         toast('✅ Нэвтэрлээ!');
       }
-      // Save session and set user scope
-      authUser={username};
-      L.sRaw('auth_session',{username,hash:passHash});
-      setUserPrefix(username);
-      migrateOldData(username);
-      // Load user data scoped to this username
-      const userData=await loadUserData(username);
-      if(userData&&userData.name){
-        L.s('user',userData);
-        document.getElementById('setup').classList.remove('on');
-        btn.disabled=false;
-        initApp();return;
-      }else{
-        showChallengeStep();
-      }
-    }catch(e){
-      showAuthError(e.message||'Алдаа гарлаа');
-    }
-  }else{
-    // localStorage mode
-    const accounts=L.gRaw('accounts')||{};
-    if(currentAuthMode==='signup'){
-      if(accounts[username]){showAuthError('Username аль хэдийн бүртгэлтэй');btn.disabled=false;btn.textContent='Register';return}
-      accounts[username]={pass_hash:passHash,created:new Date().toISOString()};
-      L.sRaw('accounts',accounts);
-      toast('✅ Бүртгэл амжилттай!');
     }else{
-      if(!accounts[username]){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent='Log In';return}
-      if(accounts[username].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent='Log In';return}
-      toast('✅ Нэвтэрлээ!');
+      // localStorage mode
+      const accounts=L.gRaw('accounts')||{};
+      if(currentAuthMode==='signup'){
+        if(accounts[username]){showAuthError('Username аль хэдийн бүртгэлтэй');btn.disabled=false;btn.textContent=origText;return}
+        accounts[username]={pass_hash:passHash,created:new Date().toISOString()};
+        L.sRaw('accounts',accounts);
+        toast('✅ Бүртгэл амжилттай!');
+      }else{
+        if(!accounts[username]){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent=origText;return}
+        if(accounts[username].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent=origText;return}
+        toast('✅ Нэвтэрлээ!');
+      }
     }
+
+    // Auth success — set up user scope
     authUser={username};
     L.sRaw('auth_session',{username,hash:passHash});
     setUserPrefix(username);
     migrateOldData(username);
-    // Check for existing user data
-    const existing=L.g('user');
-    if(existing&&existing.name){
-      document.getElementById('setup').classList.remove('on');
-      btn.disabled=false;
-      initApp();return;
+
+    // Try loading existing user data
+    let userData=null;
+    if(sbClient){
+      userData=await loadUserData(username);
+    }else{
+      userData=L.g('user');
     }
-    showChallengeStep();
+
+    if(userData&&userData.name){
+      L.s('user',userData);
+      document.getElementById('setup').classList.remove('on');
+      btn.disabled=false;btn.textContent=origText;
+      initApp();
+    }else{
+      btn.disabled=false;btn.textContent=origText;
+      showChallengeStep();
+    }
+  }catch(e){
+    console.error('Auth error:',e);
+    showAuthError(e.message||'Алдаа гарлаа. Дахин оролдоно уу.');
+    btn.disabled=false;btn.textContent=origText;
   }
-  btn.disabled=false;
-  btn.textContent=currentAuthMode==='signup'?'Register':'Log In';
 }
 
 // Load user-specific data from Supabase
 async function loadUserData(username){
-  if(!sbClient)return L.g('user_'+username);
+  if(!sbClient){
+    // localStorage — try prefixed first, then unprefixed
+    return L.g('user')||L.gRaw('user')||null;
+  }
   try{
+    // Try userdata table first
     const{data}=await sbClient.from('userdata').select('*').eq('username',username);
     if(data&&data.length>0&&data[0].data){
       const parsed=typeof data[0].data==='string'?JSON.parse(data[0].data):data[0].data;
-      L.s('user_'+username,parsed);
+      L.s('user',parsed);
       return parsed;
     }
-  }catch(e){}
-  return L.g('user_'+username);
+    // Try users table with user id
+    const{data:ud}=await sbClient.from('users').select('*').eq('id',username);
+    if(ud&&ud.length>0&&ud[0].data){
+      const parsed=typeof ud[0].data==='string'?JSON.parse(ud[0].data):ud[0].data;
+      L.s('user',parsed);
+      return parsed;
+    }
+    // Fallback: try 'default' id in users table (old data)
+    const{data:def}=await sbClient.from('users').select('*').eq('id','default');
+    if(def&&def.length>0&&def[0].data){
+      const parsed=typeof def[0].data==='string'?JSON.parse(def[0].data):def[0].data;
+      L.s('user',parsed);
+      // Migrate to user's id
+      await sbClient.from('users').upsert({id:username,data:JSON.stringify(parsed)},{onConflict:'id'}).catch(()=>{});
+      await sbClient.from('userdata').upsert({username,data:JSON.stringify(parsed)},{onConflict:'username'}).catch(()=>{});
+      console.log('📦 Migrated user data: default →',username);
+      return parsed;
+    }
+  }catch(e){console.warn('loadUserData error:',e)}
+  // Last fallback — localStorage
+  return L.g('user')||L.gRaw('user')||null;
 }
 
 // Save user-specific data
 async function saveUserData(username,userData){
-  L.s('user_'+username,userData);
+  L.s('user',userData); // Saves with prefix: li_username_user
   if(!sbClient)return;
   try{
     await sbClient.from('userdata').upsert({username,data:JSON.stringify(userData)},{onConflict:'username'});
+    await sbClient.from('users').upsert({id:username,data:JSON.stringify(userData)},{onConflict:'id'});
   }catch(e){}
 }
 
@@ -1927,7 +2006,28 @@ function toggleDetoxH(id){const dh=getDH(td());dh[id]=!dh[id];sDH(td(),dh);rende
 let jT;document.getElementById('jInput').addEventListener('input',e=>{clearTimeout(jT);jT=setTimeout(()=>{tH.jnl=e.target.value;sH(td(),tH)},800)});
 
 // Daily score
-function calcDailyScore(){const u=gU();if(!u)return 0;const h=gH(td()),sl=gSl(td()),wo=gWo(td()),meals=getMeals(td()),ref=getReflection(td());let s=0;HABITS_F().forEach(hab=>{if(h[hab.id])s+=10});if(h.detox){const dh=getDH(td());DETOX_F().forEach(x=>{if(dh[x.id])s+=5})}if(sl&&sl.sc)s+=Math.round(sl.sc/100*10);else if(h.sleep)s+=5;if(wo)s+=wo.dur>=45?5:wo.dur>=30?3:2;if(meals.length>0)s+=5;if(ref)s+=5;if(h.jnl&&h.jnl.length>10)s+=5;return Math.min(s,100)}
+function calcDailyScore(){
+  const u=gU();if(!u)return 0;
+  const h=gH(td()),sl=gSl(td()),wo=gWo(td()),meals=getMeals(td()),ref=getReflection(td());
+  const habits=HABITS_F();
+  const habDone=habits.filter(hab=>h[hab.id]).length;
+  const habTotal=habits.length;
+  let s=0;
+
+  // Habits: max 85 points (proportional)
+  // All habits done = 85, partial = proportional
+  s+=Math.round((habDone/habTotal)*85);
+
+  // Journal + Reflection: +10 points (5 each)
+  if(h.jnl&&h.jnl.length>5)s+=5;
+  if(ref&&(ref.good||ref.improve||ref.energy))s+=5;
+
+  // Sleep/Workout detail: +5 bonus
+  if(sl&&sl.sc)s+=3;
+  if(wo&&wo.dur)s+=2;
+
+  return Math.min(s,100);
+}
 
 // Sleep
 function openSl(){const x=gSl(td());document.getElementById('sl-sc').value=x?x.sc:'';document.getElementById('sl-dur').value=x?x.dur:'';document.getElementById('sl-q').value=x?x.q:'';document.getElementById('sl-deep').value=x?x.deep:'';document.getElementById('sl-rem').value=x?x.rem:'';document.getElementById('sl-light').value=x?x.light:'';document.getElementById('sl-notes').value=x?x.notes:'';openM('sleepM')}
@@ -1959,7 +2059,7 @@ function renderWoC(){const el=document.getElementById('woCard');const d=gWo(td()
 let refEnergy=0;
 function openReflection(){const x=getReflection(td());document.getElementById('ref-good').value=x?x.good:'';document.getElementById('ref-improve').value=x?x.improve:'';refEnergy=x?x.energy:0;renderEnergyStars();openM('reflectM')}
 function renderEnergyStars(){const el=document.getElementById('energyStars');el.innerHTML='';for(let i=1;i<=5;i++){const s=document.createElement('span');s.className=`star ${i<=refEnergy?'on':''}`;s.textContent='⭐';s.addEventListener('click',()=>{refEnergy=i;renderEnergyStars()});el.appendChild(s)}}
-function saveReflection(){const data={good:document.getElementById('ref-good').value.trim(),improve:document.getElementById('ref-improve').value.trim(),energy:refEnergy};if(!data.good&&!data.improve&&!refEnergy){toast('Fill at least one','⚠️');return}saveReflectionData(td(),data);closeM('reflectM');toast('🌙 Reflection saved!');renderD()}
+function saveReflection(){const modal=document.getElementById('reflectM');const date=modal.getAttribute('data-date')||td();const data={good:document.getElementById('ref-good').value.trim(),improve:document.getElementById('ref-improve').value.trim(),energy:refEnergy};if(!data.good&&!data.improve&&!refEnergy){toast('Fill at least one','⚠️');return}saveReflectionData(date,data);closeM('reflectM');toast('🌙 Reflection saved!');if(date===td())renderD();if(cPg==='pg-p')renderHistory()}
 
 function renderReflectionSummary(){const el=document.getElementById('reflectSummary');const ref=getReflection(td());const btn=document.getElementById('reflectBtn');if(!ref){el.style.display='none';btn.style.display='';return}el.style.display='';btn.style.display='none';
   let stars='';for(let i=0;i<ref.energy;i++)stars+='⭐';
@@ -1983,9 +2083,18 @@ function renderBdg(id){const g=document.getElementById(id);if(!g)return;const u=
 function checkAch(){const u=gU();if(!u)return;const st=cStrk(u),a=gAH(),b=gAB(),ph=b.filter(x=>x.purl);const cd=a.filter(h=>h.cs>=TH/HABITS_F().length).length;let pw=0;const dates=dR(u.start_date,gCD(u.start_date));for(let i=0;i+6<dates.length;i+=7){if(dates.slice(i,i+7).every(d=>{const h=a.find(r=>r.date===d);return h&&h.cs===1}))pw++}ACHS.forEach(def=>{let ok=false;if(def.r==='s')ok=st.c>=def.v||st.l>=def.v;if(def.r==='d')ok=cd>=def.v;if(def.r==='pw')ok=pw>=def.v;if(def.r==='ph')ok=ph.length>=def.v;if(def.r==='b')ok=b.length>=def.v;if(ok&&uAch(def)){toast(`🏆 ${def.n}!`);celebrate()}})}
 
 // ==================== PROGRESS ====================
-function renderProg(){const u=gU();if(!u)return;const a=gAH(),st=cStrk(u),dn=gCD(u.start_date);const cd=a.filter(h=>h.cs>=TH/HABITS_F().length).length,pf=a.filter(h=>h.cs===1).length;const tp=(dn-1)*HABITS_F().length,tDn=a.reduce((s,h)=>s+HABITS_F().filter(hb=>h[hb.id]).length,0);const rate=tp>0?Math.round(tDn/tp*100):0;
+function renderProg(){const u=gU();if(!u)return;
+  // Init history date picker and render daily report
+  document.getElementById('histDate').value=histSelectedDate;
+  renderHistory();
+  // Only render charts if stats tab is visible
+  if(histCurrentTab==='stats')renderProgCharts(u);
+}
+
+function renderProgCharts(u){
+  const a=gAH(),st=cStrk(u),dn=gCD(u.start_date);const cd=a.filter(h=>h.cs>=TH/HABITS_F().length).length,pf=a.filter(h=>h.cs===1).length;const tp=(dn-1)*HABITS_F().length,tDn=a.reduce((s,h)=>s+HABITS_F().filter(hb=>h[hb.id]).length,0);const rate=tp>0?Math.round(tDn/tp*100):0;
   document.getElementById('pStats').innerHTML=`<div class="stat-card"><div class="s-val">${rate}%</div><div class="s-label">Rate</div></div><div class="stat-card"><div class="s-val">${cd}</div><div class="s-label">Success</div></div><div class="stat-card"><div class="s-val">${pf}</div><div class="s-label">Perfect</div></div><div class="stat-card"><div class="s-val">🔥${st.c}</div><div class="s-label">Streak</div></div><div class="stat-card"><div class="s-val">${st.l}</div><div class="s-label">Best</div></div>`;
-  renderHM('hm2',u);Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});const dates=dR(u.start_date,dn),cc=chC();
+  Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});const dates=dR(u.start_date,dn),cc=chC();
   const wks=[];for(let i=0;i<dates.length;i+=7){const wd=dates.slice(i,Math.min(i+7,dates.length));let ts=0,dc=0;wd.forEach(d=>{const r=a.find(h=>h.date===d);if(r){ts+=r.cs;dc++}});wks.push({l:`W${Math.floor(i/7)+1}`,s:dc>0?Math.round(ts/dc*100):0})}
   charts.wk=new Chart(document.getElementById('wkChart'),{type:'bar',data:{labels:wks.map(w=>w.l),datasets:[{data:wks.map(w=>w.s),backgroundColor:wks.map(w=>w.s>=80?cc.g+'99':w.s>=50?cc.y+'99':cc.r+'99'),borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,grid:{color:cc.grid},ticks:{color:cc.t,callback:v=>v+'%'}},x:{grid:{display:false},ticks:{color:cc.t}}}}});
   const hS=HABITS_F().map(h=>{const c=a.filter(r=>r[h.id]).length;return{n:h.icon+' '+h.name,r:a.length?Math.round(c/a.length*100):0}});
@@ -2078,26 +2187,143 @@ function saveBody(){
   toast('📏 Saved!');
   ['bW','bWa','bF','bSM','bIS','bBMI','bTBW','bLM','bBMR','bVF'].forEach(id=>document.getElementById(id).value='');
   renderBody();checkAch();
+
+  // Auto-update nutrition if InBody data changed and nut settings exist
+  const ns=getNutSettings();
+  if(ns&&(sm||bmr||f||w)){
+    const updW=w||ns.w;const updSM=sm||ns.skeletal_muscle;const updBF=f||ns.body_fat;const updBMR=bmr||ns.bmr_inbody;
+    const cal=calcTDEE(updW,ns.h,ns.age,ns.act,ns.goal.toString(),updBMR);
+    const protein=calcProtein(ns.protein_strategy||'muscle',updW,updSM,updBF);
+    const proteinCal=protein*4;const remainCal=Math.max(cal-proteinCal,400);
+    const carbs=Math.round(remainCal*0.55/4);const fat=Math.round(remainCal*0.45/9);
+    saveNutSettingsData({...ns,w:updW,skeletal_muscle:updSM,body_fat:updBF,bmr_inbody:updBMR,cal,protein,carbs,fat,source:updBMR?'inbody':'manual',updated:td()});
+    toast(`🎯 Nutrition updated: ${cal} kcal`,'🔄');
+  }
 }
 function handlePhoto(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const d=document.getElementById('bD').value||td();const ex=gAB().find(x=>x.date===d)||{};sBE(d,{weight:ex.weight||null,waist:ex.waist||null,body_fat:ex.body_fat||null,purl:e.target.result});toast('📸 Saved!');renderPh();checkAch()};r.readAsDataURL(f)}
 function renderPh(){const g=document.getElementById('phG');const wp=gAB().filter(e=>e.purl).sort((a,b)=>a.date.localeCompare(b.date));if(!wp.length){g.innerHTML='<p style="color:var(--t3);text-align:center;grid-column:1/-1;padding:12px;font-size:.78rem">No photos yet.</p>';return}g.innerHTML='';wp.forEach(e=>{const c=document.createElement('div');c.className='photo-c';c.innerHTML=`<img src="${e.purl}" loading="lazy"><div class="pd">${fs(e.date)}</div>`;g.appendChild(c)})}
 
 // ==================== NUTRITION ====================
-let selMealType='Lunch';let currentFoodPhoto=null;
-function calcTDEE(w,h,age,act,goal){return Math.round((10*w+6.25*h-5*age+5)*act)+parseInt(goal)}
-function saveNutSettings(){const w=parseFloat(document.getElementById('ns-w').value),h=parseFloat(document.getElementById('ns-h').value),age=parseInt(document.getElementById('ns-age').value),act=document.getElementById('ns-act').value,goal=document.getElementById('ns-goal').value;if(!w||!h||!age){toast('Fill all','⚠️');return}const cal=calcTDEE(w,h,age,parseFloat(act),goal);saveNutSettingsData({w,h,age,act:parseFloat(act),goal:parseInt(goal),cal,protein:Math.round(cal*.30/4),carbs:Math.round(cal*.40/4),fat:Math.round(cal*.30/9)});toast(`🎯 ${cal} kcal/day`);renderNut()}
-function renderNut(){const ns=getNutSettings();document.getElementById('nutDate').textContent=fs(td());document.getElementById('bodySetup').style.display=ns?'none':'';if(!ns){const b=gAB();if(b.length){const l=[...b].sort((a,b)=>b.date.localeCompare(a.date))[0];if(l.weight)document.getElementById('ns-w').value=l.weight}}const meals=getMeals(td());const tC=meals.reduce((s,m)=>s+(m.cal||0),0),tP=meals.reduce((s,m)=>s+(m.protein||0),0),tCa=meals.reduce((s,m)=>s+(m.carbs||0),0),tF=meals.reduce((s,m)=>s+(m.fat||0),0);const gC=ns?ns.cal:2000,gP=ns?ns.protein:150,gCa=ns?ns.carbs:200,gF=ns?ns.fat:67;
+let selMealType="Lunch";
+// Smart TDEE: prefer InBody BMR if available, else Mifflin-St Jeor
+function calcTDEE(w,h,age,act,goal,bmr){
+  const baseBMR=bmr||Math.round(10*w+6.25*h-5*age-161); // Mifflin-St Jeor (female default)
+  return Math.round(baseBMR*act)+parseInt(goal);
+}
+
+// Smart protein: based on body composition, not just weight
+function calcProtein(strategy,weight,skeletalMuscle,bodyFat){
+  const leanMass=bodyFat?weight*(1-bodyFat/100):weight*0.75;
+  switch(strategy){
+    case 'muscle': return Math.round((skeletalMuscle||leanMass*0.55)*2); // 2g per kg muscle
+    case 'lean': return Math.round(leanMass*2.2); // 2.2g per kg lean mass
+    case 'weight': default: return Math.round(weight*1.6); // 1.6g per kg bodyweight
+  }
+}
+
+function saveNutSettings(){
+  const w=parseFloat(document.getElementById('ns-w').value);
+  const h=parseFloat(document.getElementById('ns-h').value);
+  const age=parseInt(document.getElementById('ns-age').value);
+  const act=parseFloat(document.getElementById('ns-act').value);
+  const goal=document.getElementById('ns-goal').value;
+  const sm=parseFloat(document.getElementById('ns-sm').value)||null;
+  const bf=parseFloat(document.getElementById('ns-bf').value)||null;
+  const bmr=parseInt(document.getElementById('ns-bmr').value)||null;
+  const pstrat=document.getElementById('ns-pstrat').value||'muscle';
+
+  if(!w||!h||!age){toast('Weight, Height, Age бөглө','⚠️');return}
+
+  const cal=calcTDEE(w,h,age,act,goal,bmr);
+  const protein=calcProtein(pstrat,w,sm,bf);
+  // Remaining calories split: 45% carbs, rest fat (after protein)
+  const proteinCal=protein*4;
+  const remainCal=Math.max(cal-proteinCal,400);
+  const carbs=Math.round(remainCal*0.55/4);
+  const fat=Math.round(remainCal*0.45/9);
+
+  const data={
+    w,h,age,act,goal:parseInt(goal),cal,protein,carbs,fat,
+    // InBody-specific
+    skeletal_muscle:sm,body_fat:bf,bmr_inbody:bmr,
+    protein_strategy:pstrat,
+    // Meta
+    source:bmr?'inbody':'manual',
+    updated:td()
+  };
+
+  saveNutSettingsData(data);
+  toast(`🎯 ${cal} kcal · P${protein}g · C${carbs}g · F${fat}g`);
+  renderNut();
+}
+
+// Auto-fill nutrition form from latest InBody data
+function autoFillFromInBody(){
+  const entries=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date));
+  const latest=entries[0];
+  if(!latest){toast('Body data байхгүй байна. Body tab дээр оруулна уу.','⚠️');return}
+  if(latest.weight)document.getElementById('ns-w').value=latest.weight;
+  if(latest.skeletal_muscle)document.getElementById('ns-sm').value=latest.skeletal_muscle;
+  if(latest.body_fat)document.getElementById('ns-bf').value=latest.body_fat;
+  if(latest.bmr)document.getElementById('ns-bmr').value=latest.bmr;
+  // Auto-fill height from nut settings if exists
+  const ns=getNutSettings();
+  if(ns&&ns.h)document.getElementById('ns-h').value=ns.h;
+  if(ns&&ns.age)document.getElementById('ns-age').value=ns.age;
+  document.getElementById('inbodyAutoFill').style.display='';
+  toast('✅ InBody data-аас бөглөгдлөө!');
+}
+
+// Render nutrition recommendation card
+function renderNutRecommend(){
+  const el=document.getElementById('nutRecommend');
+  const ns=getNutSettings();
+  if(!ns||!ns.cal){el.style.display='none';return}
+  el.style.display='';
+  const isInBody=ns.source==='inbody';
+  const goalLabel={'-500':'Fat Loss','-300':'Slow Cut','0':'Maintain','200':'Lean Bulk','400':'Muscle Gain'}[ns.goal]||'Custom';
+
+  el.innerHTML=`<div style="background:var(--bg3);border-radius:var(--r2);padding:14px;margin-bottom:12px;border:1px solid var(--brd)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3)">Nutrition Target</div>
+      <div style="font-size:.55rem;color:${isInBody?'var(--acc)':'var(--t3)'}">${isInBody?'🔬 InBody-based':'📝 Manual'}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;text-align:center">
+      <div style="background:var(--bg4);border-radius:var(--r1);padding:8px">
+        <div style="font-family:var(--fm);font-size:1rem;font-weight:700;color:var(--acc)">${ns.cal}</div>
+        <div style="font-size:.5rem;color:var(--t3)">kcal</div>
+      </div>
+      <div style="background:var(--bg4);border-radius:var(--r1);padding:8px">
+        <div style="font-family:var(--fm);font-size:1rem;font-weight:700;color:#ff6b6b">${ns.protein}g</div>
+        <div style="font-size:.5rem;color:var(--t3)">Protein</div>
+      </div>
+      <div style="background:var(--bg4);border-radius:var(--r1);padding:8px">
+        <div style="font-family:var(--fm);font-size:1rem;font-weight:700;color:#ffd43b">${ns.carbs}g</div>
+        <div style="font-size:.5rem;color:var(--t3)">Carbs</div>
+      </div>
+      <div style="background:var(--bg4);border-radius:var(--r1);padding:8px">
+        <div style="font-family:var(--fm);font-size:1rem;font-weight:700;color:#69db7c">${ns.fat}g</div>
+        <div style="font-size:.5rem;color:var(--t3)">Fat</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:.6rem;color:var(--t3)">
+      <span>🎯 ${goalLabel}</span>
+      ${ns.bmr_inbody?`<span>BMR: ${ns.bmr_inbody} kcal</span>`:''}
+      ${ns.protein_strategy?`<span>P: ${({muscle:'Muscle-based',weight:'Weight-based',lean:'Lean mass'})[ns.protein_strategy]}</span>`:''}
+    </div>
+    <button class="btn btn-s btn-sm btn-full" onclick="document.getElementById('bodySetup').style.display=''" style="margin-top:8px;font-size:.65rem">⚙️ Recalculate</button>
+  </div>`;
+}
+function renderNut(){const ns=getNutSettings();document.getElementById('nutDate').textContent=fs(td());document.getElementById('bodySetup').style.display=ns?'none':'';renderNutRecommend();if(!ns){const b=gAB();if(b.length){const l=[...b].sort((a,b)=>b.date.localeCompare(a.date))[0];if(l.weight)document.getElementById('ns-w').value=l.weight;if(l.skeletal_muscle)document.getElementById('ns-sm').value=l.skeletal_muscle;if(l.body_fat)document.getElementById('ns-bf').value=l.body_fat;if(l.bmr)document.getElementById('ns-bmr').value=l.bmr}}const meals=getMeals(td());const tC=meals.reduce((s,m)=>s+(m.cal||0),0),tP=meals.reduce((s,m)=>s+(m.protein||0),0),tCa=meals.reduce((s,m)=>s+(m.carbs||0),0),tF=meals.reduce((s,m)=>s+(m.fat||0),0);const gC=ns?ns.cal:2000,gP=ns?ns.protein:150,gCa=ns?ns.carbs:200,gF=ns?ns.fat:67;
   document.getElementById('calTotal').textContent=tC;document.getElementById('calGoalLabel').textContent=`/ ${gC} kcal`;setRing('calRingFill',Math.min(tC/gC*100,100));
   document.getElementById('mbP').style.width=Math.min(tP/gP*100,100)+'%';document.getElementById('mbC').style.width=Math.min(tCa/gCa*100,100)+'%';document.getElementById('mbF').style.width=Math.min(tF/gF*100,100)+'%';
   document.getElementById('mvP').textContent=`${tP}/${gP}g`;document.getElementById('mvC').textContent=`${tCa}/${gCa}g`;document.getElementById('mvF').textContent=`${tF}/${gF}g`;
-  const ml=document.getElementById('mealsList');if(!meals.length){ml.innerHTML='<div class="card"><p style="color:var(--t3);text-align:center;padding:16px;font-size:.82rem">No meals yet. Scan or add one!</p></div>'}else{let h='';MEAL_TYPES.forEach(type=>{const tm=meals.filter(m=>m.type===type);if(!tm.length)return;h+=`<div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:10px 0 4px;padding-left:2px">${type}</div>`;tm.forEach(m=>{h+=`<div class="meal-card">${m.photo?`<img src="${m.photo}">`:''}<div class="mc-info"><div class="mc-name">${m.name||'Meal'}</div><div class="mc-macros"><span style="color:#ff6b6b">P${m.protein||0}</span><span style="color:#ffd43b">C${m.carbs||0}</span><span style="color:#69db7c">F${m.fat||0}</span></div></div><div class="mc-cal">${m.cal||0}</div><button class="mc-del" onclick="deleteMeal('${m.id}')">✕</button></div>`})});ml.innerHTML=h}renderCalChart()}
+  const ml=document.getElementById('mealsList');if(!meals.length){ml.innerHTML='<div class="card"><p style="color:var(--t3);text-align:center;padding:16px;font-size:.82rem">Хоол оруулаагүй байна</p></div>'}else{let h='';MEAL_TYPES.forEach(type=>{const tm=meals.filter(m=>m.type===type);if(!tm.length)return;h+=`<div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:10px 0 4px;padding-left:2px">${type}</div>`;tm.forEach(m=>{h+=`<div class="meal-card"><div class="mc-info"><div class="mc-name">${m.name||'Meal'}</div><div class="mc-macros"><span style="color:#ff6b6b">P${m.protein||0}</span><span style="color:#ffd43b">C${m.carbs||0}</span><span style="color:#69db7c">F${m.fat||0}</span></div></div><div class="mc-cal">${m.cal||0}</div><button class="mc-del" onclick="deleteMeal('${m.id}')">✕</button></div>`})});ml.innerHTML=h}renderCalChart()}
 function renderCalChart(){if(charts.calCh){charts.calCh.destroy();delete charts.calCh}const am=getAllMeals();if(am.length<1){document.getElementById('calChartCard').style.display='none';return}document.getElementById('calChartCard').style.display='';const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0])}const ns=getNutSettings();const gC=ns?ns.cal:2000;const cc=chC();const data=days.map(d=>am.filter(m=>m.date===d).reduce((s,m)=>s+(m.cal||0),0));charts.calCh=new Chart(document.getElementById('calChart'),{type:'bar',data:{labels:days.map(d=>fs(d)),datasets:[{data,backgroundColor:data.map(v=>v>gC*1.1?'#ff475799':v>=gC*.8?cc.g+'99':'#ffc10799'),borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cc.grid},ticks:{color:cc.t}},x:{grid:{display:false},ticks:{color:cc.t}}}}})}
 function deleteMeal(id){delMeal(id);renderNut();toast('Deleted','🗑️')}
-function openFoodScan(){currentFoodPhoto=null;document.getElementById('foodPreview').style.display='none';document.getElementById('foodUpZone').style.display='';document.getElementById('aiLoading').style.display='none';document.getElementById('aiResult').style.display='none';document.getElementById('foodPhIn').value='';openM('foodScanM')}
-function openManualFood(){currentFoodPhoto=null;document.getElementById('foodPreview').style.display='none';document.getElementById('foodUpZone').style.display='none';document.getElementById('aiLoading').style.display='none';document.getElementById('aiResult').style.display='';['fd-name','fd-cal','fd-p','fd-c','fd-f','fd-notes'].forEach(id=>document.getElementById(id).value='');selMealType='Lunch';renderFoodMealTypes();openM('foodScanM')}
+function openAddFood(){['fd-name','fd-cal','fd-p','fd-c','fd-f','fd-notes'].forEach(id=>document.getElementById(id).value='');selMealType='Lunch';renderFoodMealTypes();openM('foodScanM')}
 function renderFoodMealTypes(){const el=document.getElementById('fdMealType');el.innerHTML='';MEAL_TYPES.forEach(t=>{const b=document.createElement('button');b.className=`meal-type-btn ${t===selMealType?'sel':''}`;b.textContent=t;b.addEventListener('click',()=>{selMealType=t;renderFoodMealTypes()});el.appendChild(b)})}
-function handleFoodPhoto(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=async e=>{currentFoodPhoto=e.target.result;document.getElementById('foodPreview').src=currentFoodPhoto;document.getElementById('foodPreview').style.display='';document.getElementById('foodUpZone').style.display='none';document.getElementById('aiLoading').style.display='flex';document.getElementById('aiResult').style.display='none';try{const b64=currentFoodPhoto.split(',')[1];const mt=currentFoodPhoto.split(';')[0].split(':')[1];const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mt,data:b64}},{type:'text',text:'Analyze this food photo. Respond ONLY with JSON (no markdown): {"name":"food name","calories":number,"protein":number,"carbs":number,"fat":number,"meal_type":"Breakfast|Lunch|Dinner|Snack","has_sugar":true/false,"notes":"brief description"}'}]}]})});const data=await resp.json();const text=data.content.map(i=>i.text||'').join('');const result=JSON.parse(text.replace(/```json|```/g,'').trim());document.getElementById('fd-name').value=result.name||'';document.getElementById('fd-cal').value=result.calories||'';document.getElementById('fd-p').value=result.protein||'';document.getElementById('fd-c').value=result.carbs||'';document.getElementById('fd-f').value=result.fat||'';document.getElementById('fd-notes').value=result.notes||'';selMealType=result.meal_type||'Lunch';renderFoodMealTypes();if(result.has_sugar)toast('⚠️ Sugar detected!','🚫');document.getElementById('aiLoading').style.display='none';document.getElementById('aiResult').style.display='';toast('🤖 Analyzed!')}catch(err){console.error(err);document.getElementById('aiLoading').style.display='none';document.getElementById('aiResult').style.display='';selMealType='Lunch';renderFoodMealTypes();toast('Enter manually','⚠️')}};reader.readAsDataURL(file)}
-function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim(),cal=parseInt(document.getElementById('fd-cal').value)||0;if(!n&&!cal){toast('Enter info','⚠️');return}addMeal({date:td(),name:n||'Meal',type:selMealType,cal,protein:parseInt(document.getElementById('fd-p').value)||0,carbs:parseInt(document.getElementById('fd-c').value)||0,fat:parseInt(document.getElementById('fd-f').value)||0,notes:document.getElementById('fd-notes').value.trim(),photo:currentFoodPhoto||null,time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});closeM('foodScanM');toast('🍽️ Saved!');renderNut()}
+function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim(),cal=parseInt(document.getElementById('fd-cal').value)||0;if(!n&&!cal){toast('Нэр эсвэл калори оруул','⚠️');return}addMeal({date:td(),name:n||'Meal',type:selMealType,cal,protein:parseInt(document.getElementById('fd-p').value)||0,carbs:parseInt(document.getElementById('fd-c').value)||0,fat:parseInt(document.getElementById('fd-f').value)||0,notes:document.getElementById('fd-notes').value.trim(),time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});closeM('foodScanM');toast('🍽️ Saved!');renderNut()}
 
 // ==================== PROFILE ====================
 function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cStrk(u),rem=Math.max(0,TD-dn);document.getElementById('prName').textContent=u.name;document.getElementById('prDay').textContent=`Day ${dn}/${TD} · ${ff(u.start_date)}`;document.getElementById('prStats').innerHTML=`<div class="stat-card"><div class="s-val">🔥${st.c}</div><div class="s-label">Streak</div></div><div class="stat-card"><div class="s-val">${st.l}</div><div class="s-label">Best</div></div><div class="stat-card"><div class="s-val">${rem}</div><div class="s-label">Left</div></div>`;document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');
@@ -2115,7 +2341,15 @@ function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cS
   }else{ns.textContent='Not supported in this browser'}
 }
 function saveProf(){const n=document.getElementById('eName').value.trim(),d=document.getElementById('eDate').value;if(!n){toast('Name?','⚠️');return}const u=gU();u.name=n;u.start_date=d;sU(u);toast('✅ Saved!');renderProf();document.getElementById('topBadge').textContent=`Day ${gCD(d)} / ${TD}`}
-function resetAll(){if(!confirm('Delete ALL data?'))return;if(!confirm('PERMANENT. Sure?'))return;['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs'].forEach(k=>L.r(k));for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(k.startsWith('li_ref_')||k.startsWith('li_detox_')||k.startsWith('li_gym_wo_')))localStorage.removeItem(k)}localStorage.removeItem('li_lastgreet');localStorage.removeItem('li_lastreport');location.reload()}
+function resetAll(){if(!confirm('Бүх data устгах уу?'))return;if(!confirm('БУЦААХ БОЛОМЖГҮЙ. Итгэлтэй юу?'))return;
+  // Clear prefixed data (current user)
+  ['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox'].forEach(k=>L.r(k));
+  // Clear old unprefixed data too
+  ['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs'].forEach(k=>L.rRaw(k));
+  // Clear date-specific keys
+  for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(k.includes('ref_')||k.includes('detox_')||k.includes('gym_wo_')||k.includes('insight_')||k.includes('histai_')||k.includes('celebrated_')))localStorage.removeItem(k)}
+  localStorage.removeItem('li_lastgreet');localStorage.removeItem('li_lastreport');
+  location.reload()}
 function exportCSV(){const h=gAH(),sl=gAS(),w=gAW();let csv='date,steps,workout,water,sleep,no_sugar,no_noodles,score,rest,sleep_score,sleep_dur,deep,rem,wo_type,wo_dur,wo_int,journal\n';h.forEach(r=>{const s=sl.find(x=>x.date===r.date)||{};const wo=w.find(x=>x.date===r.date)||{};csv+=`${r.date},${r.steps||0},${r.workout||0},${r.water||0},${r.sleep||0},${r.no_sugar||0},${r.no_noodles||0},${r.cs||0},${r.rest||0},${s.sc||''},${s.dur||''},${s.deep||''},${s.rem||''},${wo.type||''},${wo.dur||''},${wo.int||''},"${(r.jnl||'').replace(/"/g,'""')}"\n`});const b=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='lockin45.csv';a.click();toast('📊 Exported!')}
 // ==================== NOTIFICATION SYSTEM ====================
 const NOTIF_ICON='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔒</text></svg>';
@@ -2720,6 +2954,249 @@ function renderRunChart(sorted){
   });
 }
 
+// ==================== HISTORY TAB ====================
+let histSelectedDate=td();
+let histCurrentTab='daily';
+
+function switchHistTab(tab){
+  histCurrentTab=tab;
+  document.getElementById('htDaily').classList.toggle('active',tab==='daily');
+  document.getElementById('htStats').classList.toggle('active',tab==='stats');
+  document.getElementById('histDailyTab').style.display=tab==='daily'?'':'none';
+  document.getElementById('histStatsTab').style.display=tab==='stats'?'':'none';
+  if(tab==='stats'){
+    // Re-render charts when switching to stats (they need visible canvas)
+    setTimeout(()=>{
+      const u=gU();if(!u)return;
+      renderProgCharts(u);
+      analyzeHabits();
+      predictBodyTransformation();
+      generateWeeklyAIReport();
+    },100);
+  }
+}
+
+function histNav(dir){
+  const d=new Date(histSelectedDate+'T12:00:00');
+  d.setDate(d.getDate()+dir);
+  histSelectedDate=d.toISOString().split('T')[0];
+  document.getElementById('histDate').value=histSelectedDate;
+  renderHistory();
+}
+function histToday(){
+  histSelectedDate=td();
+  document.getElementById('histDate').value=histSelectedDate;
+  renderHistory();
+}
+
+function renderHistory(){
+  const dateInput=document.getElementById('histDate');
+  if(dateInput.value)histSelectedDate=dateInput.value;
+  else dateInput.value=histSelectedDate;
+
+  const d=histSelectedDate;
+  const el=document.getElementById('histReport');
+  const h=gH(d);
+  const sl=gSl(d);
+  const wo=gWo(d);
+  const meals=getMeals(d);
+  const ref=getReflection(d);
+  const habits=HABITS_F();
+  const habDone=habits.filter(x=>h[x.id]).length;
+  const habTotal=habits.length;
+  const pct=Math.round(habDone/habTotal*100);
+  const isToday=d===td();
+
+  // Check if any data exists for this day
+  const hasData=habDone>0||sl||wo||meals.length>0||ref;
+
+  if(!hasData&&!isToday){
+    el.innerHTML=`<div class="hist-empty">📭 ${ff(d)} — мэдээлэл алга</div>`;
+    document.getElementById('histAiCard').style.display='none';
+    return;
+  }
+
+  // Score ring color
+  const score=habDone>0?pct:0;
+  const col=score>=80?'var(--acc)':score>=50?'var(--yel)':'var(--red)';
+  const r=20,circ=2*Math.PI*r;
+  const offset=circ-(circ*score/100);
+
+  let html=`<div class="hist-report">
+    <div class="hr-date">${ff(d)}${isToday?' · Өнөөдөр':''}</div>
+    <div class="hr-score">
+      <div class="hr-score-ring">
+        <svg viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="${r}"/><circle class="ring-fill" cx="25" cy="25" r="${r}" style="stroke-dasharray:${circ};stroke-dashoffset:${offset};stroke:${col}"/></svg>
+        <div class="hrc" style="color:${col}">${score}%</div>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:.9rem">${habDone}/${habTotal} habits</div>
+        <div style="font-size:.65rem;color:var(--t3)">${score>=80?'Маш сайн өдөр':score>=50?'Хэвийн өдөр':'Дутуу өдөр'}</div>
+      </div>
+    </div>`;
+
+  // Habits list
+  html+=`<div class="hr-habits">`;
+  habits.forEach(hab=>{
+    const done=h[hab.id]||false;
+    html+=`<div class="hr-hab ${done?'done':'missed'}">${hab.icon} ${done?'✓':'✗'}</div>`;
+  });
+  html+=`</div>`;
+
+  // Sleep
+  if(sl){
+    html+=`<div class="hist-section"><div class="hs-label">😴 Нойр</div><div class="hs-content">Score: ${sl.sc||'—'}/100 · ${sl.dur||'—'} · ${sl.q||''} ${sl.deep?'· Deep '+sl.deep:''}</div></div>`;
+  }
+
+  // Workout
+  if(wo){
+    html+=`<div class="hist-section"><div class="hs-label">💪 Дасгал</div><div class="hs-content">${wo.type||'Workout'} · ${wo.int||''} · ${wo.dur?wo.dur+' мин':''} ${wo.notes?'· '+wo.notes:''}</div></div>`;
+  }
+
+  // Meals
+  if(meals.length>0){
+    const totalCal=meals.reduce((s,m)=>s+(m.cal||0),0);
+    const totalP=meals.reduce((s,m)=>s+(m.protein||0),0);
+    html+=`<div class="hist-section"><div class="hs-label">🍽️ Хоол (${meals.length})</div><div class="hs-content">${totalCal} kcal · P${totalP}g · ${meals.map(m=>m.name||m.type).join(', ')}</div></div>`;
+  }
+
+  // Reflection
+  if(ref){
+    html+=`<div class="hist-section"><div class="hs-label">🌙 Reflection</div><div class="hs-content">`;
+    if(ref.good)html+=`Сайн: ${ref.good} `;
+    if(ref.improve)html+=`Сайжруулах: ${ref.improve} `;
+    if(ref.energy)html+=`Energy: ${'⭐'.repeat(ref.energy)}`;
+    html+=`</div></div>`;
+  }
+
+  // Journal
+  if(h.jnl)html+=`<div class="hist-section"><div class="hs-label">📝 Journal</div><div class="hs-content">${h.jnl}</div></div>`;
+
+  // Detox
+  if(h.detox){
+    const dh=L.g('detox_'+d)||{};
+    const dtxDone=DETOX_F().filter(x=>dh[x.id]).length;
+    html+=`<div class="hist-section"><div class="hs-label">🧠 Detox</div><div class="hs-content">${dtxDone}/${DETOX_F().length} completed</div></div>`;
+  }
+
+  html+=`</div>`;
+  el.innerHTML=html;
+
+  // Render reflection for selected day
+  renderHistReflection(d,ref);
+
+  // AI Summary
+  generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal);
+
+  // Render clickable heatmap
+  renderClickableHeatmap();
+}
+
+// Reflection in daily view — shows existing or allows adding
+function renderHistReflection(date,ref){
+  const el=document.getElementById('histReflectContent');
+  const isToday=date===td();
+  const isPast=date<td();
+
+  if(ref){
+    // Show existing reflection
+    let html=`<div style="margin-bottom:10px">`;
+    if(ref.good)html+=`<div class="hist-section"><div class="hs-label">✅ Сайн хийсэн зүйл</div><div class="hs-content">${ref.good}</div></div>`;
+    if(ref.improve)html+=`<div class="hist-section"><div class="hs-label">📈 Сайжруулах зүйл</div><div class="hs-content">${ref.improve}</div></div>`;
+    if(ref.energy){let stars='';for(let i=0;i<ref.energy;i++)stars+='⭐';html+=`<div class="hist-section"><div class="hs-label">⚡ Energy</div><div class="hs-content">${stars}</div></div>`}
+    html+=`</div>`;
+    if(isToday||isPast)html+=`<button class="btn btn-s btn-sm btn-full" onclick="openHistReflection('${date}')">✏️ Edit Reflection</button>`;
+    el.innerHTML=html;
+  }else if(isToday||isPast){
+    el.innerHTML=`<p style="color:var(--t3);font-size:.8rem;text-align:center;padding:8px">No reflection yet.</p>
+      <button class="btn btn-s btn-sm btn-full" onclick="openHistReflection('${date}')">🌙 Add Reflection</button>`;
+  }else{
+    el.innerHTML=`<p style="color:var(--t3);font-size:.8rem;text-align:center;padding:8px">Ирээдүйн өдөр</p>`;
+  }
+}
+
+function openHistReflection(date){
+  const ref=getReflection(date);
+  document.getElementById('ref-good').value=ref?ref.good:'';
+  document.getElementById('ref-improve').value=ref?ref.improve:'';
+  refEnergy=ref?ref.energy:0;
+  renderEnergyStars();
+  // Store which date we're editing
+  document.getElementById('reflectM').setAttribute('data-date',date);
+  openM('reflectM');
+}
+
+// AI summary for selected day
+async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal){
+  const aiCard=document.getElementById('histAiCard');
+  const aiText=document.getElementById('histAiText');
+
+  // Check cache
+  const cached=L.g('histai_'+d);
+  if(cached){aiCard.style.display='';aiText.textContent=cached;return}
+
+  const pct=Math.round(habDone/habTotal*100);
+  if(habDone===0&&!sl&&!wo&&meals.length===0){aiCard.style.display='none';return}
+
+  aiCard.style.display='';
+  aiText.innerHTML='<div class="ai-loading-dots"><span></span><span></span><span></span></div>';
+
+  const ctx=[];
+  ctx.push(`Date: ${d}, Habits: ${habDone}/${habTotal} (${pct}%)`);
+  if(sl)ctx.push(`Sleep: score ${sl.sc||'?'}, duration ${sl.dur||'?'}, quality ${sl.q||'?'}`);
+  if(wo)ctx.push(`Workout: ${wo.type||'done'}, intensity ${wo.int||'?'}, ${wo.dur||'?'} min`);
+  if(meals.length)ctx.push(`Meals: ${meals.length}, total ${meals.reduce((s,m)=>s+(m.cal||0),0)} kcal`);
+  if(ref&&ref.good)ctx.push(`Felt good about: ${ref.good}`);
+  if(ref&&ref.improve)ctx.push(`Wants to improve: ${ref.improve}`);
+  if(h.jnl)ctx.push(`Journal: ${h.jnl}`);
+
+  const prompt=`You are a fitness coach reviewing a client's day. Give a 2-sentence summary and 1 actionable tip. Be specific, encouraging, concise. Data:\n${ctx.join('\n')}\n\nRespond in the same language as the journal/reflection text, or English if none.`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:150,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const text=data.content.map(i=>i.text||'').join('');
+    aiText.textContent=text;
+    L.s('histai_'+d,text);
+  }catch(e){
+    // Fallback
+    let summary='';
+    if(pct>=80)summary='Маш сайн өдөр байлаа! Habits-ийн дийлэнхийг биелүүлсэн.';
+    else if(pct>=50)summary='Дундаж өдөр. Зарим habit дутуу, гэхдээ хичээсэн.';
+    else summary='Хүнд өдөр байсан бололтой. Маргааш дахин эхлэх боломж бий.';
+    if(sl&&sl.sc&&sl.sc<60)summary+=' Нойрны чанар муу байсан — эрт унтахыг хичээ.';
+    else if(wo)summary+=' Дасгал хийсэн нь маш сайн!';
+    aiText.textContent=summary;
+    L.s('histai_'+d,summary);
+  }
+}
+
+// Clickable heatmap — clicking a day loads that day's report
+function renderClickableHeatmap(){
+  const u=gU();if(!u)return;
+  const el=document.getElementById('histHeatmap');
+  const dn=gCD(u.start_date);
+  const all=gAH();
+  const dates=dR(u.start_date,dn);
+  el.innerHTML='';
+  dates.forEach(d=>{
+    const rec=all.find(h=>h.date===d);
+    const sc=rec?rec.cs:0;
+    const st=d>td()?'':sc>=TH/HABITS_F().length?'s':sc>0?'p':'f';
+    const isSelected=d===histSelectedDate;
+    const c=document.createElement('div');
+    c.className=`hc ${st}`;
+    c.textContent=new Date(d+'T12:00:00').getDate();
+    if(isSelected)c.style.cssText='outline:2px solid var(--acc);outline-offset:1px;border-radius:4px;font-weight:700';
+    c.addEventListener('click',()=>{
+      histSelectedDate=d;
+      document.getElementById('histDate').value=d;
+      renderHistory();
+    });
+    el.appendChild(c);
+  });
+}
+
 // ==================== GYM TRAINER ====================
 const GYM_GOALS=['Strength','Hypertrophy','Fat Loss','Endurance','General Fitness'];
 const GYM_EXP=['Beginner','Intermediate','Advanced'];
@@ -3126,11 +3603,17 @@ async function initApp(){
   if(session){
     const bar=document.getElementById('authUserBar');
     if(bar){bar.style.display='';document.getElementById('authUserEmail').textContent='@'+session.username}
-    // Load user-specific data
-    const userData=L.g('user_'+session.username);
-    if(userData)L.s('user',userData);
   }
-  const u=gU();
+  // Try to get user data (with prefix if logged in, without if not)
+  let u=gU();
+  // Fallback: try without prefix (old data)
+  if(!u&&session){
+    const oldData=L.gRaw('user');
+    if(oldData&&oldData.name){
+      L.s('user',oldData); // Copy to prefixed key
+      u=oldData;
+    }
+  }
   if(!u){
     if(session){showChallengeStep();document.getElementById('setup').classList.add('on')}
     else{document.getElementById('setup').classList.add('on')}
