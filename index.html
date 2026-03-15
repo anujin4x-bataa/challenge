@@ -481,6 +481,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .win-habits{width:80%;max-width:280px;margin-bottom:20px;animation:winSlideUp .5s ease .8s backwards;position:relative;z-index:1}
 .win-hab-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.78rem}
 .win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:18px;text-shadow:0 0 8px #c8ff0055}
+/* Run stats in win screen */
 .win-streak{background:linear-gradient(135deg,#c8ff0012,#c8ff0008);border:1px solid #c8ff0025;border-radius:99px;padding:10px 24px;font-family:var(--fm);font-size:.85rem;color:#c8ff00;font-weight:700;margin-bottom:20px;animation:winSlideUp .5s ease .85s backwards;position:relative;z-index:1;box-shadow:0 0 16px #c8ff0012}
 /* Spotify song card */
 .win-spotify{width:80%;max-width:280px;background:#ffffff08;border:1px solid #ffffff12;border-radius:16px;padding:14px;margin-bottom:24px;animation:winSlideUp .5s ease .9s backwards;position:relative;z-index:1;display:flex;align-items:center;gap:12px}
@@ -497,6 +498,19 @@ textarea.f-input{resize:vertical;min-height:60px}
 .win-btn-share{background:linear-gradient(135deg,#c8ff00,#a8d900);color:#000;box-shadow:0 0 20px #c8ff0033}
 .win-btn-close{background:transparent}
 .win-brand{position:absolute;bottom:20px;font-family:var(--fm);font-size:.5rem;letter-spacing:3px;text-transform:uppercase}
+
+/* Win celebration effects */
+.win-confetti{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.win-confetti-piece{position:absolute;width:8px;height:8px;opacity:0;animation:winConfettiFall linear forwards}
+@keyframes winConfettiFall{0%{opacity:1;transform:translateY(-10vh) rotate(0deg) scale(1)}50%{opacity:.8}100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(.3)}}
+.win-ring-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;border:2px solid #c8ff00;opacity:0;animation:winRingExpand 1.5s ease .5s forwards;pointer-events:none}
+@keyframes winRingExpand{0%{width:0;height:0;opacity:.8;border-width:3px}100%{width:500px;height:500px;opacity:0;border-width:1px}}
+.win-ring-burst:nth-child(2){animation-delay:.8s}
+.win-ring-burst:nth-child(3){animation-delay:1.1s}
+[data-theme="light"] .win-ring-burst{border-color:#5cb800}
+.win-stars{position:absolute;inset:0;pointer-events:none;z-index:0}
+.win-star{position:absolute;font-size:1rem;opacity:0;animation:winStarPop .8s ease forwards}
+@keyframes winStarPop{0%{opacity:0;transform:scale(0) rotate(-30deg)}40%{opacity:1;transform:scale(1.3) rotate(10deg)}100%{opacity:0;transform:scale(.5) rotate(0deg) translateY(-30px)}}
 
 /* Clickable heatmap cells */
 .heatmap .hc{cursor:pointer;transition:.15s}
@@ -799,6 +813,11 @@ textarea.f-input{resize:vertical;min-height:60px}
 <div class="win-overlay" id="winOverlay">
   <div class="win-card" id="winCard">
     <div class="win-particles" id="winParticles"></div>
+    <div class="win-confetti" id="winConfetti"></div>
+    <div class="win-stars" id="winStars"></div>
+    <div class="win-ring-burst"></div>
+    <div class="win-ring-burst"></div>
+    <div class="win-ring-burst"></div>
     <div class="win-lock">🔒</div>
     <div class="win-msg" id="winMsg">LOCKED IN</div>
     <div class="win-sub" id="winSub">All habits completed</div>
@@ -1224,7 +1243,7 @@ textarea.f-input{resize:vertical;min-height:60px}
     <div style="width:52px;height:52px;border-radius:50%;background:var(--accd);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🔒</div>
     <div><div style="font-size:1rem;font-weight:700;color:var(--acc)" id="prName">—</div><div style="font-size:.7rem;color:var(--t3)" id="prDay">—</div></div>
   </div>
-  <div class="stats-row" id="prStats" style="margin-top:14px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px" id="prStats"></div>
   <div class="card"><div class="card-t">Edit</div>
     <div class="f-grp"><label class="f-label">Name</label><input type="text" id="eName" class="f-input"></div>
     <div class="f-grp"><label class="f-label">Start Date</label><input type="date" id="eDate" class="f-input"></div>
@@ -1235,6 +1254,31 @@ textarea.f-input{resize:vertical;min-height:60px}
     <div style="display:flex;flex-direction:column;gap:8px">
       <button class="btn btn-s btn-sm" onclick="reqNotifs()" id="notifBtn">🔔 Notifications</button>
       <div id="notifStatus" style="font-size:.65rem;color:var(--t3);padding:0 4px"></div>
+
+      <!-- Notification Settings -->
+      <div class="insight-group" style="margin-top:6px">
+        <div class="insight-header" onclick="toggleInsight(this)">
+          <div class="ih-left"><span class="ih-icon">⏰</span><span class="ih-title">Notification Schedule</span></div>
+          <span class="ih-arrow">▾</span>
+        </div>
+        <div class="insight-body">
+          <div class="insight-body-inner">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <!-- Morning -->
+              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">🌅</span><div class="ti-text"><div class="ti-name">Morning</div></div></div><input type="time" id="nf-morning" class="f-input" style="width:90px;text-align:center;padding:6px" value="07:00"><label class="tgl"><input type="checkbox" id="nf-morning-on" checked><span class="tgl-s"></span></label></div>
+              <!-- Water -->
+              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">💧</span><div class="ti-text"><div class="ti-name">Water</div><div class="ti-desc">Every 2h</div></div></div><input type="time" id="nf-water-start" class="f-input" style="width:90px;text-align:center;padding:6px" value="08:00"><label class="tgl"><input type="checkbox" id="nf-water-on" checked><span class="tgl-s"></span></label></div>
+              <!-- Workout -->
+              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">💪</span><div class="ti-text"><div class="ti-name">Workout</div></div></div><input type="time" id="nf-workout" class="f-input" style="width:90px;text-align:center;padding:6px" value="18:00"><label class="tgl"><input type="checkbox" id="nf-workout-on" checked><span class="tgl-s"></span></label></div>
+              <!-- Habit check -->
+              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">🔒</span><div class="ti-text"><div class="ti-name">Habit Check</div></div></div><input type="time" id="nf-habits" class="f-input" style="width:90px;text-align:center;padding:6px" value="20:00"><label class="tgl"><input type="checkbox" id="nf-habits-on" checked><span class="tgl-s"></span></label></div>
+              <!-- Sleep -->
+              <div class="toggle-item"><div class="ti-left"><span class="ti-icon">😴</span><div class="ti-text"><div class="ti-name">Sleep</div></div></div><input type="time" id="nf-sleep" class="f-input" style="width:90px;text-align:center;padding:6px" value="23:00"><label class="tgl"><input type="checkbox" id="nf-sleep-on" checked><span class="tgl-s"></span></label></div>
+            </div>
+            <button class="btn btn-p btn-sm btn-full" onclick="saveNotifSettings()" style="margin-top:10px">Save Schedule</button>
+          </div>
+        </div>
+      </div>
       <button class="btn btn-s btn-sm" onclick="testNotification()">🧪 Test Notification</button>
       <button class="btn btn-s btn-sm" onclick="L.r('win_'+td());showDailyWin()">🏆 Test Win Screen</button>
       <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 Export CSV</button>
@@ -1584,6 +1628,7 @@ const TH=4,TD=45;
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
+// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -2211,7 +2256,7 @@ function showDailyWin(){
   // Show overlay
   document.getElementById('winOverlay').classList.add('on');
 
-  // Theme-aware particles
+  // Theme-aware particles (floating up slowly)
   const isDark=document.documentElement.getAttribute('data-theme')!=='light';
   const pContainer=document.getElementById('winParticles');
   pContainer.innerHTML='';
@@ -2226,6 +2271,39 @@ function showDailyWin(){
     p.style.background=isDark?(Math.random()>.5?'#c8ff00':'#ffffff'):(Math.random()>.5?'#5cb800':'#a8d900');
     p.style.opacity=0;
     pContainer.appendChild(p);
+  }
+
+  // Confetti burst (falls from top)
+  const confetti=document.getElementById('winConfetti');
+  confetti.innerHTML='';
+  const confettiColors=isDark?['#c8ff00','#a8d900','#00d4ff','#ff6b6b','#ffd43b','#ffffff']:['#5cb800','#4a9600','#00b4d8','#e63946','#fca311','#333'];
+  for(let i=0;i<40;i++){
+    const c=document.createElement('div');
+    c.className='win-confetti-piece';
+    c.style.left=Math.random()*100+'%';
+    c.style.top='-5%';
+    c.style.animationDuration=(2+Math.random()*3)+'s';
+    c.style.animationDelay=(Math.random()*1.5)+'s';
+    c.style.background=confettiColors[Math.floor(Math.random()*confettiColors.length)];
+    c.style.borderRadius=Math.random()>.5?'50%':'2px';
+    c.style.width=(4+Math.random()*8)+'px';
+    c.style.height=(4+Math.random()*8)+'px';
+    confetti.appendChild(c);
+  }
+
+  // Star pops (scattered burst)
+  const stars=document.getElementById('winStars');
+  stars.innerHTML='';
+  const starEmojis=['⭐','✨','🌟','💫'];
+  for(let i=0;i<8;i++){
+    const s=document.createElement('div');
+    s.className='win-star';
+    s.textContent=starEmojis[Math.floor(Math.random()*starEmojis.length)];
+    s.style.left=(15+Math.random()*70)+'%';
+    s.style.top=(10+Math.random()*50)+'%';
+    s.style.animationDelay=(.3+Math.random()*.8)+'s';
+    s.style.fontSize=(.8+Math.random()*.8)+'rem';
+    stars.appendChild(s);
   }
 
   // Animate progress bar
@@ -2567,7 +2645,11 @@ function renderFoodMealTypes(){const el=document.getElementById('fdMealType');el
 function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim(),cal=parseInt(document.getElementById('fd-cal').value)||0;if(!n&&!cal){toast('Enter name or calories','⚠️');return}addMeal({date:td(),name:n||'Meal',type:selMealType,cal,protein:parseInt(document.getElementById('fd-p').value)||0,carbs:parseInt(document.getElementById('fd-c').value)||0,fat:parseInt(document.getElementById('fd-f').value)||0,notes:document.getElementById('fd-notes').value.trim(),time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});closeM('foodScanM');toast('🍽️ Saved!');renderNut()}
 
 // ==================== PROFILE ====================
-function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cStrk(u),rem=Math.max(0,TD-dn);document.getElementById('prName').textContent=u.name;document.getElementById('prDay').textContent=`Day ${dn}/${TD} · ${ff(u.start_date)}`;document.getElementById('prStats').innerHTML=`<div class="stat-card"><div class="s-val">🔥${st.c}</div><div class="s-label">Streak</div></div><div class="stat-card"><div class="s-val">${st.l}</div><div class="s-label">Best</div></div><div class="stat-card"><div class="s-val">${rem}</div><div class="s-label">Left</div></div>`;document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');
+function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cStrk(u),rem=Math.max(0,TD-dn);
+  const a=gAH();const rate=a.length>0?Math.round(a.filter(h=>h.cs>=TH/HABITS_F().length).length/a.length*100):0;
+  document.getElementById('prName').textContent=u.name;document.getElementById('prDay').textContent=`Day ${dn}/${TD} · ${ff(u.start_date)}`;
+  document.getElementById('prStats').innerHTML=`<div class="stat-card"><div class="s-val">🔥 ${st.c}</div><div class="s-label">Streak</div></div><div class="stat-card"><div class="s-val">⭐ ${st.l}</div><div class="s-label">Best</div></div><div class="stat-card"><div class="s-val">📅 ${rem}</div><div class="s-label">Days Left</div></div><div class="stat-card"><div class="s-val">📊 ${rate}%</div><div class="s-label">Success Rate</div></div>`;
+  document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');
   // Auth user display
   const bar=document.getElementById('authUserBar');
   if(authUser&&authUser.email){bar.style.display='';document.getElementById('authUserEmail').textContent=authUser.email}
@@ -2580,6 +2662,7 @@ function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cS
     else if(Notification.permission==='denied'){ns.textContent='❌ Blocked in browser settings';nb.textContent='🔔 Blocked'}
     else{ns.textContent='Not enabled yet';nb.textContent='🔔 Enable Notifications'}
   }else{ns.textContent='Not supported in this browser'}
+  loadNotifSettingsUI();
 }
 function saveProf(){const n=document.getElementById('eName').value.trim(),d=document.getElementById('eDate').value;if(!n){toast('Name?','⚠️');return}const u=gU();u.name=n;u.start_date=d;sU(u);toast('✅ Saved!');renderProf();document.getElementById('topBadge').textContent=`Day ${gCD(d)} / ${TD}`}
 function resetAll(){if(!confirm('Delete ALL data?'))return;if(!confirm('PERMANENT. Are you sure?'))return;
@@ -2637,75 +2720,105 @@ function testNotification(){
 }
 
 function scheduleAllReminders(){
-  // Clear existing timers
   notifTimers.forEach(t=>clearTimeout(t));
   notifTimers=[];
   if(Notification.permission!=='granted')return;
 
   const now=new Date();
   const todayBase=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const ns=getNotifSettings();
 
-  // 1. Water reminders: every 2 hours from 8AM to 8PM
-  for(let hr=8;hr<=20;hr+=2){
-    const t=new Date(todayBase);t.setHours(hr,0,0);
-    if(t>now){
-      const ms=t-now;
-      notifTimers.push(setTimeout(()=>{
-        const h=gH(td());
-        if(!h.water)sendNotif('Hydration check 💧','Drink some water. Stay hydrated.','water');
-      },ms));
+  function scheduleAt(hr,min,cb){
+    const t=new Date(todayBase);t.setHours(hr,min,0);
+    if(t>now)notifTimers.push(setTimeout(cb,t-now));
+  }
+
+  // 1. Morning
+  if(ns.morning_on){
+    const[mh,mm]=ns.morning_time.split(':').map(Number);
+    const mt=new Date(todayBase);mt.setHours(mh,mm,0);
+    if(mt<=now)mt.setDate(mt.getDate()+1);
+    notifTimers.push(setTimeout(()=>{
+      const u=gU();const name=u?u.name:'Champion';const day=u?gCD(u.start_date):'?';
+      sendNotif(`Good morning ${name} 🌅`,`Day ${day} of your Lock-In. Let's win today.`,'morning');
+    },mt-now));
+  }
+
+  // 2. Water reminders every 2h
+  if(ns.water_on){
+    const[wh]=ns.water_start.split(':').map(Number);
+    for(let hr=wh;hr<=wh+12&&hr<=21;hr+=2){
+      scheduleAt(hr,0,()=>{const h=gH(td());if(!h.water)sendNotif('Hydration check 💧','Drink some water. Stay hydrated.','water')});
     }
   }
 
-  // 2. Workout reminder at 18:00
-  const workoutTime=new Date(todayBase);workoutTime.setHours(18,0,0);
-  if(workoutTime>now){
-    notifTimers.push(setTimeout(()=>{
-      const h=gH(td());
-      if(!h.workout)sendNotif('LOCK-IN reminder 💪',"Time for today's workout. Don't skip.",'workout');
-    },workoutTime-now));
+  // 3. Workout reminder
+  if(ns.workout_on){
+    const[woh,wom]=ns.workout_time.split(':').map(Number);
+    scheduleAt(woh,wom,()=>{const h=gH(td());if(!h.workout)sendNotif('LOCK-IN reminder 💪',"Time for today's workout. Don't skip.",'workout')});
   }
 
-  // 3. Habit completion check at 20:00
-  const habitCheck=new Date(todayBase);habitCheck.setHours(20,0,0);
-  if(habitCheck>now){
-    notifTimers.push(setTimeout(()=>{
-      checkIncompleteHabits();
-    },habitCheck-now));
+  // 4. Habit check
+  if(ns.habits_on){
+    const[hh,hm]=ns.habits_time.split(':').map(Number);
+    scheduleAt(hh,hm,()=>checkIncompleteHabits());
+    // Urgent check 2 hours later
+    scheduleAt(Math.min(hh+2,23),hm,()=>{
+      const h=gH(td());const done=HABITS_F().filter(x=>h[x.id]).length;const total=HABITS_F().length;
+      if(done<total)sendNotif('🔒 LOCK-IN ALERT',`${total-done} habit${total-done>1?'s':''} still incomplete.`,'urgent');
+    });
   }
 
-  // 4. Second habit check at 22:00 (urgent)
-  const urgentCheck=new Date(todayBase);urgentCheck.setHours(22,0,0);
-  if(urgentCheck>now){
-    notifTimers.push(setTimeout(()=>{
-      const h=gH(td());
-      const done=HABITS_F().filter(x=>h[x.id]).length;
-      const total=HABITS_F().length;
-      if(done<total){
-        sendNotif('🔒 LOCK-IN ALERT',`${total-done} habit${total-done>1?'s':''} still incomplete. Don't break your streak.`,'urgent');
-      }
-    },urgentCheck-now));
+  // 5. Sleep reminder
+  if(ns.sleep_on){
+    const[sh,sm]=ns.sleep_time.split(':').map(Number);
+    scheduleAt(sh,sm,()=>sendNotif('Prepare for sleep 😴','Recovery is important. Put the phone down and rest.','sleep'));
   }
-
-  // 5. Sleep reminder at 23:00
-  const sleepTime=new Date(todayBase);sleepTime.setHours(23,0,0);
-  if(sleepTime>now){
-    notifTimers.push(setTimeout(()=>{
-      sendNotif('Prepare for sleep 😴','Recovery is important. Put the phone down and rest.','sleep');
-    },sleepTime-now));
-  }
-
-  // 6. Morning motivation at 7:00 (next day if past 7)
-  const morningTime=new Date(todayBase);morningTime.setHours(7,0,0);
-  if(morningTime<=now)morningTime.setDate(morningTime.getDate()+1);
-  notifTimers.push(setTimeout(()=>{
-    const u=gU();
-    const name=u?u.name:'Champion';
-    const day=u?gCD(u.start_date):'?';
-    sendNotif(`Good morning ${name} 🌅`,`Day ${day} of your Lock-In. Let's win today.`,'morning');
-  },morningTime-now));
 
   console.log(`⏰ ${notifTimers.length} reminders scheduled`);
+}
+
+// Notification settings
+function getNotifSettings(){
+  return L.gRaw('notif_settings')||{
+    morning_on:true,morning_time:'07:00',
+    water_on:true,water_start:'08:00',
+    workout_on:true,workout_time:'18:00',
+    habits_on:true,habits_time:'20:00',
+    sleep_on:true,sleep_time:'23:00'
+  };
+}
+
+function saveNotifSettings(){
+  const s={
+    morning_on:document.getElementById('nf-morning-on').checked,
+    morning_time:document.getElementById('nf-morning').value||'07:00',
+    water_on:document.getElementById('nf-water-on').checked,
+    water_start:document.getElementById('nf-water-start').value||'08:00',
+    workout_on:document.getElementById('nf-workout-on').checked,
+    workout_time:document.getElementById('nf-workout').value||'18:00',
+    habits_on:document.getElementById('nf-habits-on').checked,
+    habits_time:document.getElementById('nf-habits').value||'20:00',
+    sleep_on:document.getElementById('nf-sleep-on').checked,
+    sleep_time:document.getElementById('nf-sleep').value||'23:00'
+  };
+  L.sRaw('notif_settings',s);
+  scheduleAllReminders();
+  toast('⏰ Schedule saved!');
+}
+
+function loadNotifSettingsUI(){
+  const s=getNotifSettings();
+  document.getElementById('nf-morning').value=s.morning_time;
+  document.getElementById('nf-morning-on').checked=s.morning_on;
+  document.getElementById('nf-water-start').value=s.water_start;
+  document.getElementById('nf-water-on').checked=s.water_on;
+  document.getElementById('nf-workout').value=s.workout_time;
+  document.getElementById('nf-workout-on').checked=s.workout_on;
+  document.getElementById('nf-habits').value=s.habits_time;
+  document.getElementById('nf-habits-on').checked=s.habits_on;
+  document.getElementById('nf-sleep').value=s.sleep_time;
+  document.getElementById('nf-sleep-on').checked=s.sleep_on;
 }
 
 function checkIncompleteHabits(){
@@ -2761,33 +2874,16 @@ function checkMissedReminders(){
   const total=HABITS_F().length;
   const lastCheck=L.g('last_notif_check')||'';
   const todayKey=td()+'_'+hr;
-
-  // Don't spam — only check once per hour
   if(lastCheck===todayKey)return;
   L.s('last_notif_check',todayKey);
 
-  // Water reminder (every 2 hours 8AM-8PM)
-  if(hr>=8&&hr<=20&&hr%2===0&&!h.water){
-    sendNotif('Hydration check 💧','Drink some water. Stay hydrated.','water');
-  }
+  const ns=getNotifSettings();
 
-  // Workout reminder (after 6PM)
-  if(hr>=18&&!h.workout){
-    sendNotif('LOCK-IN reminder 💪',"Time for today's workout. Don't skip.",'workout');
-  }
+  if(ns.water_on){const wh=parseInt(ns.water_start);if(hr>=wh&&hr<=wh+12&&hr%2===0&&!h.water)sendNotif('Hydration check 💧','Drink some water.','water')}
+  if(ns.workout_on){const wh=parseInt(ns.workout_time);if(hr>=wh&&!h.workout)sendNotif('LOCK-IN reminder 💪',"Time for today's workout.",'workout')}
+  if(ns.habits_on){const hh=parseInt(ns.habits_time);if(hr>=hh&&done<total)sendNotif('LOCK-IN alert 🔒',`${total-done} habit${total-done>1?'s':''} incomplete.`,'habits')}
+  if(ns.sleep_on){const sh=parseInt(ns.sleep_time);if(hr>=sh)sendNotif('Prepare for sleep 😴','Recovery is important.','sleep')}
 
-  // Habit completion (after 8PM)
-  if(hr>=20&&done<total){
-    const missing=total-done;
-    sendNotif('LOCK-IN alert 🔒',`${missing} habit${missing>1?'s':''} still incomplete.`,'habits');
-  }
-
-  // Sleep reminder (after 11PM)
-  if(hr>=23){
-    sendNotif('Prepare for sleep 😴','Recovery is important.','sleep');
-  }
-
-  // All done celebration
   if(done>=total&&done>0){
     const celebrated=L.g('celebrated_'+td());
     if(!celebrated){
