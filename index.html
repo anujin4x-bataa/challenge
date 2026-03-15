@@ -1821,16 +1821,16 @@ function addGymHistory(entry){const a=getGymHistory();a.unshift(entry);if(a.leng
 
 // Custom habits config (localStorage only — no Supabase table needed)
 function getHabits(){return L.g('custom_habits')||[...DEFAULT_HABITS]}
-function saveHabitsConfig(h){L.s('custom_habits',h)}
+function saveHabitsConfig(h){L.s('custom_habits',h);DB.save('custom_habits',h)}
 function getDetoxHabits(){return L.g('custom_detox')||[...DEFAULT_DETOX]}
-function saveDetoxConfig(h){L.s('custom_detox',h)}
+function saveDetoxConfig(h){L.s('custom_detox',h);DB.save('custom_detox',h)}
 
 // === SUPABASE INITIAL SYNC ===
 async function syncFromSupabase(){
   if(!sbClient){console.log('📦 No Supabase — using localStorage');return}
   console.log('🔄 Syncing from Supabase...');
   // Only sync tables that exist in Supabase schema
-  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs'];
+  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox'];
   let synced=0;
   for(const t of tables){
     try{
