@@ -421,31 +421,39 @@ textarea.f-input{resize:vertical;min-height:60px}
 .win-overlay{display:none;position:fixed;inset:0;z-index:2500;background:#000;animation:winFadeIn .5s ease}
 .win-overlay.on{display:flex;align-items:center;justify-content:center}
 @keyframes winFadeIn{from{opacity:0}to{opacity:1}}
-.win-card{width:100%;max-width:400px;min-height:100dvh;background:linear-gradient(180deg,#0a1a0a 0%,#0d2a0d 30%,#0a1a0a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
-.win-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at center,#c8ff0008 0%,transparent 50%);animation:winPulse 3s ease-in-out infinite}
-@keyframes winPulse{0%,100%{opacity:.3;transform:scale(.9)}50%{opacity:.6;transform:scale(1.1)}}
-.win-lock{font-size:3rem;margin-bottom:8px;animation:winBounce .6s ease .3s backwards}
+.win-card{width:100%;max-width:400px;min-height:100dvh;background:linear-gradient(160deg,#020a02 0%,#0a1f0a 25%,#071507 50%,#0d2a0d 75%,#020a02 100%);background-size:200% 200%;animation:winBgShift 8s ease-in-out infinite;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
+@keyframes winBgShift{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}
+/* Animated glow orb */
+.win-card::before{content:'';position:absolute;top:15%;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,#c8ff0015 0%,#c8ff0008 30%,transparent 70%);border-radius:50%;animation:winGlow 4s ease-in-out infinite;pointer-events:none}
+@keyframes winGlow{0%,100%{opacity:.4;transform:translateX(-50%) scale(.8)}50%{opacity:.8;transform:translateX(-50%) scale(1.2)}}
+/* Bottom glow */
+.win-card::after{content:'';position:absolute;bottom:-20%;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,#c8ff000a 0%,transparent 70%);pointer-events:none}
+/* Floating particles */
+.win-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.win-particle{position:absolute;width:3px;height:3px;border-radius:50%;background:#c8ff00;opacity:0;animation:winFloat linear infinite}
+@keyframes winFloat{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.3}100%{opacity:0;transform:translateY(-20vh) scale(1)}}
+.win-lock{font-size:3.5rem;margin-bottom:12px;animation:winBounce .6s ease .3s backwards;filter:drop-shadow(0 0 20px #c8ff0044);position:relative;z-index:1}
 @keyframes winBounce{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-.win-msg{font-family:var(--fb);font-size:2rem;font-weight:800;color:#fff;text-align:center;line-height:1.1;margin-bottom:4px;text-transform:uppercase;letter-spacing:-0.5px;animation:winSlideUp .5s ease .4s backwards}
-.win-sub{font-size:.85rem;color:#c8ff00;font-weight:600;margin-bottom:32px;animation:winSlideUp .5s ease .5s backwards}
+.win-msg{font-family:var(--fb);font-size:2.2rem;font-weight:800;color:#fff;text-align:center;line-height:1.05;margin-bottom:6px;text-transform:uppercase;letter-spacing:-0.5px;animation:winSlideUp .5s ease .4s backwards;position:relative;z-index:1;text-shadow:0 0 40px #c8ff0022}
+.win-sub{font-size:.88rem;color:#c8ff00;font-weight:600;margin-bottom:36px;animation:winSlideUp .5s ease .5s backwards;position:relative;z-index:1;text-shadow:0 0 20px #c8ff0033}
 @keyframes winSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.win-day{font-family:var(--fm);font-size:3.5rem;font-weight:700;color:#c8ff00;line-height:1;animation:winScale .5s ease .6s backwards}
+.win-day{font-family:var(--fm);font-size:4rem;font-weight:700;color:#c8ff00;line-height:1;animation:winScale .5s ease .6s backwards;position:relative;z-index:1;text-shadow:0 0 30px #c8ff0044}
 @keyframes winScale{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.win-day-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#fff6;margin-top:4px;margin-bottom:24px}
-.win-progress{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .7s backwards}
-.win-progress .wp-bar{height:6px;background:#ffffff15;border-radius:99px;overflow:hidden;margin-bottom:6px}
-.win-progress .wp-fill{height:100%;background:linear-gradient(90deg,#a8d900,#c8ff00);border-radius:99px;transition:width 1.5s cubic-bezier(.22,1,.36,1)}
-.win-progress .wp-label{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.6rem;color:#fff6}
-.win-habits{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .8s backwards}
-.win-hab-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.8rem;color:#fffc}
-.win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:18px}
-.win-streak{background:#ffffff0a;border:1px solid #ffffff15;border-radius:99px;padding:8px 20px;font-family:var(--fm);font-size:.85rem;color:#c8ff00;font-weight:700;margin-bottom:28px;animation:winSlideUp .5s ease .9s backwards}
-.win-actions{display:flex;gap:10px;animation:winSlideUp .5s ease 1s backwards}
-.win-btn{padding:12px 24px;border-radius:99px;font-family:var(--fb);font-size:.78rem;font-weight:700;cursor:pointer;border:none;transition:.15s}
-.win-btn:active{transform:scale(.95)}
-.win-btn-share{background:#c8ff00;color:#000}
-.win-btn-close{background:#ffffff15;color:#fff}
-.win-brand{position:absolute;bottom:20px;font-family:var(--fm);font-size:.55rem;color:#fff3;letter-spacing:2px;text-transform:uppercase}
+.win-day-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#fff5;margin-top:4px;margin-bottom:28px;position:relative;z-index:1}
+.win-progress{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .7s backwards;position:relative;z-index:1}
+.win-progress .wp-bar{height:5px;background:#ffffff12;border-radius:99px;overflow:hidden;margin-bottom:6px}
+.win-progress .wp-fill{height:100%;background:linear-gradient(90deg,#5cb800,#c8ff00,#e0ff66);border-radius:99px;transition:width 1.5s cubic-bezier(.22,1,.36,1);box-shadow:0 0 12px #c8ff0055}
+.win-progress .wp-label{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.6rem;color:#fff4}
+.win-habits{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .8s backwards;position:relative;z-index:1}
+.win-hab-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.8rem;color:#fffb}
+.win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:18px;text-shadow:0 0 8px #c8ff0066}
+.win-streak{background:linear-gradient(135deg,#c8ff0012,#c8ff0008);border:1px solid #c8ff0025;border-radius:99px;padding:10px 24px;font-family:var(--fm);font-size:.88rem;color:#c8ff00;font-weight:700;margin-bottom:32px;animation:winSlideUp .5s ease .9s backwards;position:relative;z-index:1;box-shadow:0 0 20px #c8ff0015}
+.win-actions{display:flex;gap:10px;animation:winSlideUp .5s ease 1s backwards;position:relative;z-index:1}
+.win-btn{padding:14px 28px;border-radius:99px;font-family:var(--fb);font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:.15s}
+.win-btn:active{transform:scale(.93)}
+.win-btn-share{background:linear-gradient(135deg,#c8ff00,#a8d900);color:#000;box-shadow:0 0 20px #c8ff0033}
+.win-btn-close{background:#ffffff10;color:#fff;border:1px solid #ffffff15}
+.win-brand{position:absolute;bottom:24px;font-family:var(--fm);font-size:.5rem;color:#fff2;letter-spacing:3px;text-transform:uppercase}
 
 /* Clickable heatmap cells */
 .heatmap .hc{cursor:pointer;transition:.15s}
@@ -747,6 +755,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 <!-- DAILY WIN SUCCESS SCREEN -->
 <div class="win-overlay" id="winOverlay">
   <div class="win-card" id="winCard">
+    <div class="win-particles" id="winParticles"></div>
     <div class="win-lock">🔒</div>
     <div class="win-msg" id="winMsg">LOCKED IN</div>
     <div class="win-sub" id="winSub">All habits completed</div>
@@ -2095,6 +2104,22 @@ function showDailyWin(){
 
   // Show overlay
   document.getElementById('winOverlay').classList.add('on');
+
+  // Generate floating particles
+  const pContainer=document.getElementById('winParticles');
+  pContainer.innerHTML='';
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');
+    p.className='win-particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(4+Math.random()*6)+'s';
+    p.style.animationDelay=(Math.random()*4)+'s';
+    p.style.width=(2+Math.random()*3)+'px';
+    p.style.height=p.style.width;
+    p.style.background=Math.random()>.5?'#c8ff00':'#ffffff';
+    p.style.opacity=0;
+    pContainer.appendChild(p);
+  }
 
   // Animate progress bar after showing
   setTimeout(()=>{
