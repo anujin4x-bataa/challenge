@@ -898,19 +898,19 @@ textarea.f-input{resize:vertical;min-height:60px}
 
     <!-- Auto-fill from InBody notice -->
     <div id="inbodyAutoFill" style="display:none;background:var(--accd);border-radius:var(--r1);padding:10px 14px;margin-bottom:12px;font-size:.78rem;color:var(--acc)">
-      ✅ InBody data-аас автоматаар бөглөгдлөө
+      ✅ Auto-filled from InBody data
     </div>
 
     <div class="f-row"><div><label class="f-label">Weight (kg)</label><input type="number" id="ns-w" class="f-input" placeholder="61" step=".1"></div><div><label class="f-label">Height (cm)</label><input type="number" id="ns-h" class="f-input" placeholder="164"></div></div>
     <div class="f-row"><div><label class="f-label">Age</label><input type="number" id="ns-age" class="f-input" placeholder="22"></div><div><label class="f-label">Skeletal Muscle (kg)</label><input type="number" id="ns-sm" class="f-input" placeholder="22.6" step=".1"></div></div>
     <div class="f-row"><div><label class="f-label">Body Fat %</label><input type="number" id="ns-bf" class="f-input" placeholder="32" step=".1"></div><div><label class="f-label">BMR (kcal) — InBody</label><input type="number" id="ns-bmr" class="f-input" placeholder="1260"></div></div>
     <div class="f-row">
-      <div><label class="f-label">Activity Level</label><select id="ns-act" class="f-input f-select"><option value="1.2">Sedentary (бараг хөдлөхгүй)</option><option value="1.375">Light (7 хоног 1-2 удаа)</option><option value="1.55" selected>Moderate (7 хоног 3-5 удаа)</option><option value="1.725">Active (7 хоног 6-7 удаа)</option><option value="1.9">Very Active (өдөр 2 удаа)</option></select></div>
+      <div><label class="f-label">Activity Level</label><select id="ns-act" class="f-input f-select"><option value="1.2">Sedentary (desk job)</option><option value="1.375">Light (1-2x/week)</option><option value="1.55" selected>Moderate (3-5x/week)</option><option value="1.725">Active (6-7x/week)</option><option value="1.9">Very Active (2x/day)</option></select></div>
       <div><label class="f-label">Goal</label><select id="ns-goal" class="f-input f-select"><option value="-500">Fat Loss (-500)</option><option value="-300">Slow Cut (-300)</option><option value="0" selected>Maintain</option><option value="200">Lean Bulk (+200)</option><option value="400">Muscle Gain (+400)</option></select></div>
     </div>
     <div class="f-grp"><label class="f-label">Protein Strategy</label><select id="ns-pstrat" class="f-input f-select"><option value="muscle" selected>Based on Muscle Mass (2g/kg muscle)</option><option value="weight">Based on Body Weight (1.6g/kg)</option><option value="lean">Based on Lean Mass (2.2g/kg lean)</option></select></div>
     <button class="btn btn-p btn-full" onclick="saveNutSettings()">Calculate Smart Goal</button>
-    <button class="btn btn-s btn-full btn-sm" onclick="autoFillFromInBody()" style="margin-top:6px">🔄 InBody-аас бөглөх</button>
+    <button class="btn btn-s btn-full btn-sm" onclick="autoFillFromInBody()" style="margin-top:6px">🔄 Auto-fill from InBody</button>
   </div>
   <button class="btn btn-p btn-full btn-sm" onclick="openAddFood()" style="margin-bottom:14px">+ Add Meal</button>
   <div id="mealsList"></div>
@@ -971,7 +971,7 @@ textarea.f-input{resize:vertical;min-height:60px}
     <!-- 45-Day Heatmap (clickable) -->
     <div class="card">
       <div class="card-t">45-Day Heatmap</div>
-      <div style="font-size:.6rem;color:var(--t3);margin-bottom:8px">Өдөр дээр дарж тухайн өдрийн мэдээллийг харна</div>
+      <div style="font-size:.6rem;color:var(--t3);margin-bottom:8px">Tap a day to view details</div>
       <div class="heatmap" id="histHeatmap"></div>
     </div>
   </div>
@@ -1351,7 +1351,7 @@ function openEditHabit(id){
 }
 function saveHabitEdit(){
   const name=document.getElementById('hab-ed-name').value.trim();
-  if(!name){toast('Нэр оруул','⚠️');return}
+  if(!name){toast('Enter name','⚠️');return}
   const habits=getHabits();
   const mode=document.getElementById('hab-ed-mode').value;
   const desc=document.getElementById('hab-ed-desc').value.trim();
@@ -1365,16 +1365,16 @@ function saveHabitEdit(){
   }
   saveHabitsConfig(habits);
   closeM('habitEditM');
-  toast(mode==='edit'?'✏️ Засагдлаа!':'➕ Нэмэгдлээ!');
+  toast(mode==='edit'?'✏️ Updated!':'➕ Added!');
   renderD();
 }
 function deleteCustomHabit(){
   const id=document.getElementById('hab-ed-id').value;
-  if(!confirm('Энэ habit-ийг устгах уу?'))return;
+  if(!confirm('Delete this habit?'))return;
   const habits=getHabits().filter(h=>h.id!==id);
   saveHabitsConfig(habits);
   closeM('habitEditM');
-  toast('🗑️ Устгагдлаа');
+  toast('🗑️ Deleted');
   renderD();
 }
 
@@ -1407,7 +1407,7 @@ function openEditDetox(id){
 }
 function saveDetoxEdit(){
   const name=document.getElementById('dtx-ed-name').value.trim();
-  if(!name){toast('Нэр оруул','⚠️');return}
+  if(!name){toast('Enter name','⚠️');return}
   const habits=getDetoxHabits();
   const mode=document.getElementById('dtx-ed-mode').value;
   const desc=document.getElementById('dtx-ed-desc').value.trim();
@@ -1420,7 +1420,7 @@ function saveDetoxEdit(){
   }
   saveDetoxConfig(habits);
   closeM('detoxEditM');
-  toast(mode==='edit'?'✏️ Засагдлаа!':'➕ Нэмэгдлээ!');
+  toast(mode==='edit'?'✏️ Updated!':'➕ Added!');
   renderD();
 }
 function deleteCustomDetox(){
@@ -1429,7 +1429,7 @@ function deleteCustomDetox(){
   const habits=getDetoxHabits().filter(h=>h.id!==id);
   saveDetoxConfig(habits);
   closeM('detoxEditM');
-  toast('🗑️ Устгагдлаа');
+  toast('🗑️ Deleted');
   renderD();
 }
 
@@ -1468,11 +1468,12 @@ const TH=4,TD=45;
 
 // === SUPABASE CONFIG ===
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  ЭНД ӨӨРИЙН SUPABASE МЭДЭЭЛЛИЙГ ОРУУЛНА                    ║
-// ║  Supabase Dashboard → Settings → API хэсгээс авна          ║
+// ║  PASTE YOUR SUPABASE CREDENTIALS HERE                    ║
+// ║  Get from Supabase Dashboard → Settings → API          ║
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
+// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -1605,8 +1606,8 @@ function simpleHash(str){let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.
 async function handleAuth(){
   const username=document.getElementById('auth-user').value.trim().toLowerCase();
   const pass=document.getElementById('auth-pass').value;
-  if(!username||username.length<2){showAuthError('Username хамгийн багадаа 2 тэмдэгт');return}
-  if(!pass||pass.length<4){showAuthError('Password хамгийн багадаа 4 тэмдэгт');return}
+  if(!username||username.length<2){showAuthError('Username must be at least 2 characters');return}
+  if(!pass||pass.length<4){showAuthError('Password must be at least 4 characters');return}
   hideAuthError();
 
   const btn=document.getElementById('authBtn');
@@ -1619,29 +1620,29 @@ async function handleAuth(){
       // Supabase mode
       if(currentAuthMode==='signup'){
         const{data:existing}=await sbClient.from('accounts').select('*').eq('username',username);
-        if(existing&&existing.length>0){showAuthError('Username аль хэдийн бүртгэлтэй. Log In дарна уу.');btn.disabled=false;btn.textContent=origText;return}
+        if(existing&&existing.length>0){showAuthError('Username already taken. Tap Log In.');btn.disabled=false;btn.textContent=origText;return}
         const{error}=await sbClient.from('accounts').insert({username,pass_hash:passHash,created:new Date().toISOString()});
         if(error)throw error;
-        toast('✅ Бүртгэл амжилттай!');
+        toast('✅ Account created!');
       }else{
         const{data,error}=await sbClient.from('accounts').select('*').eq('username',username);
         if(error)throw error;
-        if(!data||data.length===0){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent=origText;return}
-        if(data[0].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent=origText;return}
-        toast('✅ Нэвтэрлээ!');
+        if(!data||data.length===0){showAuthError('Username not found');btn.disabled=false;btn.textContent=origText;return}
+        if(data[0].pass_hash!==passHash){showAuthError('Wrong password');btn.disabled=false;btn.textContent=origText;return}
+        toast('✅ Logged in!');
       }
     }else{
       // localStorage mode
       const accounts=L.gRaw('accounts')||{};
       if(currentAuthMode==='signup'){
-        if(accounts[username]){showAuthError('Username аль хэдийн бүртгэлтэй');btn.disabled=false;btn.textContent=origText;return}
+        if(accounts[username]){showAuthError('Username already taken');btn.disabled=false;btn.textContent=origText;return}
         accounts[username]={pass_hash:passHash,created:new Date().toISOString()};
         L.sRaw('accounts',accounts);
-        toast('✅ Бүртгэл амжилттай!');
+        toast('✅ Account created!');
       }else{
-        if(!accounts[username]){showAuthError('Username олдсонгүй');btn.disabled=false;btn.textContent=origText;return}
-        if(accounts[username].pass_hash!==passHash){showAuthError('Password буруу');btn.disabled=false;btn.textContent=origText;return}
-        toast('✅ Нэвтэрлээ!');
+        if(!accounts[username]){showAuthError('Username not found');btn.disabled=false;btn.textContent=origText;return}
+        if(accounts[username].pass_hash!==passHash){showAuthError('Wrong password');btn.disabled=false;btn.textContent=origText;return}
+        toast('✅ Logged in!');
       }
     }
 
@@ -1670,7 +1671,7 @@ async function handleAuth(){
     }
   }catch(e){
     console.error('Auth error:',e);
-    showAuthError(e.message||'Алдаа гарлаа. Дахин оролдоно уу.');
+    showAuthError(e.message||'Something went wrong. Try again.');
     btn.disabled=false;btn.textContent=origText;
   }
 }
@@ -1861,7 +1862,7 @@ let cPg='pg-d';const charts={};
 document.querySelectorAll('.nav-tab').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));b.classList.add('active');const pg=b.dataset.page;document.getElementById(pg).classList.add('active');cPg=pg;if(pg==='pg-d')renderD();if(pg==='pg-g')renderGym();if(pg==='pg-n')renderNut();if(pg==='pg-p')renderProg();if(pg==='pg-b')renderBody();if(pg==='pg-pr')renderProf();window.scrollTo(0,0)})});
 
 // === SETUP ===
-function doSetup(){const n=document.getElementById('s-name').value.trim(),d=document.getElementById('s-date').value;if(!n){toast('Нэр оруул','⚠️');return}if(!d){toast('Огноо сонго','⚠️');return}const userData={id:'u1',name:n,start_date:d};sU(userData);if(authUser)saveUserData(authUser.username,userData);document.getElementById('setup').classList.remove('on');initApp()}
+function doSetup(){const n=document.getElementById('s-name').value.trim(),d=document.getElementById('s-date').value;if(!n){toast('Enter name','⚠️');return}if(!d){toast('Pick a date','⚠️');return}const userData={id:'u1',name:n,start_date:d};sU(userData);if(authUser)saveUserData(authUser.username,userData);document.getElementById('setup').classList.remove('on');initApp()}
 document.getElementById('s-name').addEventListener('keypress',e=>{if(e.key==='Enter')doSetup()});
 document.getElementById('auth-pass').addEventListener('keypress',e=>{if(e.key==='Enter')handleAuth()});
 document.getElementById('s-date').value=td();
@@ -2182,7 +2183,7 @@ function saveBody(){
   const lm=parseFloat(document.getElementById('bLM').value)||null;
   const bmr=parseInt(document.getElementById('bBMR').value)||null;
   const vf=parseInt(document.getElementById('bVF').value)||null;
-  if(!w&&!wa&&!f&&!sm&&!is){toast('Ядаж нэг утга оруул','⚠️');return}
+  if(!w&&!wa&&!f&&!sm&&!is){toast('Enter at least one value','⚠️');return}
   const ex=gAB().find(e=>e.date===d);
   sBE(d,{weight:w,waist:wa,body_fat:f,skeletal_muscle:sm,inbody_score:is,bmi,total_body_water:tbw,lean_mass:lm,bmr,visceral_fat:vf,purl:ex?ex.purl:null});
   toast('📏 Saved!');
@@ -2233,7 +2234,7 @@ function saveNutSettings(){
   const bmr=parseInt(document.getElementById('ns-bmr').value)||null;
   const pstrat=document.getElementById('ns-pstrat').value||'muscle';
 
-  if(!w||!h||!age){toast('Weight, Height, Age бөглө','⚠️');return}
+  if(!w||!h||!age){toast('Fill Weight, Height, Age','⚠️');return}
 
   const cal=calcTDEE(w,h,age,act,goal,bmr);
   const protein=calcProtein(pstrat,w,sm,bf);
@@ -2262,7 +2263,7 @@ function saveNutSettings(){
 function autoFillFromInBody(){
   const entries=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date));
   const latest=entries[0];
-  if(!latest){toast('Body data байхгүй байна. Body tab дээр оруулна уу.','⚠️');return}
+  if(!latest){toast('No body data yet. Add in Body tab.','⚠️');return}
   if(latest.weight)document.getElementById('ns-w').value=latest.weight;
   if(latest.skeletal_muscle)document.getElementById('ns-sm').value=latest.skeletal_muscle;
   if(latest.body_fat)document.getElementById('ns-bf').value=latest.body_fat;
@@ -2272,7 +2273,7 @@ function autoFillFromInBody(){
   if(ns&&ns.h)document.getElementById('ns-h').value=ns.h;
   if(ns&&ns.age)document.getElementById('ns-age').value=ns.age;
   document.getElementById('inbodyAutoFill').style.display='';
-  toast('✅ InBody data-аас бөглөгдлөө!');
+  toast('✅ Auto-filled from InBody data!');
 }
 
 // Render nutrition recommendation card
@@ -2319,12 +2320,12 @@ function renderNut(){const ns=getNutSettings();document.getElementById('nutDate'
   document.getElementById('calTotal').textContent=tC;document.getElementById('calGoalLabel').textContent=`/ ${gC} kcal`;setRing('calRingFill',Math.min(tC/gC*100,100));
   document.getElementById('mbP').style.width=Math.min(tP/gP*100,100)+'%';document.getElementById('mbC').style.width=Math.min(tCa/gCa*100,100)+'%';document.getElementById('mbF').style.width=Math.min(tF/gF*100,100)+'%';
   document.getElementById('mvP').textContent=`${tP}/${gP}g`;document.getElementById('mvC').textContent=`${tCa}/${gCa}g`;document.getElementById('mvF').textContent=`${tF}/${gF}g`;
-  const ml=document.getElementById('mealsList');if(!meals.length){ml.innerHTML='<div class="card"><p style="color:var(--t3);text-align:center;padding:16px;font-size:.82rem">Хоол оруулаагүй байна</p></div>'}else{let h='';MEAL_TYPES.forEach(type=>{const tm=meals.filter(m=>m.type===type);if(!tm.length)return;h+=`<div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:10px 0 4px;padding-left:2px">${type}</div>`;tm.forEach(m=>{h+=`<div class="meal-card"><div class="mc-info"><div class="mc-name">${m.name||'Meal'}</div><div class="mc-macros"><span style="color:#ff6b6b">P${m.protein||0}</span><span style="color:#ffd43b">C${m.carbs||0}</span><span style="color:#69db7c">F${m.fat||0}</span></div></div><div class="mc-cal">${m.cal||0}</div><button class="mc-del" onclick="deleteMeal('${m.id}')">✕</button></div>`})});ml.innerHTML=h}renderCalChart()}
+  const ml=document.getElementById('mealsList');if(!meals.length){ml.innerHTML='<div class="card"><p style="color:var(--t3);text-align:center;padding:16px;font-size:.82rem">No meals logged yet</p></div>'}else{let h='';MEAL_TYPES.forEach(type=>{const tm=meals.filter(m=>m.type===type);if(!tm.length)return;h+=`<div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:10px 0 4px;padding-left:2px">${type}</div>`;tm.forEach(m=>{h+=`<div class="meal-card"><div class="mc-info"><div class="mc-name">${m.name||'Meal'}</div><div class="mc-macros"><span style="color:#ff6b6b">P${m.protein||0}</span><span style="color:#ffd43b">C${m.carbs||0}</span><span style="color:#69db7c">F${m.fat||0}</span></div></div><div class="mc-cal">${m.cal||0}</div><button class="mc-del" onclick="deleteMeal('${m.id}')">✕</button></div>`})});ml.innerHTML=h}renderCalChart()}
 function renderCalChart(){if(charts.calCh){charts.calCh.destroy();delete charts.calCh}const am=getAllMeals();if(am.length<1){document.getElementById('calChartCard').style.display='none';return}document.getElementById('calChartCard').style.display='';const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0])}const ns=getNutSettings();const gC=ns?ns.cal:2000;const cc=chC();const data=days.map(d=>am.filter(m=>m.date===d).reduce((s,m)=>s+(m.cal||0),0));charts.calCh=new Chart(document.getElementById('calChart'),{type:'bar',data:{labels:days.map(d=>fs(d)),datasets:[{data,backgroundColor:data.map(v=>v>gC*1.1?'#ff475799':v>=gC*.8?cc.g+'99':'#ffc10799'),borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cc.grid},ticks:{color:cc.t}},x:{grid:{display:false},ticks:{color:cc.t}}}}})}
 function deleteMeal(id){delMeal(id);renderNut();toast('Deleted','🗑️')}
 function openAddFood(){['fd-name','fd-cal','fd-p','fd-c','fd-f','fd-notes'].forEach(id=>document.getElementById(id).value='');selMealType='Lunch';renderFoodMealTypes();openM('foodScanM')}
 function renderFoodMealTypes(){const el=document.getElementById('fdMealType');el.innerHTML='';MEAL_TYPES.forEach(t=>{const b=document.createElement('button');b.className=`meal-type-btn ${t===selMealType?'sel':''}`;b.textContent=t;b.addEventListener('click',()=>{selMealType=t;renderFoodMealTypes()});el.appendChild(b)})}
-function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim(),cal=parseInt(document.getElementById('fd-cal').value)||0;if(!n&&!cal){toast('Нэр эсвэл калори оруул','⚠️');return}addMeal({date:td(),name:n||'Meal',type:selMealType,cal,protein:parseInt(document.getElementById('fd-p').value)||0,carbs:parseInt(document.getElementById('fd-c').value)||0,fat:parseInt(document.getElementById('fd-f').value)||0,notes:document.getElementById('fd-notes').value.trim(),time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});closeM('foodScanM');toast('🍽️ Saved!');renderNut()}
+function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim(),cal=parseInt(document.getElementById('fd-cal').value)||0;if(!n&&!cal){toast('Enter name or calories','⚠️');return}addMeal({date:td(),name:n||'Meal',type:selMealType,cal,protein:parseInt(document.getElementById('fd-p').value)||0,carbs:parseInt(document.getElementById('fd-c').value)||0,fat:parseInt(document.getElementById('fd-f').value)||0,notes:document.getElementById('fd-notes').value.trim(),time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});closeM('foodScanM');toast('🍽️ Saved!');renderNut()}
 
 // ==================== PROFILE ====================
 function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cStrk(u),rem=Math.max(0,TD-dn);document.getElementById('prName').textContent=u.name;document.getElementById('prDay').textContent=`Day ${dn}/${TD} · ${ff(u.start_date)}`;document.getElementById('prStats').innerHTML=`<div class="stat-card"><div class="s-val">🔥${st.c}</div><div class="s-label">Streak</div></div><div class="stat-card"><div class="s-val">${st.l}</div><div class="s-label">Best</div></div><div class="stat-card"><div class="s-val">${rem}</div><div class="s-label">Left</div></div>`;document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');
@@ -2342,7 +2343,7 @@ function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cS
   }else{ns.textContent='Not supported in this browser'}
 }
 function saveProf(){const n=document.getElementById('eName').value.trim(),d=document.getElementById('eDate').value;if(!n){toast('Name?','⚠️');return}const u=gU();u.name=n;u.start_date=d;sU(u);toast('✅ Saved!');renderProf();document.getElementById('topBadge').textContent=`Day ${gCD(d)} / ${TD}`}
-function resetAll(){if(!confirm('Бүх data устгах уу?'))return;if(!confirm('БУЦААХ БОЛОМЖГҮЙ. Итгэлтэй юу?'))return;
+function resetAll(){if(!confirm('Бүх data Delete?'))return;if(!confirm('PERMANENT. Are you sure?'))return;
   // Clear prefixed data (current user)
   ['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox'].forEach(k=>L.r(k));
   // Clear old unprefixed data too
@@ -2383,16 +2384,16 @@ function sendNotif(title,body,tag){
 }
 
 function testNotification(){
-  if(!('Notification' in window)){toast("Browser дэмжихгүй байна",'⚠️');return}
-  if(Notification.permission==='denied'){toast('Browser settings-ээс notification-ийг зөвшөөр','⚠️');return}
+  if(!('Notification' in window)){toast("Browser not supported",'⚠️');return}
+  if(Notification.permission==='denied'){toast('Enable notifications in browser settings','⚠️');return}
   if(Notification.permission==='default'){
     Notification.requestPermission().then(r=>{
-      if(r==='granted'){sendNotif('🔒 LOCK-IN 45','Notification ажиллаж байна! ✅','test');toast('🔔 Ажиллаж байна!')}
+      if(r==='granted'){sendNotif('🔒 LOCK-IN 45','Notifications working! ✅','test');toast('🔔 Working!')}
       else toast('Blocked','⚠️');
     });
     return;
   }
-  sendNotif('🔒 LOCK-IN 45','Notification ажиллаж байна! ✅','test');
+  sendNotif('🔒 LOCK-IN 45','Notifications working! ✅','test');
   toast('🔔 Notification илгээлээ!');
 }
 
@@ -2867,7 +2868,7 @@ function saveRun(){
   const date=document.getElementById('run-date').value||td();
   const km=parseFloat(document.getElementById('run-km').value);
   const time=parseInt(document.getElementById('run-time').value);
-  if(!km||!time){toast('KM болон хугацаа оруул','⚠️');return}
+  if(!km||!time){toast('Enter distance and time','⚠️');return}
 
   const speed=parseFloat((km/(time/60)).toFixed(1));
   const pace=time/km;
@@ -3012,7 +3013,7 @@ function renderHistory(){
   const hasData=habDone>0||sl||wo||meals.length>0||ref;
 
   if(!hasData&&!isToday){
-    el.innerHTML=`<div class="hist-empty">📭 ${ff(d)} — мэдээлэл алга</div>`;
+    el.innerHTML=`<div class="hist-empty">📭 ${ff(d)} — no data</div>`;
     document.getElementById('histAiCard').style.display='none';
     return;
   }
@@ -3024,7 +3025,7 @@ function renderHistory(){
   const offset=circ-(circ*score/100);
 
   let html=`<div class="hist-report">
-    <div class="hr-date">${ff(d)}${isToday?' · Өнөөдөр':''}</div>
+    <div class="hr-date">${ff(d)}${isToday?' · Today':''}</div>
     <div class="hr-score">
       <div class="hr-score-ring">
         <svg viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="${r}"/><circle class="ring-fill" cx="25" cy="25" r="${r}" style="stroke-dasharray:${circ};stroke-dashoffset:${offset};stroke:${col}"/></svg>
@@ -3032,7 +3033,7 @@ function renderHistory(){
       </div>
       <div>
         <div style="font-weight:700;font-size:.9rem">${habDone}/${habTotal} habits</div>
-        <div style="font-size:.65rem;color:var(--t3)">${score>=80?'Маш сайн өдөр':score>=50?'Хэвийн өдөр':'Дутуу өдөр'}</div>
+        <div style="font-size:.65rem;color:var(--t3)">${score>=80?'Great day':score>=50?'Average day':'Incomplete day'}</div>
       </div>
     </div>`;
 
@@ -3046,26 +3047,26 @@ function renderHistory(){
 
   // Sleep
   if(sl){
-    html+=`<div class="hist-section"><div class="hs-label">😴 Нойр</div><div class="hs-content">Score: ${sl.sc||'—'}/100 · ${sl.dur||'—'} · ${sl.q||''} ${sl.deep?'· Deep '+sl.deep:''}</div></div>`;
+    html+=`<div class="hist-section"><div class="hs-label">😴 Sleep</div><div class="hs-content">Score: ${sl.sc||'—'}/100 · ${sl.dur||'—'} · ${sl.q||''} ${sl.deep?'· Deep '+sl.deep:''}</div></div>`;
   }
 
   // Workout
   if(wo){
-    html+=`<div class="hist-section"><div class="hs-label">💪 Дасгал</div><div class="hs-content">${wo.type||'Workout'} · ${wo.int||''} · ${wo.dur?wo.dur+' мин':''} ${wo.notes?'· '+wo.notes:''}</div></div>`;
+    html+=`<div class="hist-section"><div class="hs-label">💪 Workout</div><div class="hs-content">${wo.type||'Workout'} · ${wo.int||''} · ${wo.dur?wo.dur+' min':''} ${wo.notes?'· '+wo.notes:''}</div></div>`;
   }
 
   // Meals
   if(meals.length>0){
     const totalCal=meals.reduce((s,m)=>s+(m.cal||0),0);
     const totalP=meals.reduce((s,m)=>s+(m.protein||0),0);
-    html+=`<div class="hist-section"><div class="hs-label">🍽️ Хоол (${meals.length})</div><div class="hs-content">${totalCal} kcal · P${totalP}g · ${meals.map(m=>m.name||m.type).join(', ')}</div></div>`;
+    html+=`<div class="hist-section"><div class="hs-label">🍽️ Meals (${meals.length})</div><div class="hs-content">${totalCal} kcal · P${totalP}g · ${meals.map(m=>m.name||m.type).join(', ')}</div></div>`;
   }
 
   // Reflection
   if(ref){
     html+=`<div class="hist-section"><div class="hs-label">🌙 Reflection</div><div class="hs-content">`;
     if(ref.good)html+=`Сайн: ${ref.good} `;
-    if(ref.improve)html+=`Сайжруулах: ${ref.improve} `;
+    if(ref.improve)html+=`Improve: ${ref.improve} `;
     if(ref.energy)html+=`Energy: ${'⭐'.repeat(ref.energy)}`;
     html+=`</div></div>`;
   }
@@ -3102,8 +3103,8 @@ function renderHistReflection(date,ref){
   if(ref){
     // Show existing reflection
     let html=`<div style="margin-bottom:10px">`;
-    if(ref.good)html+=`<div class="hist-section"><div class="hs-label">✅ Сайн хийсэн зүйл</div><div class="hs-content">${ref.good}</div></div>`;
-    if(ref.improve)html+=`<div class="hist-section"><div class="hs-label">📈 Сайжруулах зүйл</div><div class="hs-content">${ref.improve}</div></div>`;
+    if(ref.good)html+=`<div class="hist-section"><div class="hs-label">✅ Did well</div><div class="hs-content">${ref.good}</div></div>`;
+    if(ref.improve)html+=`<div class="hist-section"><div class="hs-label">📈 Will improve</div><div class="hs-content">${ref.improve}</div></div>`;
     if(ref.energy){let stars='';for(let i=0;i<ref.energy;i++)stars+='⭐';html+=`<div class="hist-section"><div class="hs-label">⚡ Energy</div><div class="hs-content">${stars}</div></div>`}
     html+=`</div>`;
     if(isToday||isPast)html+=`<button class="btn btn-s btn-sm btn-full" onclick="openHistReflection('${date}')">✏️ Edit Reflection</button>`;
@@ -3112,7 +3113,7 @@ function renderHistReflection(date,ref){
     el.innerHTML=`<p style="color:var(--t3);font-size:.8rem;text-align:center;padding:8px">No reflection yet.</p>
       <button class="btn btn-s btn-sm btn-full" onclick="openHistReflection('${date}')">🌙 Add Reflection</button>`;
   }else{
-    el.innerHTML=`<p style="color:var(--t3);font-size:.8rem;text-align:center;padding:8px">Ирээдүйн өдөр</p>`;
+    el.innerHTML=`<p style="color:var(--t3);font-size:.8rem;text-align:center;padding:8px">Future date</p>`;
   }
 }
 
@@ -3162,11 +3163,11 @@ async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal){
   }catch(e){
     // Fallback
     let summary='';
-    if(pct>=80)summary='Маш сайн өдөр байлаа! Habits-ийн дийлэнхийг биелүүлсэн.';
-    else if(pct>=50)summary='Дундаж өдөр. Зарим habit дутуу, гэхдээ хичээсэн.';
-    else summary='Хүнд өдөр байсан бололтой. Маргааш дахин эхлэх боломж бий.';
-    if(sl&&sl.sc&&sl.sc<60)summary+=' Нойрны чанар муу байсан — эрт унтахыг хичээ.';
-    else if(wo)summary+=' Дасгал хийсэн нь маш сайн!';
+    if(pct>=80)summary='Great day байлаа! Habits-ийн дийлэнхийг биелүүлсэн.';
+    else if(pct>=50)summary='Average day. Some habits missed but you showed up.';
+    else summary='Tough day. Tomorrow is a fresh start.';
+    if(sl&&sl.sc&&sl.sc<60)summary+='  Sleep quality was low — try sleeping earlier.';
+    else if(wo)summary+='  Great job working out!';
     aiText.textContent=summary;
     L.s('histai_'+d,summary);
   }
@@ -3413,7 +3414,7 @@ function saveExEdit(){
   const wo=getTodayWo();if(!wo)return;
   const idx=parseInt(document.getElementById('ex-ed-idx').value);
   const name=document.getElementById('ex-ed-name').value.trim();
-  if(!name){toast('Нэр оруул','⚠️');return}
+  if(!name){toast('Enter name','⚠️');return}
   const ex={
     name,
     sets:parseInt(document.getElementById('ex-ed-sets').value)||3,
@@ -3421,18 +3422,18 @@ function saveExEdit(){
     rest:document.getElementById('ex-ed-rest').value.trim()||'60 sec',
     weight_suggestion:document.getElementById('ex-ed-weight').value.trim()||''
   };
-  if(idx===-1){wo.exercises.push(ex);toast('➕ Нэмэгдлээ!')}
-  else{wo.exercises[idx]=ex;toast('✏️ Засагдлаа!')}
+  if(idx===-1){wo.exercises.push(ex);toast('➕ Added!')}
+  else{wo.exercises[idx]=ex;toast('✏️ Updated!')}
   saveTodayWo(wo);closeM('exEditM');renderTodayWorkout();
 }
 
 function deleteExercise(idx){
   const wo=getTodayWo();if(!wo)return;
-  if(!confirm(`"${wo.exercises[idx]?.name}" устгах уу?`))return;
+  if(!confirm(`"${wo.exercises[idx]?.name}" Delete?`))return;
   wo.exercises.splice(idx,1);
   // Fix completed indices
   if(wo.completed){wo.completed=wo.completed.filter(i=>i!==idx).map(i=>i>idx?i-1:i)}
-  saveTodayWo(wo);renderTodayWorkout();toast('🗑️ Устгагдлаа');
+  saveTodayWo(wo);renderTodayWorkout();toast('🗑️ Deleted');
 }
 
 function toggleExDone(idx){
