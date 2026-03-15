@@ -1425,7 +1425,7 @@ function saveDetoxEdit(){
 }
 function deleteCustomDetox(){
   const id=document.getElementById('dtx-ed-id').value;
-  if(!confirm('Устгах уу?'))return;
+  if(!confirm('Delete?'))return;
   const habits=getDetoxHabits().filter(h=>h.id!==id);
   saveDetoxConfig(habits);
   closeM('detoxEditM');
@@ -1473,7 +1473,6 @@ const TH=4,TD=45;
 // ╚══════════════════════════════════════════════════════════════╝
 const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
-// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -2343,7 +2342,7 @@ function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cS
   }else{ns.textContent='Not supported in this browser'}
 }
 function saveProf(){const n=document.getElementById('eName').value.trim(),d=document.getElementById('eDate').value;if(!n){toast('Name?','⚠️');return}const u=gU();u.name=n;u.start_date=d;sU(u);toast('✅ Saved!');renderProf();document.getElementById('topBadge').textContent=`Day ${gCD(d)} / ${TD}`}
-function resetAll(){if(!confirm('Бүх data Delete?'))return;if(!confirm('PERMANENT. Are you sure?'))return;
+function resetAll(){if(!confirm('Delete ALL data?'))return;if(!confirm('PERMANENT. Are you sure?'))return;
   // Clear prefixed data (current user)
   ['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox'].forEach(k=>L.r(k));
   // Clear old unprefixed data too
@@ -2394,7 +2393,7 @@ function testNotification(){
     return;
   }
   sendNotif('🔒 LOCK-IN 45','Notifications working! ✅','test');
-  toast('🔔 Notification илгээлээ!');
+  toast('🔔 Notification sent!');
 }
 
 function scheduleAllReminders(){
@@ -3065,7 +3064,7 @@ function renderHistory(){
   // Reflection
   if(ref){
     html+=`<div class="hist-section"><div class="hs-label">🌙 Reflection</div><div class="hs-content">`;
-    if(ref.good)html+=`Сайн: ${ref.good} `;
+    if(ref.good)html+=`Good: ${ref.good} `;
     if(ref.improve)html+=`Improve: ${ref.improve} `;
     if(ref.energy)html+=`Energy: ${'⭐'.repeat(ref.energy)}`;
     html+=`</div></div>`;
@@ -3163,7 +3162,7 @@ async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal){
   }catch(e){
     // Fallback
     let summary='';
-    if(pct>=80)summary='Great day байлаа! Habits-ийн дийлэнхийг биелүүлсэн.';
+    if(pct>=80)summary='Great day! Most habits completed.';
     else if(pct>=50)summary='Average day. Some habits missed but you showed up.';
     else summary='Tough day. Tomorrow is a fresh start.';
     if(sl&&sl.sc&&sl.sc<60)summary+='  Sleep quality was low — try sleeping earlier.';
