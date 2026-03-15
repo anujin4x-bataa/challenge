@@ -417,6 +417,36 @@ textarea.f-input{resize:vertical;min-height:60px}
 .hist-section .hs-content{font-size:.82rem;color:var(--t2);line-height:1.5}
 .hist-empty{text-align:center;padding:24px;color:var(--t3);font-size:.82rem}
 
+/* === DAILY WIN SUCCESS SCREEN === */
+.win-overlay{display:none;position:fixed;inset:0;z-index:2500;background:#000;animation:winFadeIn .5s ease}
+.win-overlay.on{display:flex;align-items:center;justify-content:center}
+@keyframes winFadeIn{from{opacity:0}to{opacity:1}}
+.win-card{width:100%;max-width:400px;min-height:100dvh;background:linear-gradient(180deg,#0a1a0a 0%,#0d2a0d 30%,#0a1a0a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden}
+.win-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at center,#c8ff0008 0%,transparent 50%);animation:winPulse 3s ease-in-out infinite}
+@keyframes winPulse{0%,100%{opacity:.3;transform:scale(.9)}50%{opacity:.6;transform:scale(1.1)}}
+.win-lock{font-size:3rem;margin-bottom:8px;animation:winBounce .6s ease .3s backwards}
+@keyframes winBounce{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.win-msg{font-family:var(--fb);font-size:2rem;font-weight:800;color:#fff;text-align:center;line-height:1.1;margin-bottom:4px;text-transform:uppercase;letter-spacing:-0.5px;animation:winSlideUp .5s ease .4s backwards}
+.win-sub{font-size:.85rem;color:#c8ff00;font-weight:600;margin-bottom:32px;animation:winSlideUp .5s ease .5s backwards}
+@keyframes winSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.win-day{font-family:var(--fm);font-size:3.5rem;font-weight:700;color:#c8ff00;line-height:1;animation:winScale .5s ease .6s backwards}
+@keyframes winScale{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.win-day-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#fff6;margin-top:4px;margin-bottom:24px}
+.win-progress{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .7s backwards}
+.win-progress .wp-bar{height:6px;background:#ffffff15;border-radius:99px;overflow:hidden;margin-bottom:6px}
+.win-progress .wp-fill{height:100%;background:linear-gradient(90deg,#a8d900,#c8ff00);border-radius:99px;transition:width 1.5s cubic-bezier(.22,1,.36,1)}
+.win-progress .wp-label{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.6rem;color:#fff6}
+.win-habits{width:80%;max-width:280px;margin-bottom:28px;animation:winSlideUp .5s ease .8s backwards}
+.win-hab-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.8rem;color:#fffc}
+.win-hab-row .whr-check{color:#c8ff00;font-weight:700;width:18px}
+.win-streak{background:#ffffff0a;border:1px solid #ffffff15;border-radius:99px;padding:8px 20px;font-family:var(--fm);font-size:.85rem;color:#c8ff00;font-weight:700;margin-bottom:28px;animation:winSlideUp .5s ease .9s backwards}
+.win-actions{display:flex;gap:10px;animation:winSlideUp .5s ease 1s backwards}
+.win-btn{padding:12px 24px;border-radius:99px;font-family:var(--fb);font-size:.78rem;font-weight:700;cursor:pointer;border:none;transition:.15s}
+.win-btn:active{transform:scale(.95)}
+.win-btn-share{background:#c8ff00;color:#000}
+.win-btn-close{background:#ffffff15;color:#fff}
+.win-brand{position:absolute;bottom:20px;font-family:var(--fm);font-size:.55rem;color:#fff3;letter-spacing:2px;text-transform:uppercase}
+
 /* Clickable heatmap cells */
 .heatmap .hc{cursor:pointer;transition:.15s}
 .heatmap .hc:active{transform:scale(1.3)}
@@ -712,6 +742,25 @@ textarea.f-input{resize:vertical;min-height:60px}
   <button class="btn btn-p btn-full" onclick="saveFoodEntry()">Save Meal</button>
   <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeM('foodScanM')">Cancel</button>
 </div>
+</div>
+
+<!-- DAILY WIN SUCCESS SCREEN -->
+<div class="win-overlay" id="winOverlay">
+  <div class="win-card" id="winCard">
+    <div class="win-lock">🔒</div>
+    <div class="win-msg" id="winMsg">LOCKED IN</div>
+    <div class="win-sub" id="winSub">All habits completed</div>
+    <div class="win-day" id="winDay">7</div>
+    <div class="win-day-label">DAY / <span id="winTotal">45</span></div>
+    <div class="win-progress"><div class="wp-bar"><div class="wp-fill" id="winProgressFill" style="width:0%"></div></div><div class="wp-label"><span>Start</span><span id="winPct">0%</span><span>Day 45</span></div></div>
+    <div class="win-habits" id="winHabits"></div>
+    <div class="win-streak" id="winStreak">🔥 0 day streak</div>
+    <div class="win-actions">
+      <button class="win-btn win-btn-share" onclick="shareWin()">📤 Share</button>
+      <button class="win-btn win-btn-close" onclick="closeWin()">Continue</button>
+    </div>
+    <div class="win-brand">LOCK-IN 45</div>
+  </div>
 </div>
 
 <!-- ==================== APP ==================== -->
@@ -1126,6 +1175,7 @@ textarea.f-input{resize:vertical;min-height:60px}
       <button class="btn btn-s btn-sm" onclick="reqNotifs()" id="notifBtn">🔔 Notifications</button>
       <div id="notifStatus" style="font-size:.65rem;color:var(--t3);padding:0 4px"></div>
       <button class="btn btn-s btn-sm" onclick="testNotification()">🧪 Test Notification</button>
+      <button class="btn btn-s btn-sm" onclick="L.r('win_'+td());showDailyWin()">🏆 Test Win Screen</button>
       <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 Export CSV</button>
       <button class="btn btn-d btn-sm" onclick="resetAll()">⚠️ Reset All</button>
     </div>
@@ -2000,7 +2050,84 @@ function renderD(){
   else{generateDailyInsight().then(()=>{const t=document.getElementById('dailyInsightText').textContent;if(t&&!t.includes('Loading'))L.s('insight_'+td(),t)})}
 }
 
-function toggleH(id){const nv=!tH[id];tH[id]=nv;if(nv){tH[id+'_t']=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});if(navigator.vibrate)navigator.vibrate(30)}sH(td(),tH);renderD();if(HABITS_F().every(h=>tH[h.id])){toast('PERFECT DAY!','🎯');celebrate();if(navigator.vibrate)navigator.vibrate([50,50,100])}else if(nv){const hab=HABITS_F().find(h=>h.id===id);if(hab)toast(`${hab.icon} Done!`);if(id==='sleep'&&!gSl(td()))setTimeout(openSl,400);if(id==='workout'){const gymWo=getTodayWo();if(gymWo)toast('🏋️ Check Gym tab!','💪');else if(!gWo(td()))setTimeout(openWo,400)}}}
+function toggleH(id){const nv=!tH[id];tH[id]=nv;if(nv){tH[id+'_t']=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});if(navigator.vibrate)navigator.vibrate(30)}sH(td(),tH);renderD();if(HABITS_F().every(h=>tH[h.id])){celebrate();if(navigator.vibrate)navigator.vibrate([50,50,100]);setTimeout(()=>showDailyWin(),600)}else if(nv){const hab=HABITS_F().find(h=>h.id===id);if(hab)toast(`${hab.icon} Done!`);if(id==='sleep'&&!gSl(td()))setTimeout(openSl,400);if(id==='workout'){const gymWo=getTodayWo();if(gymWo)toast('🏋️ Check Gym tab!','💪');else if(!gWo(td()))setTimeout(openWo,400)}}}
+
+// === DAILY WIN SCREEN ===
+const WIN_MESSAGES=[
+  {msg:'LOCKED IN',sub:'All habits completed'},
+  {msg:'MISSION\nCOMPLETED',sub:'Today was a win'},
+  {msg:'DISCIPLINE\nWINS',sub:'You showed up again'},
+  {msg:'DAY\nDOMINATED',sub:'Nothing was skipped'},
+  {msg:'ANOTHER DAY\nSTRONGER',sub:'Consistency is key'},
+  {msg:'YOU SHOWED\nUP TODAY',sub:'That\'s what matters'},
+  {msg:'PERFECT\nEXECUTION',sub:'Every box checked'},
+  {msg:'NO EXCUSES\nJUST RESULTS',sub:'The grind pays off'},
+  {msg:'ELITE\nPERFORMANCE',sub:'Built different'},
+  {msg:'100%\nCOMPLETION',sub:'Flawless day'}
+];
+
+function showDailyWin(){
+  // Don't show twice
+  const winKey='win_'+td();
+  if(L.g(winKey))return;
+  L.s(winKey,true);
+
+  const u=gU();if(!u)return;
+  const dn=gCD(u.start_date);
+  const st=cStrk(u);
+  const habits=HABITS_F();
+  const pick=WIN_MESSAGES[Math.floor(Math.random()*WIN_MESSAGES.length)];
+  const pct=Math.round(dn/TD*100);
+
+  document.getElementById('winMsg').textContent=pick.msg;
+  document.getElementById('winSub').textContent=pick.sub;
+  document.getElementById('winDay').textContent=dn;
+  document.getElementById('winTotal').textContent=TD;
+  document.getElementById('winPct').textContent=pct+'%';
+  document.getElementById('winStreak').textContent=`🔥 ${st.c} day streak`;
+
+  // Habits checklist
+  let habHtml='';
+  habits.forEach(h=>{
+    habHtml+=`<div class="win-hab-row"><span class="whr-check">✓</span>${h.icon} ${h.name}</div>`;
+  });
+  document.getElementById('winHabits').innerHTML=habHtml;
+
+  // Show overlay
+  document.getElementById('winOverlay').classList.add('on');
+
+  // Animate progress bar after showing
+  setTimeout(()=>{
+    document.getElementById('winProgressFill').style.width=pct+'%';
+  },800);
+}
+
+function closeWin(){
+  document.getElementById('winOverlay').classList.remove('on');
+}
+
+function shareWin(){
+  const u=gU();if(!u)return;
+  const dn=gCD(u.start_date);
+  const st=cStrk(u);
+
+  // Try native share API (mobile)
+  if(navigator.share){
+    navigator.share({
+      title:'LOCK-IN 45',
+      text:`🔒 Day ${dn}/${TD} — All habits completed!\n🔥 ${st.c} day streak\n💪 #LOCKIN45 #DisciplineWins`
+    }).catch(()=>{});
+    return;
+  }
+
+  // Fallback: copy to clipboard
+  const text=`🔒 LOCK-IN 45 — Day ${dn}/${TD}\n✅ All habits completed!\n🔥 ${st.c} day streak\n💪 #LOCKIN45 #DisciplineWins`;
+  navigator.clipboard.writeText(text).then(()=>{
+    toast('📋 Copied to clipboard!');
+  }).catch(()=>{
+    toast('Share manually','ℹ️');
+  });
+}
 function toggleRest(c){tH.rest=c;sH(td(),tH);renderD();if(c)toast('Rest day.','😴')}
 function toggleDetox(c){tH.detox=c;sH(td(),tH);renderD();if(c)toast('🧠 Detox ON','🔴')}
 function toggleDetoxH(id){const dh=getDH(td());dh[id]=!dh[id];sDH(td(),dh);renderD();if(dh[id])toast(`${DETOX_F().find(h=>h.id===id).icon} Done!`)}
@@ -2009,23 +2136,17 @@ let jT;document.getElementById('jInput').addEventListener('input',e=>{clearTimeo
 // Daily score
 function calcDailyScore(){
   const u=gU();if(!u)return 0;
-  const h=gH(td()),sl=gSl(td()),wo=gWo(td()),meals=getMeals(td()),ref=getReflection(td());
+  const h=gH(td()),ref=getReflection(td());
   const habits=HABITS_F();
   const habDone=habits.filter(hab=>h[hab.id]).length;
   const habTotal=habits.length;
   let s=0;
 
-  // Habits: max 85 points (proportional)
-  // All habits done = 85, partial = proportional
-  s+=Math.round((habDone/habTotal)*85);
+  // Habits: max 90 points (proportional)
+  s+=Math.round((habDone/habTotal)*90);
 
-  // Journal + Reflection: +10 points (5 each)
-  if(h.jnl&&h.jnl.length>5)s+=5;
-  if(ref&&(ref.good||ref.improve||ref.energy))s+=5;
-
-  // Sleep/Workout detail: +5 bonus
-  if(sl&&sl.sc)s+=3;
-  if(wo&&wo.dur)s+=2;
+  // Reflection: +10 points
+  if(ref&&(ref.good||ref.improve||ref.energy))s+=10;
 
   return Math.min(s,100);
 }
