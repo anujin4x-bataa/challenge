@@ -50,9 +50,9 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .t-btn{width:34px;height:34px;border-radius:50%;background:var(--bg3);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--t2);transition:.15s}
 .t-btn:active{transform:scale(.9)}
 
-.page{display:none;padding:0 16px 20px;animation:fadeIn .3s ease}
-.page.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.page{display:none;padding:0 16px 20px}
+.page.active{display:block;animation:pageSlideIn .3s ease}
+@keyframes pageSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--bg2);border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-around;z-index:100}
 .nav-tab{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--t3);font-size:.55rem;font-weight:600;padding:6px 12px;cursor:pointer;border:none;background:none;font-family:var(--fb);-webkit-tap-highlight-color:transparent;transition:.15s}
@@ -495,6 +495,33 @@ textarea.f-input{resize:vertical;min-height:60px}
 .add-exercise-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px dashed var(--brd2);border-radius:var(--r1);color:var(--t3);font-size:.78rem;font-weight:600;cursor:pointer;margin-top:8px;transition:.15s;font-family:var(--fb)}
 .add-exercise-btn:active{border-color:var(--acc);color:var(--acc);background:var(--accd)}
 
+/* Pull to refresh */
+.ptr-indicator{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-50px);z-index:150;background:var(--bg2);border:1px solid var(--brd);border-radius:99px;padding:8px 16px;font-size:.7rem;color:var(--t2);font-weight:600;transition:transform .3s ease;pointer-events:none;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.ptr-indicator.show{transform:translateX(-50%) translateY(12px)}
+
+/* AI Coach Chat */
+.coach-fab{position:fixed;bottom:76px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--acc);color:var(--acc-t);border:none;font-size:1.2rem;cursor:pointer;z-index:90;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:.2s}
+.coach-fab:active{transform:scale(.9)}
+.chat-overlay{display:none;position:fixed;inset:0;z-index:1500;background:var(--bg);flex-direction:column}
+.chat-overlay.on{display:flex}
+.chat-header{padding:14px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
+.chat-header-title{font-family:var(--fb);font-weight:700;font-size:1rem}
+.chat-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--t2);padding:4px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.82rem;line-height:1.5;animation:chatIn .3s ease}
+@keyframes chatIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg.user{align-self:flex-end;background:var(--acc);color:var(--acc-t);border-bottom-right-radius:4px}
+.chat-msg.ai{align-self:flex-start;background:var(--bg3);color:var(--t1);border-bottom-left-radius:4px}
+.chat-msg.ai .typing{display:flex;gap:4px;padding:4px 0}
+.chat-msg.ai .typing span{width:6px;height:6px;border-radius:50%;background:var(--t3);animation:aiDot 1.2s infinite}
+.chat-msg.ai .typing span:nth-child(2){animation-delay:.2s}
+.chat-msg.ai .typing span:nth-child(3){animation-delay:.4s}
+.chat-input-bar{padding:10px 16px;border-top:1px solid var(--brd);display:flex;gap:8px;background:var(--bg)}
+.chat-input-bar input{flex:1;background:var(--bg3);border:1px solid var(--brd);border-radius:99px;padding:10px 16px;font-size:.82rem;color:var(--t1);font-family:var(--fb);outline:none}
+.chat-input-bar input:focus{border-color:var(--acc)}
+.chat-send{width:40px;height:40px;border-radius:50%;background:var(--acc);color:var(--acc-t);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-send:active{transform:scale(.9)}
+
 /* Draggable habits */
 .habit{cursor:grab;-webkit-user-select:none;user-select:none}
 .habit:active{cursor:grabbing}
@@ -814,6 +841,27 @@ textarea.f-input{resize:vertical;min-height:60px}
 
 <!-- HIDDEN SHARE CARD (for screenshot) -->
 
+<!-- Pull to Refresh -->
+<div class="ptr-indicator" id="ptrIndicator">↓ Release to refresh</div>
+
+<!-- AI Coach FAB -->
+<button class="coach-fab" onclick="openCoachChat()" id="coachFab">⚡</button>
+
+<!-- AI Coach Chat -->
+<div class="chat-overlay" id="chatOverlay">
+  <div class="chat-header">
+    <div class="chat-header-title">⚡ AI Coach</div>
+    <button class="chat-close" onclick="closeCoachChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg ai">Hey! I'm your AI fitness coach. Ask me anything about your workouts, nutrition, habits, or progress. I have access to all your data.</div>
+  </div>
+  <div class="chat-input-bar">
+    <input type="text" id="chatInput" placeholder="Ask your coach..." onkeydown="if(event.key==='Enter')sendCoachMsg()">
+    <button class="chat-send" onclick="sendCoachMsg()">↑</button>
+  </div>
+</div>
+
 <!-- ==================== APP ==================== -->
 <div class="app">
 <header class="topbar">
@@ -1011,13 +1059,13 @@ textarea.f-input{resize:vertical;min-height:60px}
   <!-- AI Meal Plan -->
   <div class="insight-group">
     <div class="insight-header" onclick="toggleInsight(this)">
-      <div class="ih-left"><span class="ih-icon">🤖</span><span class="ih-title">AI Meal Plan</span></div>
+      <div class="ih-left"><span class="ih-icon">⚡</span><span class="ih-title">AI Meal Plan</span></div>
       <span class="ih-arrow">▾</span>
     </div>
     <div class="insight-body">
       <div class="insight-body-inner">
         <div id="mealPlanContent"><p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Generate a daily meal plan based on your calorie and macro goals.</p></div>
-        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">🤖 Generate Meal Plan</button>
+        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">⚡ Generate Meal Plan</button>
       </div>
     </div>
   </div>
@@ -1057,7 +1105,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
     <!-- AI Daily Summary -->
     <div class="ai-insight" id="histAiCard" style="display:none">
-      <div class="ai-tag">🤖 AI Day Summary</div>
+      <div class="ai-tag">⚡ AI Day Summary</div>
       <div class="ai-body" id="histAiText">—</div>
     </div>
 
@@ -1314,7 +1362,7 @@ textarea.f-input{resize:vertical;min-height:60px}
   <!-- Generate workout button -->
   <div id="todayPlanInfo"></div>
   <button class="ai-gen-btn" onclick="generateWorkout()" id="genWoBtn">
-    🤖 Generate Today's Workout
+    ⚡ Generate Today's Workout
   </button>
   <div style="height:12px"></div>
 
@@ -3157,7 +3205,7 @@ Respond ONLY with JSON (no markdown):
       {time:'Snack',food:'Greek yogurt + nuts',cal:Math.round(cal*0.1),protein:Math.round(protein*0.1)}
     ],total_cal:cal,tip:'Focus on whole foods and eat protein with every meal.'});
   }
-  btn.disabled=false;btn.textContent='🤖 Generate Meal Plan';
+  btn.disabled=false;btn.textContent='⚡ Generate Meal Plan';
 }
 
 function renderMealPlan(plan){
@@ -3794,7 +3842,7 @@ Respond ONLY with JSON (no markdown, no backticks):
     toast('Generated workout (offline)','⚡');
     renderTodayWorkout();
   }
-  btn.disabled=false;btn.innerHTML='🤖 Generate Today\'s Workout';
+  btn.disabled=false;btn.innerHTML='⚡ Generate Today\'s Workout';
 }
 
 function generateFallbackWorkout(prof,recovery,todayPlan){
@@ -4083,7 +4131,7 @@ function renderPRTracker(){
     if(recent.length>=2){
       const avgIncrease=recent.length>=3?(recent[recent.length-1].weight-recent[0].weight)/(recent.length-1):2.5;
       const suggestion=Math.round((latest.weight+Math.max(avgIncrease,1.25))*4)/4; // Round to .25
-      html+=`<div class="pr-suggestion"><span class="ps-icon">🤖</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
+      html+=`<div class="pr-suggestion"><span class="ps-icon">⚡</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
     }
   });
   el.innerHTML=html;
@@ -4109,6 +4157,120 @@ function renderGymHist(){
   el.innerHTML=html;
 }
 
+// ==================== PULL TO REFRESH ====================
+let ptrStartY=0,ptrActive=false;
+document.addEventListener('touchstart',e=>{
+  if(window.scrollY===0&&!document.querySelector('.modal-bg[style*="flex"]')&&!document.querySelector('.chat-overlay.on')&&!document.querySelector('.win-overlay.on')){
+    ptrStartY=e.touches[0].clientY;ptrActive=true;
+  }
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  if(!ptrActive)return;
+  const diff=e.touches[0].clientY-ptrStartY;
+  if(diff>60){document.getElementById('ptrIndicator').classList.add('show')}
+},{passive:true});
+document.addEventListener('touchend',()=>{
+  const ind=document.getElementById('ptrIndicator');
+  if(ind.classList.contains('show')){
+    ind.textContent='Refreshing...';
+    setTimeout(()=>{
+      if(cPg==='pg-d')renderD();
+      if(cPg==='pg-g')renderGym();
+      if(cPg==='pg-n')renderNut();
+      if(cPg==='pg-p')renderProg();
+      if(cPg==='pg-b')renderBody();
+      if(cPg==='pg-pr')renderProf();
+      ind.classList.remove('show');
+      ind.textContent='↓ Release to refresh';
+      toast('Refreshed','✅');
+    },500);
+  }
+  ptrActive=false;
+});
+
+// ==================== AI COACH CHAT ====================
+let chatHistory=[];
+
+function openCoachChat(){
+  document.getElementById('chatOverlay').classList.add('on');
+  document.getElementById('coachFab').style.display='none';
+  document.getElementById('chatInput').focus();
+}
+
+function closeCoachChat(){
+  document.getElementById('chatOverlay').classList.remove('on');
+  document.getElementById('coachFab').style.display='';
+}
+
+function buildCoachContext(){
+  const u=gU();if(!u)return '';
+  const dn=gCD(u.start_date);const st=cStrk(u);
+  const h=gH(td());const habDone=HABITS_F().filter(x=>h[x.id]).length;
+  const sl=gSl(td());const wo=gWo(td());
+  const body=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date))[0]||{};
+  const ns=getNutSettings();
+  const meals=getMeals(td());const totalCal=meals.reduce((s,m)=>s+(m.cal||0),0);
+  const prof=getGymProfile()||{};
+  const gymWo=getTodayWo();
+
+  let ctx=`USER CONTEXT (today ${td()}):`;
+  ctx+=`\n- Name: ${u.name}, Day ${dn}/${TD}, Streak: ${st.c}, Best: ${st.l}`;
+  ctx+=`\n- Gender: Female`;
+  ctx+=`\n- Today's habits: ${habDone}/${HABITS_F().length} done`;
+  if(sl)ctx+=`\n- Sleep: score ${sl.sc||'?'}, ${sl.dur||'?'}, ${sl.q||'?'}`;
+  if(wo)ctx+=`\n- Workout logged: ${wo.type}, ${wo.dur||'?'} min`;
+  if(gymWo)ctx+=`\n- Gym workout: ${gymWo.title}, ${gymWo.completed?gymWo.completed.length:0}/${gymWo.exercises?gymWo.exercises.length:0} exercises`;
+  if(body.weight)ctx+=`\n- Body: ${body.weight}kg, ${body.body_fat||'?'}% fat, ${body.skeletal_muscle||'?'}kg muscle`;
+  if(ns)ctx+=`\n- Nutrition target: ${ns.cal} kcal, P${ns.protein}g`;
+  if(totalCal)ctx+=`\n- Today's intake: ${totalCal} kcal`;
+  if(prof.goal)ctx+=`\n- Gym: ${prof.goal}, ${prof.exp}, focus: ${(prof.focus||[]).join(', ')||'none'}`;
+  return ctx;
+}
+
+async function sendCoachMsg(){
+  const input=document.getElementById('chatInput');
+  const msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+
+  const msgsEl=document.getElementById('chatMessages');
+
+  // User message
+  const userDiv=document.createElement('div');
+  userDiv.className='chat-msg user';
+  userDiv.textContent=msg;
+  msgsEl.appendChild(userDiv);
+
+  // AI typing
+  const aiDiv=document.createElement('div');
+  aiDiv.className='chat-msg ai';
+  aiDiv.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  msgsEl.appendChild(aiDiv);
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+
+  // Build messages
+  chatHistory.push({role:'user',content:msg});
+
+  const systemPrompt=`You are an AI fitness coach inside the LOCK-IN 45 app. You have access to the user's real data. Be concise (2-4 sentences max), motivational, and actionable. Speak like a supportive but no-nonsense coach. The user is female.
+
+${buildCoachContext()}`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:systemPrompt,messages:chatHistory.slice(-10)})
+    });
+    const data=await resp.json();
+    const text=data.content.map(i=>i.text||'').join('');
+    chatHistory.push({role:'assistant',content:text});
+    aiDiv.textContent=text;
+  }catch(e){
+    aiDiv.textContent="Can't connect right now. Check your habits and keep pushing — you've got this!";
+  }
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+
+// ==================== INIT ====================
 async function initApp(){
   initTh();
   // Check saved session
