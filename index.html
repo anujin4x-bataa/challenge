@@ -88,10 +88,6 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .energy-meter .em-label{font-size:.6rem;font-weight:700;white-space:nowrap}
 
 /* === WEEKLY FOCUS === */
-.weekly-focus{background:var(--bg3);border-radius:var(--r1);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;font-size:.78rem}
-.weekly-focus .wf-icon{font-size:1rem}
-.weekly-focus .wf-label{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3)}
-.weekly-focus .wf-text{color:var(--t2);font-weight:500}
 
 /* === MICRO-INTERACTIONS === */
 /* Habit check pop animation */
@@ -169,8 +165,8 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);min-height:100dv
 .score-mini .ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.85rem;font-weight:700}
 
 /* === COACH — centered quote === */
-.coach-inline{background:var(--bg3);border-radius:var(--r2);padding:16px;margin-bottom:12px;text-align:center}
-.coach-inline .ci-text{font-size:.9rem;color:var(--t2);line-height:1.6;font-style:italic}
+.coach-inline{padding:20px 16px;margin-bottom:12px;text-align:center;display:flex;align-items:center;justify-content:center}
+.coach-inline .ci-text{font-size:.95rem;color:var(--t1);line-height:1.7;font-style:italic;font-weight:500;text-align:center;max-width:320px;margin:0 auto;letter-spacing:.2px}
 
 /* === HABITS === */
 .habit{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--bg3);border-radius:var(--r2);margin-bottom:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;transition:all .15s;border:1px solid transparent}
@@ -866,12 +862,6 @@ textarea.f-input{resize:vertical;min-height:60px}
     </div>
   </div>
 
-  <!-- WEEKLY FOCUS -->
-  <div class="weekly-focus" id="weeklyFocus" style="display:none">
-    <div class="wf-icon">🎯</div>
-    <div><div class="wf-label">This week focus</div><div class="wf-text" id="wfText">—</div></div>
-  </div>
-
   <!-- ZONE 2: COACH — compact inline -->
   <div class="coach-inline">
     <div class="ci-text" id="coachMsg">"Loading..."</div>
@@ -1313,12 +1303,16 @@ textarea.f-input{resize:vertical;min-height:60px}
         <div class="f-grp"><label class="f-label">Session Time (min)</label>
           <div class="gym-settings" id="gymTimeChips"></div>
         </div>
+        <div class="f-grp"><label class="f-label">Focus Areas <span style="font-weight:400;color:var(--t3)">(select multiple)</span></label>
+          <div class="gym-settings" id="gymFocusChips"></div>
+        </div>
         <button class="btn btn-p btn-sm btn-full" onclick="saveGymProfile()">Save Profile</button>
       </div>
     </div>
   </div>
 
   <!-- Generate workout button -->
+  <div id="todayPlanInfo"></div>
   <button class="ai-gen-btn" onclick="generateWorkout()" id="genWoBtn">
     🤖 Generate Today's Workout
   </button>
@@ -1623,7 +1617,17 @@ const COACH={m:[
   "Winners wake up early.",
   "Your future self is watching.",
   "Make today count.",
-  "No shortcuts. Just work."
+  "No shortcuts. Just work.",
+  "Attack the day before it attacks you.",
+  "Champions are made in the morning.",
+  "Another chance to be great.",
+  "Yesterday is gone. Today is everything.",
+  "The sun is up. So are you. Move.",
+  "You woke up with a purpose.",
+  "Don't wish for it. Work for it.",
+  "Today's effort is tomorrow's result.",
+  "Be the hardest worker in the room.",
+  "The world rewards the disciplined."
 ],d:[
   "PERFECT DAY. Elite.",
   "All habits done. Locked in.",
@@ -1632,7 +1636,14 @@ const COACH={m:[
   "Flawless execution today.",
   "You did what others won't.",
   "Machine mode. Activated.",
-  "Zero excuses. Full send."
+  "Zero excuses. Full send.",
+  "This is what greatness looks like.",
+  "You're built different. Proven today.",
+  "Nothing left undone. That's power.",
+  "100% commitment. 100% results.",
+  "Perfect days create perfect lives.",
+  "Today you chose discipline over comfort.",
+  "The best version of you showed up."
 ],p:[
   "Not perfect, but you showed up.",
   "Progress > perfection.",
@@ -1640,13 +1651,21 @@ const COACH={m:[
   "Partial beats zero. Keep going.",
   "Even 1% forward is forward.",
   "Bad days build strong people.",
-  "Showing up is half the battle."
+  "Showing up is half the battle.",
+  "Some is better than none. Always.",
+  "Tomorrow is another shot.",
+  "The comeback is always stronger.",
+  "You didn't quit. That counts.",
+  "Imperfect action beats perfect inaction.",
+  "Still in the game. That's what matters."
 ],s:[
   "🔥 {s} days! Unstoppable.",
   "🔥 {s} day streak!",
   "🔥 {s} days locked in.",
   "🔥 {s} days of pure discipline.",
-  "🔥 {s} days. Don't stop now."
+  "🔥 {s} days. Don't stop now.",
+  "🔥 {s} days. You're on fire.",
+  "🔥 {s} days. Momentum is real."
 ],ms:{
   7:"ONE WEEK. The hardest part is done.",
   14:"TWO WEEKS. This is a lifestyle.",
@@ -1668,17 +1687,22 @@ const COACH={m:[
   "Fall in love with the process.",
   "One day or day one. You decide.",
   "Push yourself because no one else will.",
-  "Great things never come from comfort zones.",
-  "It's not about being the best. It's about being better than yesterday.",
-  "The only bad workout is the one that didn't happen.",
-  "Success is the sum of small efforts repeated daily.",
+  "The pain you feel today is the strength you feel tomorrow.",
+  "Dream big. Start small. Act now.",
+  "Comfort is the enemy of growth.",
+  "Success is rented. The rent is due every day.",
+  "You are what you repeatedly do.",
+  "Doubt kills more dreams than failure ever will.",
+  "Be so good they can't ignore you.",
+  "The harder you work, the luckier you get.",
   "Discipline is choosing between what you want now and what you want most.",
-  "Your body hears everything your mind says. Stay positive.",
   "Don't count the days. Make the days count.",
-  "Results happen over time, not overnight.",
-  "Champions train. Losers complain.",
   "If it doesn't challenge you, it doesn't change you.",
-  "You are one decision away from a completely different life."
+  "Winners focus on winning. Losers focus on winners.",
+  "Stop waiting for the perfect moment. Take the moment and make it perfect.",
+  "The body achieves what the mind believes.",
+  "Pain is temporary. Quitting lasts forever.",
+  "Every expert was once a beginner."
 ]};
 const MEAL_TYPES=['Breakfast','Lunch','Dinner','Snack'];
 const TH=4,TD=45;
@@ -2084,7 +2108,7 @@ document.getElementById('auth-pass').addEventListener('keypress',e=>{if(e.key===
 document.getElementById('s-date').value=td();
 
 // === COACH ===
-function getCoach(h){const d=HABITS_F().filter(x=>h[x.id]).length,sc=d/HABITS_F().length,u=gU(),st=cStrk(u);let msg;if(st.c>0&&COACH.ms[st.c])msg=COACH.ms[st.c];else if(st.c>=3)msg=rF(COACH.s).replace('{s}',st.c);else if(sc===1)msg=rF(COACH.d);else if(d>0)msg=rF(COACH.p);else msg=new Date().getHours()<12?rF(COACH.m):rF(COACH.e);return '"'+msg+'"'}
+function getCoach(h){const d=HABITS_F().filter(x=>h[x.id]).length,sc=d/HABITS_F().length,u=gU(),st=cStrk(u);let msg;if(st.c>0&&COACH.ms[st.c])msg=COACH.ms[st.c];else if(st.c>=3)msg=rF(COACH.s).replace('{s}',st.c);else if(sc===1)msg=rF(COACH.d);else if(d>0)msg=rF(COACH.p);else msg=new Date().getHours()<12?rF(COACH.m):rF(COACH.e);return msg}
 
 // ==================== DASHBOARD ====================
 let tH=null;
@@ -2125,17 +2149,6 @@ function renderD(){
   document.getElementById('emEnergyFill').style.background=eCols[energyLevel];
 
   // Weekly focus (based on weakest habit)
-  const wfEl=document.getElementById('weeklyFocus');
-  if(all.length>=3){
-    const habRates={};HABITS_F().forEach(h=>{const done=all.filter(r=>r[h.id]).length;habRates[h.id]={name:h.name,icon:h.icon,rate:done/Math.max(all.length,1)}});
-    const sorted=Object.values(habRates).sort((a,b)=>a.rate-b.rate);
-    const weak1=sorted[0];const weak2=sorted[1];
-    if(weak1&&weak2){
-      wfEl.style.display='';
-      document.getElementById('wfText').textContent=`${weak1.icon} ${weak1.name} + ${weak2.icon} ${weak2.name}`;
-    }
-  }else{wfEl.style.display='none'}
-
   // Daily score
   const score=calcDailyScore();
   const col=score>=80?'var(--acc)':score>=60?'#7dff7d':score>=40?'var(--yel)':'var(--red)';
@@ -2173,9 +2186,9 @@ function renderD(){
     const moveDown=idx<currentHabits.length-1?`<span class="h-move" onclick="event.stopPropagation();moveHabit(${idx},1)" style="cursor:pointer;font-size:.6rem;color:var(--t3);padding:2px">▼</span>`:'';
     const reorderBtns=`<div style="display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;opacity:.4">${moveUp}${moveDown}</div>`;
 
-    div.innerHTML=`${reorderBtns}<div class="hchk">${done?'✓':''}</div><div class="h-info"><div class="h-name">${h.icon} ${h.name}</div><div class="h-desc">${h.desc}</div>${extraInfo}</div>${done&&tH[h.id+'_t']?`<div class="h-meta">${tH[h.id+'_t']}</div>`:''}${h.detail?`<button class="h-detail" data-h="${h.id}">Log</button>`:''}<button class="h-edit" data-eid="${h.id}">✏️</button>`;
+    div.innerHTML=`${reorderBtns}<div class="hchk">${done?'✓':''}</div><div class="h-info"><div class="h-name">${h.icon} ${h.name}</div><div class="h-desc">${h.desc}</div>${extraInfo}</div>${done&&tH[h.id+'_t']?`<div class="h-meta">${tH[h.id+'_t']}</div>`:''}${h.detail?`<button class="h-detail" data-h="${h.id}">${h.id==='workout'?'Gym →':'Log'}</button>`:''}<button class="h-edit" data-eid="${h.id}">✏️</button>`;
     div.addEventListener('click',e=>{if(e.target.classList.contains('h-detail')||e.target.classList.contains('h-edit')||e.target.classList.contains('h-move'))return;toggleH(h.id)});
-    if(h.detail)div.querySelector('.h-detail').addEventListener('click',e=>{e.stopPropagation();h.id==='sleep'?openSl():openWo()});
+    if(h.detail)div.querySelector('.h-detail').addEventListener('click',e=>{e.stopPropagation();if(h.id==='sleep')openSl();else if(h.id==='workout'){document.querySelector('[data-page=pg-g]').click()}});
     div.querySelector('.h-edit').addEventListener('click',e=>{e.stopPropagation();openEditHabit(h.id)});
     el.appendChild(div);
   });
@@ -3592,22 +3605,39 @@ const GYM_GOALS=['Strength','Hypertrophy','Fat Loss','Endurance','General Fitnes
 const GYM_EXP=['Beginner','Intermediate','Advanced'];
 const GYM_EQUIP=['Full Gym','Dumbbells Only','Bodyweight','Home Gym','Resistance Bands'];
 const GYM_TIMES=['30','45','60','75','90'];
+const GYM_FOCUS=['Glutes','Legs','Back','Arms','Shoulders','Core','Chest','Full Body','Cardio','Flexibility'];
+let gymGoal='Fat Loss',gymExp='Intermediate',gymEquip='Full Gym',gymTime='45';
+let gymFocus=[];
 const DAYS_SHORT=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 // Gym data functions are in the DATA LAYER above (Supabase synced)
 
-let gymGoal='Hypertrophy',gymExp='Intermediate',gymEquip='Full Gym',gymTime='60';
 
 function renderGym(){
   const prof=getGymProfile();
-  if(prof){gymGoal=prof.goal;gymExp=prof.exp;gymEquip=prof.equip;gymTime=prof.time}
+  if(prof){gymGoal=prof.goal;gymExp=prof.exp;gymEquip=prof.equip;gymTime=prof.time;gymFocus=prof.focus||[]}
   renderGymChips();
   renderRecovery();
+  renderTodayPlanInfo();
   renderTodayWorkout();
   renderRunSection();
   renderWeekPlan();
   renderPRTracker();
   renderGymHist();
+}
+
+function renderTodayPlanInfo(){
+  const el=document.getElementById('todayPlanInfo');
+  const plan=getWeekPlan();
+  if(!plan||!plan.length){el.innerHTML='';return}
+  const dayName=DAYS_SHORT[new Date().getDay()===0?6:new Date().getDay()-1];
+  const todayPlan=plan.find(d=>d.day===dayName);
+  if(!todayPlan){el.innerHTML='';return}
+  if(todayPlan.type==='Rest'||todayPlan.type==='Active Recovery'){
+    el.innerHTML=`<div style="text-align:center;padding:10px;margin-bottom:8px;font-size:.78rem;color:var(--t3)">${todayPlan.icon} Today's plan: <strong>${todayPlan.type}</strong>${todayPlan.focus?' · '+todayPlan.focus:''}</div>`;
+  }else{
+    el.innerHTML=`<div style="text-align:center;padding:10px;margin-bottom:8px;background:var(--accd);border-radius:var(--r1);font-size:.78rem;color:var(--acc);font-weight:600">${todayPlan.icon} Today: <strong>${todayPlan.type}</strong>${todayPlan.focus?' · '+todayPlan.focus:''}</div>`;
+  }
 }
 
 function renderGymChips(){
@@ -3616,10 +3646,24 @@ function renderGymChips(){
   render('gymExpChips',GYM_EXP,gymExp,v=>{gymExp=v});
   render('gymEquipChips',GYM_EQUIP,gymEquip,v=>{gymEquip=v});
   render('gymTimeChips',GYM_TIMES,gymTime,v=>{gymTime=v});
+  // Focus — multi-select
+  const focusEl=document.getElementById('gymFocusChips');
+  focusEl.innerHTML='';
+  GYM_FOCUS.forEach(o=>{
+    const c=document.createElement('div');
+    c.className=`gym-chip ${gymFocus.includes(o)?'sel':''}`;
+    c.textContent=o;
+    c.addEventListener('click',()=>{
+      const i=gymFocus.indexOf(o);
+      if(i>=0)gymFocus.splice(i,1);else gymFocus.push(o);
+      renderGymChips();
+    });
+    focusEl.appendChild(c);
+  });
 }
 
 function saveGymProfile(){
-  saveGymProfileData({goal:gymGoal,exp:gymExp,equip:gymEquip,time:gymTime});
+  saveGymProfileData({goal:gymGoal,exp:gymExp,equip:gymEquip,time:gymTime,focus:gymFocus});
   toast('⚙️ Profile saved!');
 }
 
@@ -3663,34 +3707,69 @@ async function generateWorkout(){
   const btn=document.getElementById('genWoBtn');
   btn.disabled=true;btn.innerHTML='<div class="dot" style="width:6px;height:6px;border-radius:50%;background:#000;animation:aiDot 1.2s infinite"></div><div class="dot" style="width:6px;height:6px;border-radius:50%;background:#000;animation:aiDot 1.2s infinite;animation-delay:.2s"></div><div class="dot" style="width:6px;height:6px;border-radius:50%;background:#000;animation:aiDot 1.2s infinite;animation-delay:.4s"></div> Generating...';
   const recovery=getRecoveryScore();
-  const prof=getGymProfile()||{goal:gymGoal,exp:gymExp,equip:gymEquip,time:gymTime};
+  const prof=getGymProfile()||{goal:gymGoal,exp:gymExp,equip:gymEquip,time:gymTime,focus:gymFocus};
+  const focusCtx=prof.focus&&prof.focus.length?prof.focus.join(', '):'';
   const prs=getPRs();
   const prContext=prs.slice(0,8).map(p=>`${p.name}: ${p.history[p.history.length-1]?.weight||0}kg x ${p.history[p.history.length-1]?.reps||0}`).join(', ');
   const weekPlan=getWeekPlan();
   const dayName=DAYS_SHORT[new Date().getDay()===0?6:new Date().getDay()-1];
   const todayPlan=weekPlan?weekPlan.find(d=>d.day===dayName):null;
 
-  const prompt=`You are an expert personal gym trainer. Generate a structured workout.
+  // Sleep data
+  const sl=gSl(td());
+  const yDate=new Date();yDate.setDate(yDate.getDate()-1);
+  const ySl=gSl(yDate.toISOString().split('T')[0]);
+  const sleepInfo=sl||ySl;
+  const sleepCtx=sleepInfo?`Sleep: score ${sleepInfo.sc||'?'}/100, duration ${sleepInfo.dur||'?'}, quality ${sleepInfo.q||'?'}${sleepInfo.deep?' deep:'+sleepInfo.deep:''}`:''
 
-USER PROFILE:
+  // InBody / body composition
+  const bodyEntries=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date));
+  const body=bodyEntries[0]||{};
+  const bodyCtx=[];
+  if(body.weight)bodyCtx.push(`Weight: ${body.weight}kg`);
+  if(body.skeletal_muscle)bodyCtx.push(`Skeletal Muscle: ${body.skeletal_muscle}kg`);
+  if(body.body_fat)bodyCtx.push(`Body Fat: ${body.body_fat}%`);
+  if(body.bmr)bodyCtx.push(`BMR: ${body.bmr} kcal`);
+  if(body.lean_mass)bodyCtx.push(`Lean Mass: ${body.lean_mass}kg`);
+
+  // Nutrition targets
+  const ns=getNutSettings();
+  const nutCtx=ns?`Daily target: ${ns.cal} kcal, P${ns.protein}g`:'';
+
+  const prompt=`You are an expert personal gym trainer for a FEMALE client. Generate a structured workout.
+
+CLIENT PROFILE:
+- Gender: Female
 - Goal: ${prof.goal}
 - Experience: ${prof.exp}
 - Equipment: ${prof.equip}
 - Session time: ${prof.time} minutes
 - Recovery score today: ${recovery}/100
 - Today is: ${dayName}
-${todayPlan?`- Today's plan: ${todayPlan.type}`:''}
-${prContext?`- Recent lifts: ${prContext}`:''}
+${todayPlan?`- Today's plan from weekly split: ${todayPlan.type} (${todayPlan.focus||''})`:''}
+${focusCtx?`- Priority focus areas: ${focusCtx}`:''}
+${prContext?`- Recent PRs: ${prContext}`:''}
+${sleepCtx?`- ${sleepCtx}`:''}
+${bodyCtx.length?`- InBody Analysis: ${bodyCtx.join(', ')}`:''}
+${nutCtx?`- ${nutCtx}`:''}
 
-RULES:
-- If recovery < 40, make it a light/mobility session
+RULES FOR FEMALE CLIENT:
+- Prioritize her selected focus areas in exercise selection
+- Prioritize glute/hip exercises for lower body days (hip thrusts, glute bridges, RDLs, sumo squats)
+- Include core work (especially deep core stability, not just crunches)
+- Balance upper body with both push AND pull (many women neglect back/pull)
+- Use appropriate weight suggestions for female lifters
+- If body fat is high (>28%), include more metabolic conditioning
+- If skeletal muscle is low (<23kg), focus on progressive overload
+- If sleep score < 60, make it a lighter session
+- If recovery < 40, make it mobility/stretching
 - If recovery < 60, reduce volume by ~30%
 - Match exercises to available equipment
-- Include warmup set recommendations for compound lifts
+- Include warmup recommendations
 - Include a finisher
 
 Respond ONLY with JSON (no markdown, no backticks):
-{"title":"Workout Name","type":"Upper Body|Lower Body|Push|Pull|Full Body|Cardio|Mobility","exercises":[{"name":"Exercise Name","sets":4,"reps":"6-8","rest":"2 min","weight_suggestion":"based on experience level"}],"finisher":"Finisher description","notes":"Brief coaching note","estimated_time":"${prof.time} min"}`;
+{"title":"Workout Name","type":"Upper Body|Lower Body|Push|Pull|Full Body|Glutes|Cardio|Mobility","exercises":[{"name":"Exercise Name","sets":4,"reps":"6-8","rest":"2 min","weight_suggestion":"based on experience and body composition"}],"finisher":"Finisher description","notes":"Brief coaching note referencing her body data","estimated_time":"${prof.time} min"}`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -3833,7 +3912,7 @@ function toggleExDone(idx){
   renderTodayWorkout();
   if(wo.completed.length===wo.exercises.length){
     toast('🎉 Workout complete!');celebrate();
-    addGymHistory({date:td(),title:wo.title,type:wo.type,exercises:wo.exercises.length,time:wo.estimated_time});
+    addGymHistory({date:td(),title:wo.title,type:wo.type,exercises:wo.exercises.length,exerciseList:wo.exercises.map(e=>e.name),time:wo.estimated_time});
     renderGymHist();
     // Auto-check workout habit on dashboard
     const h=gH(td());
@@ -3850,16 +3929,34 @@ function toggleExDone(idx){
 async function generateWeekPlan(){
   const btn=document.getElementById('genPlanBtn');
   btn.disabled=true;btn.textContent='Generating...';
-  const prof=getGymProfile()||{goal:gymGoal,exp:gymExp,equip:gymEquip,time:gymTime};
+  const prof=getGymProfile()||{goal:gymGoal,exp:gymExp,equip:gymEquip,time:gymTime,focus:gymFocus};
+  const focusCtx=prof.focus&&prof.focus.length?prof.focus.join(', '):'';
+  const bodyEntries=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date));
+  const body=bodyEntries[0]||{};
+  const bodyCtx=[];
+  if(body.weight)bodyCtx.push(`${body.weight}kg`);
+  if(body.body_fat)bodyCtx.push(`${body.body_fat}% body fat`);
+  if(body.skeletal_muscle)bodyCtx.push(`${body.skeletal_muscle}kg muscle`);
 
-  const prompt=`You are a personal trainer. Generate a weekly training split.
+  const prompt=`You are a personal trainer creating a weekly split for a FEMALE client.
 
-USER: Goal=${prof.goal}, Experience=${prof.exp}, Equipment=${prof.equip}, Time=${prof.time}min/session
+CLIENT: Goal=${prof.goal}, Experience=${prof.exp}, Equipment=${prof.equip}, Time=${prof.time}min/session
+${focusCtx?`Priority focus: ${focusCtx}`:''}
+${bodyCtx.length?`Body: ${bodyCtx.join(', ')}`:''}
+
+RULES:
+- Prioritize her focus areas: schedule more days for selected focus areas
+- Include 2 lower body days (one glute-focused, one quad/hamstring)
+- Include 1-2 upper body days
+- Include at least 1 rest day
+- Balance with cardio/core days
+- If body fat >28%, add more cardio days
+- If muscle mass is low, prioritize strength days
 
 Respond ONLY with JSON array (no markdown):
-[{"day":"Mon","type":"Upper Body","icon":"💪","focus":"Chest, shoulders, triceps"},{"day":"Tue","type":"...","icon":"...","focus":"..."},...]
+[{"day":"Mon","type":"Lower Body - Glutes","icon":"🍑","focus":"Hip thrusts, glute bridges, RDL"},{"day":"Tue","type":"...","icon":"...","focus":"..."},...]
 
-Include all 7 days Mon-Sun. Include at least 1 rest day and 1 active recovery day. Use emojis for icons.`;
+Include all 7 days Mon-Sun. Use emojis for icons.`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -3876,13 +3973,13 @@ Include all 7 days Mon-Sun. Include at least 1 rest day and 1 active recovery da
     console.error(err);
     // Fallback plan
     const fallback=[
-      {day:'Mon',type:'Upper Body',icon:'💪',focus:'Chest, shoulders, triceps'},
-      {day:'Tue',type:'Cardio + Core',icon:'🏃',focus:'30 min run + abs'},
-      {day:'Wed',type:'Lower Body',icon:'🦵',focus:'Squats, deadlifts, legs'},
-      {day:'Thu',type:'Rest',icon:'😴',focus:'Full recovery'},
-      {day:'Fri',type:'Push',icon:'🏋️',focus:'Bench, overhead press'},
-      {day:'Sat',type:'Pull',icon:'💪',focus:'Rows, pull-ups, biceps'},
-      {day:'Sun',type:'Active Recovery',icon:'🧘',focus:'Stretching, light walk'}
+      {day:'Mon',type:'Lower Body - Glutes',icon:'🍑',focus:'Hip thrusts, glute bridges, RDL'},
+      {day:'Tue',type:'Upper Body',icon:'💪',focus:'Back, shoulders, arms'},
+      {day:'Wed',type:'Cardio + Core',icon:'🏃',focus:'30 min run + deep core'},
+      {day:'Thu',type:'Lower Body - Legs',icon:'🦵',focus:'Squats, lunges, leg press'},
+      {day:'Fri',type:'Full Body',icon:'🏋️',focus:'Compound movements'},
+      {day:'Sat',type:'Active Recovery',icon:'🧘',focus:'Yoga, stretching, walk'},
+      {day:'Sun',type:'Rest',icon:'😴',focus:'Full recovery'}
     ];
     saveWeekPlanData(fallback);
     toast('📅 Plan generated (offline)','⚡');
@@ -3897,16 +3994,32 @@ function renderWeekPlan(){
   if(!plan||!plan.length){el.innerHTML='<p style="color:var(--t3);font-size:.82rem;text-align:center;padding:12px">No plan yet.</p>';return}
   const today=DAYS_SHORT[new Date().getDay()===0?6:new Date().getDay()-1];
   let html='<div class="week-plan">';
-  plan.forEach(d=>{
+  plan.forEach((d,i)=>{
     const isToday=d.day===today;
     html+=`<div class="wp-day ${isToday?'today':''}">
-      <div class="wpd-name">${d.day}</div>
+      <div class="wpd-name">${d.day}${isToday?' ←':''}</div>
       <div class="wpd-type">${d.type}${d.focus?` <span style="color:var(--t3);font-size:.68rem;font-weight:400">· ${d.focus}</span>`:''}</div>
-      <div class="wpd-icon">${d.icon||'💪'}</div>
+      <div style="display:flex;gap:4px;align-items:center">
+        ${i>0?`<div class="ex-btn" onclick="swapPlanDay(${i},${i-1})" style="font-size:.5rem">▲</div>`:''}
+        ${i<plan.length-1?`<div class="ex-btn" onclick="swapPlanDay(${i},${i+1})" style="font-size:.5rem">▼</div>`:''}
+        <div class="wpd-icon">${d.icon||'💪'}</div>
+      </div>
     </div>`;
   });
   html+='</div>';
   el.innerHTML=html;
+}
+
+function swapPlanDay(a,b){
+  const plan=getWeekPlan();if(!plan)return;
+  // Swap the type/icon/focus but keep the day names
+  const dayA={type:plan[a].type,icon:plan[a].icon,focus:plan[a].focus};
+  const dayB={type:plan[b].type,icon:plan[b].icon,focus:plan[b].focus};
+  plan[a].type=dayB.type;plan[a].icon=dayB.icon;plan[a].focus=dayB.focus;
+  plan[b].type=dayA.type;plan[b].icon=dayA.icon;plan[b].focus=dayA.focus;
+  saveWeekPlanData(plan);
+  renderWeekPlan();
+  toast('📅 Swapped!');
 }
 
 // === PR TRACKER ===
@@ -3976,11 +4089,14 @@ function renderGymHist(){
   if(!hist.length){el.innerHTML='<p style="color:var(--t3);font-size:.82rem;text-align:center;padding:12px">Complete workouts to see history.</p>';return}
 
   let html='';
-  hist.slice(0,10).forEach(h=>{
-    html+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--brd)">
-      <div style="font-family:var(--fm);font-size:.65rem;color:var(--t3);width:50px">${fs(h.date)}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.82rem">${h.title}</div><div style="font-size:.65rem;color:var(--t3)">${h.exercises} exercises · ${h.time||''}</div></div>
-      <div style="font-size:.7rem;color:var(--acc);font-weight:700">${h.type||''}</div>
+  hist.slice(0,15).forEach(h=>{
+    html+=`<div style="padding:10px 0;border-bottom:1px solid var(--brd)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-family:var(--fm);font-size:.65rem;color:var(--t3);width:50px">${fs(h.date)}</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:.82rem">${h.title}</div><div style="font-size:.65rem;color:var(--t3)">${h.exercises} exercises · ${h.time||''}</div></div>
+        <div style="font-size:.7rem;color:var(--acc);font-weight:700">✓ ${h.type||''}</div>
+      </div>
+      ${h.exerciseList?`<div style="font-size:.6rem;color:var(--t3);margin-top:4px;padding-left:60px">${h.exerciseList.join(' · ')}</div>`:''}
     </div>`;
   });
   el.innerHTML=html;
