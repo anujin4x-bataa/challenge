@@ -3746,14 +3746,15 @@ CLIENT PROFILE:
 - Session time: ${prof.time} minutes
 - Recovery score today: ${recovery}/100
 - Today is: ${dayName}
-${todayPlan?`- Today's plan from weekly split: ${todayPlan.type} (${todayPlan.focus||''})`:''}
+${todayPlan?`- TODAY'S PLAN FROM WEEKLY SPLIT: ${todayPlan.type} — ${todayPlan.focus||''}. YOU MUST generate a ${todayPlan.type} workout. Do NOT change the type.`:''}
 ${focusCtx?`- Priority focus areas: ${focusCtx}`:''}
 ${prContext?`- Recent PRs: ${prContext}`:''}
 ${sleepCtx?`- ${sleepCtx}`:''}
 ${bodyCtx.length?`- InBody Analysis: ${bodyCtx.join(', ')}`:''}
 ${nutCtx?`- ${nutCtx}`:''}
 
-RULES FOR FEMALE CLIENT:
+CRITICAL RULES:
+${todayPlan?`- The workout type MUST be "${todayPlan.type}". This is non-negotiable — the user set this in their weekly plan.`:''}
 - Prioritize her selected focus areas in exercise selection
 - Prioritize glute/hip exercises for lower body days (hip thrusts, glute bridges, RDLs, sumo squats)
 - Include core work (especially deep core stability, not just crunches)
@@ -3769,7 +3770,7 @@ RULES FOR FEMALE CLIENT:
 - Include a finisher
 
 Respond ONLY with JSON (no markdown, no backticks):
-{"title":"Workout Name","type":"Upper Body|Lower Body|Push|Pull|Full Body|Glutes|Cardio|Mobility","exercises":[{"name":"Exercise Name","sets":4,"reps":"6-8","rest":"2 min","weight_suggestion":"based on experience and body composition"}],"finisher":"Finisher description","notes":"Brief coaching note referencing her body data","estimated_time":"${prof.time} min"}`;
+{"title":"Workout Name","type":"${todayPlan?todayPlan.type:'Full Body'}","exercises":[{"name":"Exercise Name","sets":4,"reps":"6-8","rest":"2 min","weight_suggestion":"based on experience and body composition"}],"finisher":"Finisher description","notes":"Brief coaching note referencing her body data","estimated_time":"${prof.time} min"}`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -3787,7 +3788,7 @@ Respond ONLY with JSON (no markdown, no backticks):
   }catch(err){
     console.error(err);
     // Fallback: generate a structured workout locally
-    const fallback=generateFallbackWorkout(prof,recovery);
+    const fallback=generateFallbackWorkout(prof,recovery,todayPlan);
     fallback.date=td();fallback.completed=[];
     saveTodayWo(fallback);
     toast('Generated workout (offline)','⚡');
@@ -3796,19 +3797,25 @@ Respond ONLY with JSON (no markdown, no backticks):
   btn.disabled=false;btn.innerHTML='🤖 Generate Today\'s Workout';
 }
 
-function generateFallbackWorkout(prof,recovery){
+function generateFallbackWorkout(prof,recovery,todayPlan){
   const isLight=recovery<50;
   const templates={
     'Upper Body':{title:'Upper Body Strength',exercises:[{name:'Bench Press',sets:4,reps:'6-8',rest:'2 min'},{name:'Barbell Row',sets:4,reps:'8',rest:'90 sec'},{name:'Overhead Press',sets:3,reps:'10',rest:'90 sec'},{name:'Pull Ups',sets:3,reps:'8-10',rest:'90 sec'},{name:'Lateral Raises',sets:3,reps:'12-15',rest:'60 sec'},{name:'Bicep Curls',sets:3,reps:'12',rest:'60 sec'}],finisher:'Pushups x max reps'},
     'Lower Body':{title:'Lower Body Power',exercises:[{name:'Barbell Squat',sets:4,reps:'6-8',rest:'2-3 min'},{name:'Romanian Deadlift',sets:4,reps:'8-10',rest:'2 min'},{name:'Bulgarian Split Squat',sets:3,reps:'10 each',rest:'90 sec'},{name:'Leg Press',sets:3,reps:'12',rest:'90 sec'},{name:'Calf Raises',sets:4,reps:'15',rest:'60 sec'}],finisher:'Wall Sit x 60 seconds'},
+    'Lower Body - Glutes':{title:'Glute Focus Day',exercises:[{name:'Hip Thrust',sets:4,reps:'10-12',rest:'90 sec'},{name:'Sumo Squat',sets:4,reps:'10',rest:'90 sec'},{name:'Romanian Deadlift',sets:3,reps:'10',rest:'90 sec'},{name:'Glute Bridge',sets:3,reps:'15',rest:'60 sec'},{name:'Cable Kickbacks',sets:3,reps:'12 each',rest:'60 sec'}],finisher:'Banded Glute Bridge x 30'},
+    'Lower Body - Legs':{title:'Leg Day',exercises:[{name:'Barbell Squat',sets:4,reps:'8',rest:'2 min'},{name:'Leg Press',sets:4,reps:'10',rest:'90 sec'},{name:'Walking Lunges',sets:3,reps:'12 each',rest:'90 sec'},{name:'Leg Curl',sets:3,reps:'12',rest:'60 sec'},{name:'Calf Raises',sets:4,reps:'15',rest:'60 sec'}],finisher:'Bodyweight Squats x 50'},
+    'Full Body':{title:'Full Body Strength',exercises:[{name:'Deadlift',sets:4,reps:'5',rest:'2 min'},{name:'Dumbbell Press',sets:3,reps:'10',rest:'90 sec'},{name:'Goblet Squat',sets:3,reps:'12',rest:'90 sec'},{name:'Bent Over Row',sets:3,reps:'10',rest:'90 sec'},{name:'Plank',sets:3,reps:'45 sec',rest:'30 sec'}],finisher:'Burpees x 10'},
     'Push':{title:'Push Day',exercises:[{name:'Flat Dumbbell Press',sets:4,reps:'8-10',rest:'90 sec'},{name:'Incline Press',sets:3,reps:'10',rest:'90 sec'},{name:'Shoulder Press',sets:3,reps:'10',rest:'90 sec'},{name:'Tricep Dips',sets:3,reps:'12',rest:'60 sec'},{name:'Lateral Raises',sets:3,reps:'15',rest:'60 sec'}],finisher:'Diamond Pushups x failure'},
     'Pull':{title:'Pull Day',exercises:[{name:'Deadlift',sets:4,reps:'5',rest:'3 min'},{name:'Pull Ups',sets:4,reps:'8',rest:'90 sec'},{name:'Cable Rows',sets:3,reps:'10',rest:'90 sec'},{name:'Face Pulls',sets:3,reps:'15',rest:'60 sec'},{name:'Barbell Curls',sets:3,reps:'10',rest:'60 sec'}],finisher:'Dead Hang x max time'},
+    'Cardio + Core':{title:'Cardio & Core',exercises:[{name:'Treadmill Run',sets:1,reps:'20 min',rest:'-'},{name:'Plank',sets:3,reps:'45 sec',rest:'30 sec'},{name:'Russian Twist',sets:3,reps:'20',rest:'30 sec'},{name:'Dead Bug',sets:3,reps:'10 each',rest:'30 sec'},{name:'Mountain Climbers',sets:3,reps:'30 sec',rest:'30 sec'}],finisher:'Tabata abs 4 min'},
     'Mobility':{title:'Recovery & Mobility',exercises:[{name:'Foam Rolling',sets:1,reps:'5 min',rest:'-'},{name:'Cat-Cow Stretch',sets:2,reps:'10',rest:'30 sec'},{name:'Hip 90/90',sets:2,reps:'8 each',rest:'30 sec'},{name:'Thoracic Rotation',sets:2,reps:'8 each',rest:'30 sec'},{name:'Light Walk',sets:1,reps:'15 min',rest:'-'}],finisher:'5 min meditation'}
   };
-  const types=Object.keys(templates);
-  const dayIdx=new Date().getDay();
-  const pick=isLight?'Mobility':types[dayIdx%4];
-  const wo={...templates[pick],type:pick,notes:isLight?'Recovery focused today. Keep it light.':'Train hard, stay focused.',estimated_time:prof.time+' min'};
+  // Use today's plan type if available, else pick by day
+  let pick;
+  if(isLight){pick='Mobility'}
+  else if(todayPlan&&templates[todayPlan.type]){pick=todayPlan.type}
+  else{const types=Object.keys(templates);pick=types[new Date().getDay()%types.length]}
+  const wo={...templates[pick],type:pick,notes:isLight?'Recovery focused today.':'Train hard, stay focused.',estimated_time:prof.time+' min'};
   if(isLight)wo.exercises.forEach(e=>{if(typeof e.sets==='number'&&e.sets>2)e.sets=Math.max(2,e.sets-1)});
   return wo;
 }
