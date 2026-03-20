@@ -1388,6 +1388,7 @@ textarea.f-input{resize:vertical;min-height:60px}
           <button class="btn btn-p btn-sm btn-full" onclick="fullSync()" id="syncBtn">☁️ Sync to Cloud</button>
           <div id="syncStatus" style="text-align:center;font-size:.65rem;color:var(--t3);margin-top:4px"></div>
           <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+          <button class="btn btn-s btn-sm" onclick="handleLogout()" style="color:var(--red);border-color:var(--red)">🚪 Log Out</button>
           <button class="btn btn-d btn-sm" onclick="resetAll()">⚠️ Reset All</button>
         </div>
       </div>
@@ -1894,8 +1895,9 @@ const TH=4,TD=45;
 // ║  PASTE YOUR SUPABASE CREDENTIALS HERE                    ║
 // ║  Get from Supabase Dashboard → Settings → API          ║
 // ╚══════════════════════════════════════════════════════════════╝
-const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
+const SUPABASE_URL = '';   // ← Paste API URL here. Example: 'https://abcdefgh.supabase.co'
+const SUPABASE_KEY = '';   // ← Paste anon key here. Example: 'eyJhbGci...'
+// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -2252,8 +2254,17 @@ function cStrk(u){const a=gAH();if(!a.length||!u)return{c:0,l:0};const dn=gCD(u.
 function getDH(date){const saved=L.g('detox_'+date);if(saved)return saved;const def={};DETOX_F().forEach(h=>def[h.id]=false);return def}
 function sDH(date,data){L.s('detox_'+date,data);DB.save('detox',{date,data});DB.saveAllDated('detox')}
 
-function getReflection(date){return L.g('ref_'+date)||null}
-function saveReflectionData(date,data){L.s('ref_'+date,data);DB.save('reflections',{date,data});DB.saveAllDated('ref')}
+function getReflection(date){return L.g('ref_'+date)||getAllReflections()[date]||null}
+function saveReflectionData(date,data){
+  L.s('ref_'+date,data);
+  // Save to reflections collection
+  const allRef=L.g('all_reflections')||{};
+  allRef[date]=data;
+  L.s('all_reflections',allRef);
+  DB.save('all_reflections',allRef);
+  DB.saveAllDated('ref');
+}
+function getAllReflections(){return L.g('all_reflections')||{}}
 
 function getNutSettings(){return L.g('nutset')||null}
 function saveNutSettingsData(d){L.s('nutset',d);DB.save('nutset',d)}
@@ -2286,12 +2297,20 @@ async function syncFromSupabase(){
   if(!sbClient){console.log('📦 No Supabase — using localStorage');return}
   console.log('🔄 Syncing from Supabase...');
   // Only sync tables that exist in Supabase schema
-  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox','fav_meals'];
+  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox','fav_meals','all_reflections'];
   let synced=0;
   for(const t of tables){
     try{
       const result=await DB.load(t);
-      if(result)synced++;
+      if(result){
+        synced++;
+        // If all_reflections loaded, restore individual date keys
+        if(t==='all_reflections'&&typeof result==='object'){
+          Object.entries(result).forEach(([date,data])=>{
+            L.s('ref_'+date,data);
+          });
+        }
+      }
     }catch(e){}
   }
   // Load all date-specific data
@@ -3213,7 +3232,7 @@ async function fullSync(){
   let uploaded=0,errors=0;
 
   // 1. Sync all regular tables
-  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox','fav_meals'];
+  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox','fav_meals','all_reflections'];
   for(const t of tables){
     const data=L.g(t);
     if(data){
