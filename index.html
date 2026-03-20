@@ -532,7 +532,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 /* AI Coach Chat */
 .coach-fab{position:fixed;bottom:76px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--acc);color:var(--acc-t);border:none;font-size:1.2rem;cursor:pointer;z-index:110;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:.2s}
 .coach-fab:active{transform:scale(.9)}
-.chat-overlay{display:none;position:fixed;inset:0;z-index:1500;background:var(--bg);flex-direction:column}
+.chat-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1500;background:var(--bg);flex-direction:column}
 .chat-overlay.on{display:flex}
 .chat-header{padding:14px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
 .chat-header-title{font-family:var(--fb);font-weight:700;font-size:1rem}
@@ -546,7 +546,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .chat-msg.ai .typing span{width:6px;height:6px;border-radius:50%;background:var(--t3);animation:aiDot 1.2s infinite}
 .chat-msg.ai .typing span:nth-child(2){animation-delay:.2s}
 .chat-msg.ai .typing span:nth-child(3){animation-delay:.4s}
-.chat-input-bar{padding:10px 16px;border-top:1px solid var(--brd);display:flex;gap:8px;background:var(--bg)}
+.chat-input-bar{padding:10px 16px env(safe-area-inset-bottom,0);border-top:1px solid var(--brd);display:flex;gap:8px;background:var(--bg)}
 .chat-input-bar input{flex:1;background:var(--bg3);border:1px solid var(--brd);border-radius:99px;padding:10px 16px;font-size:.82rem;color:var(--t1);font-family:var(--fb);outline:none}
 .chat-input-bar input:focus{border-color:var(--acc)}
 .chat-send{width:40px;height:40px;border-radius:50%;background:var(--acc);color:var(--acc-t);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -889,20 +889,20 @@ textarea.f-input{resize:vertical;min-height:60px}
 </div>
 
 <!-- AI Coach FAB -->
-<button class="coach-fab" onclick="openCoachChat()" id="coachFab">🤖</button>
+<button class="coach-fab" onclick="openCoachChat()" ontouchend="openCoachChat()" id="coachFab">🤖</button>
 
 <!-- AI Coach Chat -->
 <div class="chat-overlay" id="chatOverlay">
   <div class="chat-header">
     <div class="chat-header-title">🤖 AI Coach</div>
-    <button class="chat-close" onclick="closeCoachChat()">✕</button>
+    <button class="chat-close" onclick="closeCoachChat()" ontouchend="closeCoachChat()">✕</button>
   </div>
   <div class="chat-messages" id="chatMessages">
     <div class="chat-msg ai">Hey! I'm your AI fitness coach. Ask me anything about your workouts, nutrition, habits, or progress. I have access to all your data.</div>
   </div>
   <div class="chat-input-bar">
     <input type="text" id="chatInput" placeholder="Ask your coach..." onkeydown="if(event.key==='Enter')sendCoachMsg()">
-    <button class="chat-send" onclick="sendCoachMsg()">↑</button>
+    <button class="chat-send" onclick="sendCoachMsg()" ontouchend="event.preventDefault();sendCoachMsg()">↑</button>
   </div>
 </div>
 
@@ -4497,14 +4497,24 @@ document.addEventListener('touchend',()=>{
 let chatHistory=[];
 
 function openCoachChat(){
-  document.getElementById('chatOverlay').classList.add('on');
-  document.getElementById('coachFab').style.display='none';
-  document.getElementById('chatInput').focus();
+  console.log('Opening coach chat');
+  const overlay=document.getElementById('chatOverlay');
+  const fab=document.getElementById('coachFab');
+  if(!overlay){console.error('chatOverlay not found');return}
+  overlay.classList.add('on');
+  overlay.style.display='flex';
+  if(fab)fab.style.display='none';
+  setTimeout(()=>{
+    const inp=document.getElementById('chatInput');
+    if(inp)inp.focus();
+  },300);
 }
 
 function closeCoachChat(){
-  document.getElementById('chatOverlay').classList.remove('on');
-  document.getElementById('coachFab').style.display='';
+  const overlay=document.getElementById('chatOverlay');
+  const fab=document.getElementById('coachFab');
+  if(overlay){overlay.classList.remove('on');overlay.style.display='none'}
+  if(fab)fab.style.display='';
 }
 
 function buildCoachContext(){
@@ -4553,17 +4563,21 @@ async function sendCoachMsg(){
   msgsEl.appendChild(aiDiv);
   msgsEl.scrollTop=msgsEl.scrollHeight;
 
-  // Build messages
+  // Build messages with context as first user message
   chatHistory.push({role:'user',content:msg});
 
-  const systemPrompt=`You are an AI fitness coach inside the LOCK-IN 45 app. You have access to the user's real data. Be concise (2-4 sentences max), motivational, and actionable. Speak like a supportive but no-nonsense coach. The user is female.
+  const contextPrompt=`You are an AI fitness coach inside the LOCK-IN 45 app. You have access to the user's real data. Be concise (2-4 sentences max), motivational, and actionable. Speak like a supportive but no-nonsense coach. The user is female.
 
-${buildCoachContext()}`;
+${buildCoachContext()}
+
+Now respond to the user's messages below.`;
+
+  const apiMessages=[{role:'user',content:contextPrompt},{role:'assistant',content:'Got it — I have all your data. How can I help?'},...chatHistory.slice(-10)];
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:systemPrompt,messages:chatHistory.slice(-10)})
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:apiMessages})
     });
     const data=await resp.json();
     if(data.error){
