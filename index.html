@@ -1212,6 +1212,8 @@ textarea.f-input{resize:vertical;min-height:60px}
     <div class="card" id="slpChC"><div class="card-t">😴 Sleep Score</div><div class="chart-wrap"><canvas id="slpCh"></canvas></div></div>
     <div class="card" id="slpPerfC" style="display:none"><div class="card-t">😴 Sleep vs Performance</div><div class="chart-wrap"><canvas id="slpPerfChart"></canvas></div></div>
     <div class="card" id="habTimeC" style="display:none"><div class="card-t">⏰ Habit Completion Times</div><div id="habTimeHeat"></div></div>
+    <div class="card" id="woVolC" style="display:none"><div class="card-t">🏋️ Weekly Workout Volume (kg)</div><div class="chart-wrap"><canvas id="woVolChart"></canvas></div></div>
+    <div class="card" id="calTrendC" style="display:none"><div class="card-t">🍽️ Calorie Trend vs Target</div><div class="chart-wrap"><canvas id="calTrendChart"></canvas></div></div>
   </div>
 </div>
 
@@ -1467,6 +1469,20 @@ textarea.f-input{resize:vertical;min-height:60px}
   </div>
 
   <!-- Exercise history -->
+  <!-- Exercise History -->
+  <div class="insight-group">
+    <div class="insight-header" onclick="toggleInsight(this)">
+      <div class="ih-left"><span class="ih-icon">📈</span><span class="ih-title">Exercise History</span></div>
+      <span class="ih-arrow">▾</span>
+    </div>
+    <div class="insight-body">
+      <div class="insight-body-inner" id="exHistory">
+        <p style="color:var(--t3);font-size:.82rem;text-align:center;padding:12px">Complete workouts to track exercises.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workout History -->
   <div class="insight-group">
     <div class="insight-header" onclick="toggleInsight(this)">
       <div class="ih-left"><span class="ih-icon">📋</span><span class="ih-title">Workout History</span></div>
@@ -1701,7 +1717,34 @@ function renderHabEmojiPicker(elId,type){
     el.appendChild(span);
   });
 }
-const ACHS=[{id:'d1',n:'Day One',i:'🎯',r:'d',v:1},{id:'s3',n:'3 Day',i:'🔥',r:'s',v:3},{id:'s7',n:'7 Day',i:'🔥',r:'s',v:7},{id:'s14',n:'14 Day',i:'⚡',r:'s',v:14},{id:'s21',n:'21 Day',i:'💎',r:'s',v:21},{id:'s30',n:'30 Day',i:'👑',r:'s',v:30},{id:'s45',n:'45 Day',i:'🏆',r:'s',v:45},{id:'pw',n:'Perfect Wk',i:'⭐',r:'pw',v:1},{id:'half',n:'Halfway',i:'🏔️',r:'d',v:23},{id:'done',n:'Complete',i:'🏆',r:'d',v:45},{id:'ph1',n:'First Photo',i:'📸',r:'ph',v:1},{id:'b5',n:'Body Track',i:'📏',r:'b',v:5}];
+const ACHS=[
+  // Streak badges
+  {id:'d1',n:'First Step',i:'🎯',r:'d',v:1,medal:'🥉'},
+  {id:'s3',n:'3 Day Fire',i:'🔥',r:'s',v:3,medal:'🥉'},
+  {id:'s7',n:'Week Warrior',i:'🔥',r:'s',v:7,medal:'🥈'},
+  {id:'s14',n:'Two Week Tank',i:'⚡',r:'s',v:14,medal:'🥈'},
+  {id:'s21',n:'Habit Forged',i:'💎',r:'s',v:21,medal:'🥇'},
+  {id:'s30',n:'Month Monster',i:'👑',r:'s',v:30,medal:'🥇'},
+  {id:'s45',n:'Legendary',i:'🏆',r:'s',v:45,medal:'🏆'},
+  // Progress badges
+  {id:'half',n:'Halfway',i:'🏔️',r:'d',v:23,medal:'🥈'},
+  {id:'done',n:'Finisher',i:'🏆',r:'d',v:45,medal:'🏆'},
+  {id:'pw',n:'Perfect Week',i:'⭐',r:'pw',v:1,medal:'🥇'},
+  // Gym badges
+  {id:'w5',n:'5 Workouts',i:'💪',r:'w',v:5,medal:'🥉'},
+  {id:'w15',n:'15 Workouts',i:'🏋️',r:'w',v:15,medal:'🥈'},
+  {id:'w30',n:'30 Workouts',i:'🦾',r:'w',v:30,medal:'🥇'},
+  // Body badges
+  {id:'ph1',n:'First Photo',i:'📸',r:'ph',v:1,medal:'🥉'},
+  {id:'b5',n:'5 Measurements',i:'📏',r:'b',v:5,medal:'🥈'},
+  // Food badges
+  {id:'m7',n:'7 Days Tracked',i:'🍽️',r:'m',v:7,medal:'🥉'},
+  {id:'m21',n:'21 Days Tracked',i:'🥗',r:'m',v:21,medal:'🥈'},
+  // Special
+  {id:'early',n:'Early Bird',i:'🌅',r:'early',v:1,medal:'🥉'},
+  {id:'night',n:'Night Owl',i:'🦉',r:'night',v:1,medal:'🥉'},
+  {id:'allai',n:'AI Explorer',i:'🤖',r:'ai',v:1,medal:'🥈'}
+];
 const COACH={m:[
   "New day. Let's go.",
   "Rise and grind.",
@@ -2272,7 +2315,7 @@ function renderD(){
   // Zone 1: Status
   document.getElementById('topBadge').textContent=`Day ${dn} / ${TD}`;
   document.getElementById('heroDay').textContent=dn;
-  setRing('heroRingFill',prog);
+  setRing('heroRingFill',0);setTimeout(()=>setRing('heroRingFill',prog),150);
   document.getElementById('hStreak').textContent=st.c;
   document.getElementById('hBest').textContent=st.l;
   document.getElementById('hToday').textContent=tPct+'%';
@@ -2304,7 +2347,7 @@ function renderD(){
   document.getElementById('dsVal').style.color=col;
   setRing('dsRingFill',score);
   const dsF=document.getElementById('dsRingFill');
-  if(dsF)dsF.style.stroke=col;
+  if(dsF){dsF.style.stroke=col;dsF.style.strokeDashoffset=2*Math.PI*52;setTimeout(()=>setRing('dsRingFill',score),100)}
 
   // Zone 2: Coach
   document.getElementById('coachMsg').textContent=getCoach(tH);
@@ -2584,7 +2627,55 @@ function renderReflectionSummary(){const el=document.getElementById('reflectSumm
   el.innerHTML=`<div class="reflect-done"><div class="rd-q">Did well:</div><div>${ref.good||'—'}</div><div class="rd-q">Will improve:</div><div>${ref.improve||'—'}</div>${ref.energy?`<div class="rd-q">Energy: ${stars}</div>`:''}<button class="btn btn-s btn-sm" onclick="openReflection()" style="margin-top:8px">Edit</button></div>`}
 
 // Morning greeting
-function showMorningGreeting(){const u=gU();if(!u)return;if(localStorage.getItem('li_lastgreet')===td())return;const hr=new Date().getHours();let g='Good morning';if(hr>=12&&hr<17)g='Good afternoon';if(hr>=17)g='Good evening';document.getElementById('grName').textContent=u.name;document.querySelector('.gr-hello').textContent=g;document.getElementById('grDay').textContent=`Day ${gCD(u.start_date)} of your Lock-In`;document.getElementById('grMsg').textContent=rF(["Let's win today.","Make today count.","Stay locked in.","Execute relentlessly.","No excuses."]);document.getElementById('greetOv').classList.add('on')}
+const DAY_MESSAGES=[
+  "Day 1. The beginning of everything. Let's go.",
+  "Day 2. You showed up again. That's rare.",
+  "Day 3. Three days in. Most people quit by now.",
+  "Day 4. Building momentum. Don't stop.",
+  "Day 5. Almost a week. Feel it?",
+  "Day 6. Tomorrow marks one full week.",
+  "Day 7. ONE WEEK. You're already different.",
+  "Day 8. Week 2 begins. Level up.",
+  "Day 9. The grind is where growth lives.",
+  "Day 10. Double digits. You're serious.",
+  "Day 11. Your habits are becoming automatic.",
+  "Day 12. The body is adapting. Trust the process.",
+  "Day 13. Unlucky? Not for you. Keep pushing.",
+  "Day 14. TWO WEEKS. This is who you are now.",
+  "Day 15. One third done. No turning back.",
+  "Day 16. The middle is where champions are made.",
+  "Day 17. Every rep counts. Every meal counts.",
+  "Day 18. You're building something most won't.",
+  "Day 19. Discipline is a superpower.",
+  "Day 20. Almost three weeks of consistency.",
+  "Day 21. 21 DAYS. Habit officially formed.",
+  "Day 22. Now it's about refinement.",
+  "Day 23. Push harder than yesterday.",
+  "Day 24. Your future self is thanking you.",
+  "Day 25. Over halfway. Accelerate.",
+  "Day 26. Every day is a chance to be better.",
+  "Day 27. You're in rare territory now.",
+  "Day 28. FOUR WEEKS. A full month of discipline.",
+  "Day 29. The transformation is real.",
+  "Day 30. 30 DAYS. Look how far you've come.",
+  "Day 31. The final stretch begins.",
+  "Day 32. You can see the finish line.",
+  "Day 33. Don't coast. Finish strong.",
+  "Day 34. Champions don't slow down at the end.",
+  "Day 35. 10 days left. Make each one count.",
+  "Day 36. Your body is a machine now.",
+  "Day 37. The results speak for themselves.",
+  "Day 38. ONE WEEK LEFT. All out.",
+  "Day 39. Six days to legendary status.",
+  "Day 40. Five days. Pure execution.",
+  "Day 41. Four more. You've got this.",
+  "Day 42. Three days to immortality.",
+  "Day 43. Two. More. Days.",
+  "Day 44. Tomorrow you become a legend.",
+  "Day 45. YOU DID IT. 45 DAYS. LEGENDARY. 👑"
+];
+
+function showMorningGreeting(){const u=gU();if(!u)return;if(localStorage.getItem('li_lastgreet')===td())return;const hr=new Date().getHours();let g,emoji;if(hr>=5&&hr<12){g='Good morning';emoji='☀️'}else if(hr>=12&&hr<17){g='Good afternoon';emoji='🌤️'}else if(hr>=17&&hr<21){g='Good evening';emoji='🌅'}else{g='Night owl mode';emoji='🌙'}const dn=gCD(u.start_date);const dayMsg=DAY_MESSAGES[Math.min(dn-1,44)]||"Keep going. Every day counts.";document.getElementById('grName').textContent=u.name;document.querySelector('.gr-hello').textContent=`${emoji} ${g}`;document.getElementById('grDay').textContent=`Day ${dn} of your Lock-In`;document.getElementById('grMsg').textContent=dayMsg;document.getElementById('greetOv').classList.add('on')}
 function dismissGreeting(){document.getElementById('greetOv').classList.remove('on');localStorage.setItem('li_lastgreet',td())}
 
 // Weekly report
@@ -2597,8 +2688,8 @@ function renderWeeklyReportCard(){const u=gU();if(!u)return;const el=document.ge
 
 // Heatmap & Badges
 function renderHM(id,u){const g=document.getElementById(id);if(!g)return;const a=gAH(),dates=dR(u.start_date,TD),t=td();g.innerHTML='';dates.forEach((d,i)=>{const rec=a.find(h=>h.date===d);const sc=rec?rec.cs:0;const rest=rec?rec.rest:false;const fu=d>t;const c=document.createElement('div');let cls='';if(fu)cls='fu';else if(rest)cls='s';else if(rec)cls=dSt(sc);c.className=`hc ${cls} ${d===t?'td':''}`;c.textContent=i+1;c.title=`Day ${i+1} · ${fs(d)}`;g.appendChild(c)})}
-function renderBdg(id){const g=document.getElementById(id);if(!g)return;const u=gAch();g.innerHTML='';ACHS.forEach(d=>{const a=u.find(x=>x.id===d.id);const c=document.createElement('div');c.className=`bdg ${a?'on':'off'}`;c.innerHTML=`<div class="bdg-icon">${d.i}</div><div class="bdg-name">${d.n}</div><div class="bdg-date">${a?fs(a.du):'—'}</div>`;g.appendChild(c)})}
-function checkAch(){const u=gU();if(!u)return;const st=cStrk(u),a=gAH(),b=gAB(),ph=b.filter(x=>x.purl);const cd=a.filter(h=>h.cs>=TH/HABITS_F().length).length;let pw=0;const dates=dR(u.start_date,gCD(u.start_date));for(let i=0;i+6<dates.length;i+=7){if(dates.slice(i,i+7).every(d=>{const h=a.find(r=>r.date===d);return h&&h.cs===1}))pw++}ACHS.forEach(def=>{let ok=false;if(def.r==='s')ok=st.c>=def.v||st.l>=def.v;if(def.r==='d')ok=cd>=def.v;if(def.r==='pw')ok=pw>=def.v;if(def.r==='ph')ok=ph.length>=def.v;if(def.r==='b')ok=b.length>=def.v;if(ok&&uAch(def)){toast(`🏆 ${def.n}!`);celebrate()}})}
+function renderBdg(id){const g=document.getElementById(id);if(!g)return;const u=gAch();let unlocked=0;g.innerHTML='';ACHS.forEach(d=>{const a=u.find(x=>x.id===d.id);if(a)unlocked++;const c=document.createElement('div');c.className=`bdg ${a?'on':'off'}`;c.innerHTML=`<div class="bdg-icon">${d.i}</div><div class="bdg-name">${d.n}</div><div class="bdg-date">${a?d.medal+' '+fs(a.du):'🔒'}</div>`;g.appendChild(c)});const countEl=document.getElementById('achCount');if(countEl)countEl.textContent=`${unlocked}/${ACHS.length}`}
+function checkAch(){const u=gU();if(!u)return;const st=cStrk(u),a=gAH(),b=gAB(),ph=b.filter(x=>x.purl);const cd=a.filter(h=>h.cs>=TH/HABITS_F().length).length;let pw=0;const dates=dR(u.start_date,gCD(u.start_date));for(let i=0;i+6<dates.length;i+=7){if(dates.slice(i,i+7).every(d=>{const h=a.find(r=>r.date===d);return h&&h.cs===1}))pw++}const gymHist=getGymHistory();const wCount=gymHist.length;const mealDays=new Set(getAllMeals().map(m=>m.date)).size;const hr=new Date().getHours();ACHS.forEach(def=>{let ok=false;if(def.r==='s')ok=st.c>=def.v||st.l>=def.v;if(def.r==='d')ok=cd>=def.v;if(def.r==='pw')ok=pw>=def.v;if(def.r==='ph')ok=ph.length>=def.v;if(def.r==='b')ok=b.length>=def.v;if(def.r==='w')ok=wCount>=def.v;if(def.r==='m')ok=mealDays>=def.v;if(def.r==='early')ok=hr>=5&&hr<7&&HABITS_F().some(h=>gH(td())[h.id]);if(def.r==='night')ok=hr>=23&&HABITS_F().every(h=>gH(td())[h.id]);if(def.r==='ai')ok=typeof chatHistory!=='undefined'&&chatHistory.length>=2;if(ok&&uAch(def)){toast(`${def.medal} ${def.n} unlocked!`);celebrate();if(navigator.vibrate)navigator.vibrate([50,30,100])}})}
 
 // ==================== PROGRESS ====================
 function renderProg(){const u=gU();if(!u)return;
@@ -2676,6 +2767,49 @@ function renderProgCharts(u){
     htHtml+='</table></div>';
     document.getElementById('habTimeHeat').innerHTML=htHtml;
   }else{habTimeEl.style.display='none'}
+
+  // Workout Volume Progression (weekly total kg lifted)
+  const woVolEl=document.getElementById('woVolC');
+  const gymH=getGymHistory();
+  if(gymH.length>=2){
+    const weekVols={};
+    gymH.forEach(g=>{
+      if(!g.exerciseDetails)return;
+      const d=new Date(g.date);
+      const wk='W'+Math.ceil((d-new Date(u.start_date))/(7*864e5));
+      let vol=0;
+      g.exerciseDetails.forEach(ex=>{
+        const w=parseFloat(String(ex.weight).replace(/[^0-9.]/g,''))||0;
+        const s=parseInt(ex.sets)||0;
+        const r=parseInt(String(ex.reps).replace(/[^0-9]/g,''))||0;
+        vol+=w*s*r;
+      });
+      weekVols[wk]=(weekVols[wk]||0)+vol;
+    });
+    const wKeys=Object.keys(weekVols).sort();
+    if(wKeys.length>=2){
+      woVolEl.style.display='';
+      if(charts.woVol){charts.woVol.destroy();delete charts.woVol}
+      charts.woVol=new Chart(document.getElementById('woVolChart'),{type:'line',data:{labels:wKeys,datasets:[{data:wKeys.map(k=>Math.round(weekVols[k])),borderColor:cc.g,backgroundColor:cc.g+'22',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:cc.g}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cc.grid},ticks:{color:cc.t,callback:v=>v>=1000?(v/1000).toFixed(1)+'t':v+'kg'}},x:{grid:{display:false},ticks:{color:cc.t}}}}});
+    }else{woVolEl.style.display='none'}
+  }else{woVolEl.style.display='none'}
+
+  // Calorie Trend vs Target
+  const calTrendEl=document.getElementById('calTrendC');
+  const allMeals=getAllMeals();
+  const ns=getNutSettings();
+  if(allMeals.length>=3&&ns){
+    const calDays={};
+    allMeals.forEach(m=>{calDays[m.date]=(calDays[m.date]||0)+(m.cal||0)});
+    const cDates=Object.keys(calDays).sort().slice(-14);
+    if(cDates.length>=3){
+      calTrendEl.style.display='';
+      if(charts.calTrend){charts.calTrend.destroy();delete charts.calTrend}
+      const target=ns.cal;
+      const diffs=cDates.map(d=>calDays[d]-target);
+      charts.calTrend=new Chart(document.getElementById('calTrendChart'),{type:'bar',data:{labels:cDates.map(d=>fs(d)),datasets:[{data:diffs,backgroundColor:diffs.map(v=>v>0?'#ff475766':'#51cf6666'),borderColor:diffs.map(v=>v>0?'#ff4757':'#51cf66'),borderWidth:1,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const v=ctx.raw;return v>0?`+${v} surplus`:`${v} deficit`}}}},scales:{y:{grid:{color:cc.grid},ticks:{color:cc.t,callback:v=>(v>0?'+':'')+v}},x:{grid:{display:false},ticks:{color:cc.t}}}}});
+    }else{calTrendEl.style.display='none'}
+  }else{calTrendEl.style.display='none'}
 }
 function chC(){const dk=document.documentElement.getAttribute('data-theme')!=='light';return{g:dk?'#c8ff00':'#5cb800',y:'#ffc107',r:'#ff4757',t:dk?'#555':'#777',grid:dk?'#1c1c1c44':'#d5d5d033'}}
 
@@ -4431,7 +4565,61 @@ function renderPRTracker(){
 }
 
 // === GYM HISTORY ===
+function renderExHistory(){
+  const el=document.getElementById('exHistory');
+  const hist=getGymHistory().filter(h=>h.exerciseDetails);
+  if(!hist.length){el.innerHTML='<p style="color:var(--t3);font-size:.82rem;text-align:center;padding:12px">Complete workouts to track exercises.</p>';return}
+
+  // Group all exercises across workouts
+  const exMap={};
+  hist.forEach(h=>{
+    h.exerciseDetails.forEach(ex=>{
+      const key=ex.name.toLowerCase();
+      if(!exMap[key])exMap[key]={name:ex.name,history:[]};
+      exMap[key].history.push({date:h.date,sets:ex.sets,reps:ex.reps,weight:ex.weight||''});
+    });
+  });
+
+  const exercises=Object.values(exMap).sort((a,b)=>b.history.length-a.history.length);
+  let html='';
+  exercises.slice(0,15).forEach(ex=>{
+    const latest=ex.history[0];
+    const oldest=ex.history[ex.history.length-1];
+    const latestW=parseFloat(String(latest.weight).replace(/[^0-9.]/g,''))||0;
+    const oldestW=parseFloat(String(oldest.weight).replace(/[^0-9.]/g,''))||0;
+    const diff=latestW-oldestW;
+    const trend=diff>0?`<span style="color:var(--acc)">↑ +${diff}kg</span>`:diff<0?`<span style="color:var(--red)">↓ ${diff}kg</span>`:'';
+
+    html+=`<div style="padding:8px 0;border-bottom:1px solid var(--brd)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-weight:600;font-size:.82rem">${ex.name}</div>
+          <div style="font-size:.6rem;color:var(--t3)">${ex.history.length}× performed</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--fm);font-size:.78rem;font-weight:700">${latest.sets}×${latest.reps} ${latest.weight}</div>
+          <div style="font-size:.6rem">${trend}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:3px;margin-top:4px;overflow-x:auto">`;
+    ex.history.slice(0,8).reverse().forEach(h=>{
+      const w=parseFloat(String(h.weight).replace(/[^0-9.]/g,''))||0;
+      const maxW=Math.max(...ex.history.map(x=>parseFloat(String(x.weight).replace(/[^0-9.]/g,''))||0),1);
+      const pct=Math.max(20,w/maxW*100);
+      html+=`<div style="flex:1;min-width:24px;text-align:center">
+        <div style="height:30px;display:flex;align-items:flex-end;justify-content:center">
+          <div style="width:12px;height:${pct}%;background:var(--acc);border-radius:3px 3px 0 0;opacity:.7"></div>
+        </div>
+        <div style="font-size:.45rem;color:var(--t3);margin-top:2px">${fs(h.date)}</div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+  el.innerHTML=html;
+}
+
 function renderGymHist(){
+  renderExHistory();
   const el=document.getElementById('gymHistory');
   const hist=getGymHistory();
   if(!hist.length){el.innerHTML='<p style="color:var(--t3);font-size:.82rem;text-align:center;padding:12px">Complete workouts to see history.</p>';return}
