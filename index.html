@@ -530,27 +530,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 .ptr-indicator.show{transform:translateX(-50%) translateY(12px)}
 
 /* AI Coach Chat */
-.coach-fab{position:fixed;bottom:76px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--acc);color:var(--acc-t);border:none;font-size:1.2rem;cursor:pointer;z-index:110;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:.2s}
-.coach-fab:active{transform:scale(.9)}
-.chat-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1500;background:var(--bg);flex-direction:column}
-.chat-overlay.on{display:flex}
-.chat-header{padding:14px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
-.chat-header-title{font-family:var(--fb);font-weight:700;font-size:1rem}
-.chat-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--t2);padding:4px}
-.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-.chat-msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.82rem;line-height:1.5;animation:chatIn .3s ease}
 @keyframes chatIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.chat-msg.user{align-self:flex-end;background:var(--acc);color:var(--acc-t);border-bottom-right-radius:4px}
-.chat-msg.ai{align-self:flex-start;background:var(--bg3);color:var(--t1);border-bottom-left-radius:4px}
-.chat-msg.ai .typing{display:flex;gap:4px;padding:4px 0}
-.chat-msg.ai .typing span{width:6px;height:6px;border-radius:50%;background:var(--t3);animation:aiDot 1.2s infinite}
-.chat-msg.ai .typing span:nth-child(2){animation-delay:.2s}
-.chat-msg.ai .typing span:nth-child(3){animation-delay:.4s}
-.chat-input-bar{padding:10px 16px env(safe-area-inset-bottom,0);border-top:1px solid var(--brd);display:flex;gap:8px;background:var(--bg)}
-.chat-input-bar input{flex:1;background:var(--bg3);border:1px solid var(--brd);border-radius:99px;padding:10px 16px;font-size:.82rem;color:var(--t1);font-family:var(--fb);outline:none}
-.chat-input-bar input:focus{border-color:var(--acc)}
-.chat-send{width:40px;height:40px;border-radius:50%;background:var(--acc);color:var(--acc-t);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.chat-send:active{transform:scale(.9)}
 
 /* Draggable habits */
 .habit{cursor:grab;-webkit-user-select:none;user-select:none}
@@ -888,23 +868,6 @@ textarea.f-input{resize:vertical;min-height:60px}
   </div>
 </div>
 
-<!-- AI Coach FAB -->
-<button class="coach-fab" onclick="openCoachChat()" ontouchend="openCoachChat()" id="coachFab">🤖</button>
-
-<!-- AI Coach Chat -->
-<div class="chat-overlay" id="chatOverlay">
-  <div class="chat-header">
-    <div class="chat-header-title">🤖 AI Coach</div>
-    <button class="chat-close" onclick="closeCoachChat()" ontouchend="closeCoachChat()">✕</button>
-  </div>
-  <div class="chat-messages" id="chatMessages">
-    <div class="chat-msg ai">Hey! I'm your AI fitness coach. Ask me anything about your workouts, nutrition, habits, or progress. I have access to all your data.</div>
-  </div>
-  <div class="chat-input-bar">
-    <input type="text" id="chatInput" placeholder="Ask your coach..." onkeydown="if(event.key==='Enter')sendCoachMsg()">
-    <button class="chat-send" onclick="sendCoachMsg()" ontouchend="event.preventDefault();sendCoachMsg()">↑</button>
-  </div>
-</div>
 
 <!-- ==================== APP ==================== -->
 <div class="app">
@@ -2279,7 +2242,7 @@ document.querySelectorAll('.nav-tab').forEach(b=>{b.addEventListener('click',()=
 // Swipe between tabs
 let swipeStartX=0,swipeStartY=0,swiping=false;
 document.addEventListener('touchstart',e=>{
-  if(document.querySelector('.modal-bg[style*="flex"]')||document.querySelector('.chat-overlay.on')||document.querySelector('.win-overlay.on'))return;
+  if(document.querySelector('.modal-bg[style*="flex"]')||document.querySelector('.win-overlay.on'))return;
   swipeStartX=e.touches[0].clientX;swipeStartY=e.touches[0].clientY;swiping=true;
 },{passive:true});
 document.addEventListener('touchend',e=>{
@@ -2689,7 +2652,7 @@ function renderWeeklyReportCard(){const u=gU();if(!u)return;const el=document.ge
 // Heatmap & Badges
 function renderHM(id,u){const g=document.getElementById(id);if(!g)return;const a=gAH(),dates=dR(u.start_date,TD),t=td();g.innerHTML='';dates.forEach((d,i)=>{const rec=a.find(h=>h.date===d);const sc=rec?rec.cs:0;const rest=rec?rec.rest:false;const fu=d>t;const c=document.createElement('div');let cls='';if(fu)cls='fu';else if(rest)cls='s';else if(rec)cls=dSt(sc);c.className=`hc ${cls} ${d===t?'td':''}`;c.textContent=i+1;c.title=`Day ${i+1} · ${fs(d)}`;g.appendChild(c)})}
 function renderBdg(id){const g=document.getElementById(id);if(!g)return;const u=gAch();let unlocked=0;g.innerHTML='';ACHS.forEach(d=>{const a=u.find(x=>x.id===d.id);if(a)unlocked++;const c=document.createElement('div');c.className=`bdg ${a?'on':'off'}`;c.innerHTML=`<div class="bdg-icon">${d.i}</div><div class="bdg-name">${d.n}</div><div class="bdg-date">${a?d.medal+' '+fs(a.du):'🔒'}</div>`;g.appendChild(c)});const countEl=document.getElementById('achCount');if(countEl)countEl.textContent=`${unlocked}/${ACHS.length}`}
-function checkAch(){const u=gU();if(!u)return;const st=cStrk(u),a=gAH(),b=gAB(),ph=b.filter(x=>x.purl);const cd=a.filter(h=>h.cs>=TH/HABITS_F().length).length;let pw=0;const dates=dR(u.start_date,gCD(u.start_date));for(let i=0;i+6<dates.length;i+=7){if(dates.slice(i,i+7).every(d=>{const h=a.find(r=>r.date===d);return h&&h.cs===1}))pw++}const gymHist=getGymHistory();const wCount=gymHist.length;const mealDays=new Set(getAllMeals().map(m=>m.date)).size;const hr=new Date().getHours();ACHS.forEach(def=>{let ok=false;if(def.r==='s')ok=st.c>=def.v||st.l>=def.v;if(def.r==='d')ok=cd>=def.v;if(def.r==='pw')ok=pw>=def.v;if(def.r==='ph')ok=ph.length>=def.v;if(def.r==='b')ok=b.length>=def.v;if(def.r==='w')ok=wCount>=def.v;if(def.r==='m')ok=mealDays>=def.v;if(def.r==='early')ok=hr>=5&&hr<7&&HABITS_F().some(h=>gH(td())[h.id]);if(def.r==='night')ok=hr>=23&&HABITS_F().every(h=>gH(td())[h.id]);if(def.r==='ai')ok=typeof chatHistory!=='undefined'&&chatHistory.length>=2;if(ok&&uAch(def)){toast(`${def.medal} ${def.n} unlocked!`);celebrate();if(navigator.vibrate)navigator.vibrate([50,30,100])}})}
+function checkAch(){const u=gU();if(!u)return;const st=cStrk(u),a=gAH(),b=gAB(),ph=b.filter(x=>x.purl);const cd=a.filter(h=>h.cs>=TH/HABITS_F().length).length;let pw=0;const dates=dR(u.start_date,gCD(u.start_date));for(let i=0;i+6<dates.length;i+=7){if(dates.slice(i,i+7).every(d=>{const h=a.find(r=>r.date===d);return h&&h.cs===1}))pw++}const gymHist=getGymHistory();const wCount=gymHist.length;const mealDays=new Set(getAllMeals().map(m=>m.date)).size;const hr=new Date().getHours();ACHS.forEach(def=>{let ok=false;if(def.r==='s')ok=st.c>=def.v||st.l>=def.v;if(def.r==='d')ok=cd>=def.v;if(def.r==='pw')ok=pw>=def.v;if(def.r==='ph')ok=ph.length>=def.v;if(def.r==='b')ok=b.length>=def.v;if(def.r==='w')ok=wCount>=def.v;if(def.r==='m')ok=mealDays>=def.v;if(def.r==='early')ok=hr>=5&&hr<7&&HABITS_F().some(h=>gH(td())[h.id]);if(def.r==='night')ok=hr>=23&&HABITS_F().every(h=>gH(td())[h.id]);if(ok&&uAch(def)){toast(`${def.medal} ${def.n} unlocked!`);celebrate();if(navigator.vibrate)navigator.vibrate([50,30,100])}})}
 
 // ==================== PROGRESS ====================
 function renderProg(){const u=gU();if(!u)return;
@@ -3973,13 +3936,15 @@ function openHistReflection(date){
 }
 
 // AI summary for selected day
-async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal){
+async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal,forceNew){
   const aiCard=document.getElementById('histAiCard');
   const aiText=document.getElementById('histAiText');
 
   // Check cache
-  const cached=L.g('histai_'+d);
-  if(cached){aiCard.style.display='';aiText.textContent=cached;return}
+  if(!forceNew){
+    const cached=L.g('histai_'+d);
+    if(cached){aiCard.style.display='';aiText.innerHTML=cached+'<div style="text-align:right;margin-top:6px"><button onclick="regenDaySummary()" style="background:none;border:none;color:var(--t3);font-size:.6rem;cursor:pointer;font-family:var(--fb)">🔄 Regenerate</button></div>';return}
+  }
 
   const pct=Math.round(habDone/habTotal*100);
   if(habDone===0&&!sl&&!wo&&meals.length===0){aiCard.style.display='none';return}
@@ -3989,38 +3954,55 @@ async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal){
 
   const ctx=[];
   ctx.push(`Date: ${d}, Habits: ${habDone}/${habTotal} (${pct}%)`);
-  if(sl)ctx.push(`Sleep: score ${sl.sc||'?'}, duration ${sl.dur||'?'}, quality ${sl.q||'?'}`);
+  if(sl)ctx.push(`Sleep: score ${sl.sc||'?'}, duration ${sl.dur||'?'}, quality ${sl.q||'?'}${sl.deep?' deep:'+sl.deep:''}${sl.rem?' rem:'+sl.rem:''}`);
   if(wo)ctx.push(`Workout: ${wo.type||'done'}, intensity ${wo.int||'?'}, ${wo.dur||'?'} min`);
-  if(meals.length)ctx.push(`Meals: ${meals.length}, total ${meals.reduce((s,m)=>s+(m.cal||0),0)} kcal`);
+  const gymHist=getGymHistory().find(g=>g.date===d);
+  if(gymHist&&gymHist.exerciseDetails)ctx.push(`Gym: ${gymHist.title}, exercises: ${gymHist.exerciseDetails.map(e=>e.name+' '+e.sets+'×'+e.reps+(e.weight?' '+e.weight:'')).join(', ')}`);
+  if(meals.length){
+    const totalCal=meals.reduce((s,m)=>s+(m.cal||0),0);
+    const totalP=meals.reduce((s,m)=>s+(m.protein||0),0);
+    ctx.push(`Meals: ${meals.length} meals, ${totalCal} kcal, P${totalP}g. Meals: ${meals.map(m=>(m.name||m.type)+' '+m.cal+'kcal').join(', ')}`);
+  }
   if(ref&&ref.good)ctx.push(`Felt good about: ${ref.good}`);
   if(ref&&ref.improve)ctx.push(`Wants to improve: ${ref.improve}`);
   if(h.jnl)ctx.push(`Journal: ${h.jnl}`);
+  const dayRuns=(L.g('runs')||[]).filter(r=>r.date===d);
+  if(dayRuns.length)ctx.push(`Run: ${dayRuns[0].km}km in ${dayRuns[0].time}min`);
 
   const u=gU();const dn=u?gCD(u.start_date):'?';const st=u?cStrk(u):{c:0};
   const body=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date))[0]||{};
+  const ns=getNutSettings();
+
+  const styles=['analytical and data-driven','warm and encouraging','tough-love coach','witty and sharp','philosophical and deep'];
+  const style=styles[Math.floor(Math.random()*styles.length)];
 
   const prompt=`You're a personal coach reviewing Day ${dn}/45 of a female client's 45-day challenge. Streak: ${st.c} days.
 
 DATA:
 ${ctx.join('\n')}
 ${body.weight?`Body: ${body.weight}kg, ${body.body_fat||'?'}% fat, ${body.skeletal_muscle||'?'}kg muscle`:''}
+${ns?`Nutrition target: ${ns.cal} kcal, P${ns.protein}g`:''}
+
+YOUR STYLE TODAY: Be ${style}.
 
 INSTRUCTIONS:
-- Write exactly 3 short lines (not sentences — punchy lines)
-- Line 1: One specific observation about what stands out (reference actual numbers)
-- Line 2: A genuine insight connecting her data points (e.g. sleep→workout correlation, calorie vs habit completion)
-- Line 3: One concrete tip for tomorrow (not generic — based on her actual weak spots today)
-- Be direct and specific. NEVER use generic phrases like "great job" or "keep it up" without context
-- Vary your style: sometimes be analytical, sometimes motivational, sometimes tough-love
-- Reference her actual numbers, not just "good" or "bad"
+- Write exactly 3 short punchy lines
+- Line 1: One specific observation referencing actual numbers from above
+- Line 2: A genuine insight connecting 2+ data points (e.g. sleep score vs workout quality, calorie intake vs target, habit % vs streak)
+- Line 3: One hyper-specific tip for tomorrow based on her weakest area today
+- NEVER use generic phrases. Every word must reference her actual data.
 - Write in English`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
-    const text=data.content.map(i=>i.text||'').join('');
-    aiText.textContent=text;
-    L.s('histai_'+d,text);
+    const text=(data.content||[]).map(i=>i.text||'').join('');
+    if(text){
+      aiText.innerHTML=text+'<div style="text-align:right;margin-top:6px"><button onclick="regenDaySummary()" style="background:none;border:none;color:var(--t3);font-size:.6rem;cursor:pointer;font-family:var(--fb)">🔄 Regenerate</button></div>';
+      L.s('histai_'+d,text);
+    }else{
+      aiText.textContent='Could not generate summary.';
+    }
   }catch(e){
     // Fallback
     let summary='';
@@ -4032,6 +4014,12 @@ INSTRUCTIONS:
     aiText.textContent=summary;
     L.s('histai_'+d,summary);
   }
+}
+
+function regenDaySummary(){
+  const d=document.getElementById('histDate').value;
+  L.r('histai_'+d);
+  renderHistory();
 }
 
 // Clickable heatmap — clicking a day loads that day's report
@@ -4680,115 +4668,6 @@ document.addEventListener('touchend',()=>{
   }
   ptrActive=false;
 });
-
-// ==================== AI COACH CHAT ====================
-let chatHistory=[];
-
-function openCoachChat(){
-  console.log('Opening coach chat');
-  const overlay=document.getElementById('chatOverlay');
-  const fab=document.getElementById('coachFab');
-  if(!overlay){console.error('chatOverlay not found');return}
-  overlay.classList.add('on');
-  overlay.style.display='flex';
-  if(fab)fab.style.display='none';
-  setTimeout(()=>{
-    const inp=document.getElementById('chatInput');
-    if(inp)inp.focus();
-  },300);
-}
-
-function closeCoachChat(){
-  const overlay=document.getElementById('chatOverlay');
-  const fab=document.getElementById('coachFab');
-  if(overlay){overlay.classList.remove('on');overlay.style.display='none'}
-  if(fab)fab.style.display='';
-}
-
-function buildCoachContext(){
-  const u=gU();if(!u)return '';
-  const dn=gCD(u.start_date);const st=cStrk(u);
-  const h=gH(td());const habDone=HABITS_F().filter(x=>h[x.id]).length;
-  const sl=gSl(td());const wo=gWo(td());
-  const body=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date))[0]||{};
-  const ns=getNutSettings();
-  const meals=getMeals(td());const totalCal=meals.reduce((s,m)=>s+(m.cal||0),0);
-  const prof=getGymProfile()||{};
-  const gymWo=getTodayWo();
-
-  let ctx=`USER CONTEXT (today ${td()}):`;
-  ctx+=`\n- Name: ${u.name}, Day ${dn}/${TD}, Streak: ${st.c}, Best: ${st.l}`;
-  ctx+=`\n- Gender: Female`;
-  ctx+=`\n- Today's habits: ${habDone}/${HABITS_F().length} done`;
-  if(sl)ctx+=`\n- Sleep: score ${sl.sc||'?'}, ${sl.dur||'?'}, ${sl.q||'?'}`;
-  if(wo)ctx+=`\n- Workout logged: ${wo.type}, ${wo.dur||'?'} min`;
-  if(gymWo)ctx+=`\n- Gym workout: ${gymWo.title}, ${gymWo.completed?gymWo.completed.length:0}/${gymWo.exercises?gymWo.exercises.length:0} exercises`;
-  if(body.weight)ctx+=`\n- Body: ${body.weight}kg, ${body.body_fat||'?'}% fat, ${body.skeletal_muscle||'?'}kg muscle`;
-  if(ns)ctx+=`\n- Nutrition target: ${ns.cal} kcal, P${ns.protein}g`;
-  if(totalCal)ctx+=`\n- Today's intake: ${totalCal} kcal`;
-  if(prof.goal)ctx+=`\n- Gym: ${prof.goal}, ${prof.exp}, focus: ${(prof.focus||[]).join(', ')||'none'}`;
-  return ctx;
-}
-
-async function sendCoachMsg(){
-  const input=document.getElementById('chatInput');
-  const msg=input.value.trim();
-  if(!msg)return;
-  input.value='';
-
-  const msgsEl=document.getElementById('chatMessages');
-
-  // User message
-  const userDiv=document.createElement('div');
-  userDiv.className='chat-msg user';
-  userDiv.textContent=msg;
-  msgsEl.appendChild(userDiv);
-
-  // AI typing
-  const aiDiv=document.createElement('div');
-  aiDiv.className='chat-msg ai';
-  aiDiv.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
-  msgsEl.appendChild(aiDiv);
-  msgsEl.scrollTop=msgsEl.scrollHeight;
-
-  // Build messages with context as first user message
-  chatHistory.push({role:'user',content:msg});
-
-  const contextPrompt=`You are an AI fitness coach inside the LOCK-IN 45 app. You have access to the user's real data. Be concise (2-4 sentences max), motivational, and actionable. Speak like a supportive but no-nonsense coach. The user is female.
-
-${buildCoachContext()}
-
-Now respond to the user's messages below.`;
-
-  const apiMessages=[{role:'user',content:contextPrompt},{role:'assistant',content:'Got it — I have all your data. How can I help?'},...chatHistory.slice(-10)];
-
-  try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:apiMessages})
-    });
-    const data=await resp.json();
-    if(data.error){
-      console.error('Coach API error:',data.error);
-      aiDiv.textContent=data.error.message||"Something went wrong. Try again!";
-      chatHistory.pop(); // remove failed user msg from history
-      return;
-    }
-    const text=(data.content||[]).map(i=>i.text||'').join('');
-    if(!text){
-      aiDiv.textContent="Hmm, got an empty response. Try asking again!";
-      chatHistory.pop();
-      return;
-    }
-    chatHistory.push({role:'assistant',content:text});
-    aiDiv.textContent=text;
-  }catch(e){
-    console.error('Coach fetch error:',e);
-    aiDiv.textContent="Can't connect right now. Check your habits and keep pushing — you've got this!";
-    chatHistory.pop();
-  }
-  msgsEl.scrollTop=msgsEl.scrollHeight;
-}
 
 // ==================== LONG-PRESS CONTEXT MENU ====================
 let longPressTimer=null;
