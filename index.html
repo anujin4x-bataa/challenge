@@ -845,12 +845,12 @@ textarea.f-input{resize:vertical;min-height:60px}
 <div class="ptr-indicator" id="ptrIndicator">↓ Release to refresh</div>
 
 <!-- AI Coach FAB -->
-<button class="coach-fab" onclick="openCoachChat()" id="coachFab">⚡</button>
+<button class="coach-fab" onclick="openCoachChat()" id="coachFab">🤖</button>
 
 <!-- AI Coach Chat -->
 <div class="chat-overlay" id="chatOverlay">
   <div class="chat-header">
-    <div class="chat-header-title">⚡ AI Coach</div>
+    <div class="chat-header-title">🤖 AI Coach</div>
     <button class="chat-close" onclick="closeCoachChat()">✕</button>
   </div>
   <div class="chat-messages" id="chatMessages">
@@ -1053,19 +1053,20 @@ textarea.f-input{resize:vertical;min-height:60px}
     <button class="btn btn-p btn-full" onclick="saveNutSettings()">Calculate Smart Goal</button>
     <button class="btn btn-s btn-full btn-sm" onclick="autoFillFromInBody()" style="margin-top:6px">🔄 Auto-fill from InBody</button>
   </div>
-  <button class="btn btn-p btn-full btn-sm" onclick="openAddFood()" style="margin-bottom:14px">+ Add Meal</button>
+  <button class="btn btn-p btn-full btn-sm" onclick="openAddFood()" style="margin-bottom:8px">+ Add Meal</button>
+  <div id="savedMealsRow"></div>
   <div id="mealsList"></div>
 
   <!-- AI Meal Plan -->
   <div class="insight-group">
     <div class="insight-header" onclick="toggleInsight(this)">
-      <div class="ih-left"><span class="ih-icon">⚡</span><span class="ih-title">AI Meal Plan</span></div>
+      <div class="ih-left"><span class="ih-icon">🤖</span><span class="ih-title">AI Meal Plan</span></div>
       <span class="ih-arrow">▾</span>
     </div>
     <div class="insight-body">
       <div class="insight-body-inner">
         <div id="mealPlanContent"><p style="color:var(--t3);font-size:.82rem;text-align:center;padding:8px">Generate a daily meal plan based on your calorie and macro goals.</p></div>
-        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">⚡ Generate Meal Plan</button>
+        <button class="ai-gen-btn" onclick="generateMealPlan()" id="genMealBtn" style="margin-top:10px">🤖 Generate Meal Plan</button>
       </div>
     </div>
   </div>
@@ -1105,7 +1106,7 @@ textarea.f-input{resize:vertical;min-height:60px}
 
     <!-- AI Daily Summary -->
     <div class="ai-insight" id="histAiCard" style="display:none">
-      <div class="ai-tag">⚡ AI Day Summary</div>
+      <div class="ai-tag">🤖 AI Day Summary</div>
       <div class="ai-body" id="histAiText">—</div>
     </div>
 
@@ -1362,7 +1363,7 @@ textarea.f-input{resize:vertical;min-height:60px}
   <!-- Generate workout button -->
   <div id="todayPlanInfo"></div>
   <button class="ai-gen-btn" onclick="generateWorkout()" id="genWoBtn">
-    ⚡ Generate Today's Workout
+    🤖 Generate Today's Workout
   </button>
   <div style="height:12px"></div>
 
@@ -1750,7 +1751,26 @@ const COACH={m:[
   "Stop waiting for the perfect moment. Take the moment and make it perfect.",
   "The body achieves what the mind believes.",
   "Pain is temporary. Quitting lasts forever.",
-  "Every expert was once a beginner."
+  "Every expert was once a beginner.",
+  "You are one workout away from a good mood.",
+  "The only bad workout is the one that didn't happen.",
+  "Results happen over time, not overnight.",
+  "Strong is the new beautiful.",
+  "Sweat now. Shine later.",
+  "She believed she could, so she did.",
+  "Your body can stand almost anything. It's your mind you have to convince.",
+  "Strive for progress, not perfection.",
+  "It always seems impossible until it's done.",
+  "A year from now you'll wish you had started today.",
+  "The comeback is always stronger than the setback.",
+  "Sore today. Strong tomorrow.",
+  "You are your only limit.",
+  "Great things never came from comfort zones.",
+  "Don't limit your challenges. Challenge your limits.",
+  "When you feel like quitting, think about why you started.",
+  "The difference between try and triumph is a little umph.",
+  "Believe in yourself and all that you are.",
+  "Your health is an investment, not an expense."
 ]};
 const MEAL_TYPES=['Breakfast','Lunch','Dinner','Snack'];
 const TH=4,TD=45;
@@ -1760,8 +1780,9 @@ const TH=4,TD=45;
 // ║  PASTE YOUR SUPABASE CREDENTIALS HERE                    ║
 // ║  Get from Supabase Dashboard → Settings → API          ║
 // ╚══════════════════════════════════════════════════════════════╝
-const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   // ← ЭНД API URL оруул. Жишээ: 'https://abcdefgh.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   // ← ЭНД Publishable anon key оруул. Жишээ: 'eyJhbGci...'https://anujin4x-bataa.github.io/challenge/
+const SUPABASE_URL = '';   // ← Paste API URL here. Example: 'https://abcdefgh.supabase.co'
+const SUPABASE_KEY = '';   // ← Paste anon key here. Example: 'eyJhbGci...'
+// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -2735,9 +2756,38 @@ function renderNut(){const ns=getNutSettings();document.getElementById('nutDate'
   document.getElementById('calTotal').textContent=tC;document.getElementById('calGoalLabel').textContent=`/ ${gC} kcal`;setRing('calRingFill',Math.min(tC/gC*100,100));
   document.getElementById('mbP').style.width=Math.min(tP/gP*100,100)+'%';document.getElementById('mbC').style.width=Math.min(tCa/gCa*100,100)+'%';document.getElementById('mbF').style.width=Math.min(tF/gF*100,100)+'%';
   document.getElementById('mvP').textContent=`${tP}/${gP}g`;document.getElementById('mvC').textContent=`${tCa}/${gCa}g`;document.getElementById('mvF').textContent=`${tF}/${gF}g`;
-  const ml=document.getElementById('mealsList');if(!meals.length){ml.innerHTML='<div class="card"><p style="color:var(--t3);text-align:center;padding:16px;font-size:.82rem">No meals logged yet</p></div>'}else{let h='';MEAL_TYPES.forEach(type=>{const tm=meals.filter(m=>m.type===type);if(!tm.length)return;h+=`<div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:10px 0 4px;padding-left:2px">${type}</div>`;tm.forEach(m=>{h+=`<div class="meal-card"><div class="mc-info"><div class="mc-name">${m.name||'Meal'}</div><div class="mc-macros"><span style="color:#ff6b6b">P${m.protein||0}</span><span style="color:#ffd43b">C${m.carbs||0}</span><span style="color:#69db7c">F${m.fat||0}</span></div></div><div class="mc-cal">${m.cal||0}</div><button class="mc-del" onclick="deleteMeal('${m.id}')">✕</button></div>`})});ml.innerHTML=h}renderCalChart()}
+  const ml=document.getElementById('mealsList');if(!meals.length){ml.innerHTML='<div class="card"><p style="color:var(--t3);text-align:center;padding:16px;font-size:.82rem">No meals logged yet</p></div>'}else{let h='';MEAL_TYPES.forEach(type=>{const tm=meals.filter(m=>m.type===type);if(!tm.length)return;h+=`<div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:10px 0 4px;padding-left:2px">${type}</div>`;tm.forEach(m=>{h+=`<div class="meal-card"><div class="mc-info"><div class="mc-name">${m.name||'Meal'}</div><div class="mc-macros"><span style="color:#ff6b6b">P${m.protein||0}</span><span style="color:#ffd43b">C${m.carbs||0}</span><span style="color:#69db7c">F${m.fat||0}</span></div></div><div class="mc-cal">${m.cal||0}</div><button class="mc-del" onclick="deleteMeal('${m.id}')">✕</button></div>`})});ml.innerHTML=h}
+  // Saved meals (favorites from past)
+  renderSavedMeals();
+  renderCalChart()}
 function renderCalChart(){if(charts.calCh){charts.calCh.destroy();delete charts.calCh}const am=getAllMeals();if(am.length<1){document.getElementById('calChartCard').style.display='none';return}document.getElementById('calChartCard').style.display='';const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0])}const ns=getNutSettings();const gC=ns?ns.cal:2000;const cc=chC();const data=days.map(d=>am.filter(m=>m.date===d).reduce((s,m)=>s+(m.cal||0),0));charts.calCh=new Chart(document.getElementById('calChart'),{type:'bar',data:{labels:days.map(d=>fs(d)),datasets:[{data,backgroundColor:data.map(v=>v>gC*1.1?'#ff475799':v>=gC*.8?cc.g+'99':'#ffc10799'),borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cc.grid},ticks:{color:cc.t}},x:{grid:{display:false},ticks:{color:cc.t}}}}})}
 function deleteMeal(id){delMeal(id);renderNut();toast('Deleted','🗑️')}
+
+function renderSavedMeals(){
+  const el=document.getElementById('savedMealsRow');
+  const all=getAllMeals();
+  if(all.length<1){el.innerHTML='';return}
+  // Get unique meals by name (most recent version)
+  const unique={};
+  all.forEach(m=>{if(m.name&&m.name!=='Meal')unique[m.name.toLowerCase()]={name:m.name,cal:m.cal,protein:m.protein,carbs:m.carbs,fat:m.fat,type:m.type}});
+  const saved=Object.values(unique);
+  if(!saved.length){el.innerHTML='';return}
+  // Check which are already logged today
+  const todayMeals=getMeals(td()).map(m=>m.name?.toLowerCase());
+  let h='<div style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:4px 0 6px">Quick Add</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
+  saved.slice(0,12).forEach(m=>{
+    const already=todayMeals.includes(m.name.toLowerCase());
+    h+=`<button onclick='quickAddMeal(${JSON.stringify(m).replace(/'/g,"&#39;")})' style="padding:5px 10px;border-radius:99px;font-size:.65rem;font-weight:600;cursor:pointer;border:1px solid ${already?'var(--acc)':'var(--brd)'};background:${already?'var(--accd)':'var(--bg4)'};color:${already?'var(--acc)':'var(--t2)'};font-family:var(--fb)">${m.name} <span style="color:var(--t3)">${m.cal}</span></button>`;
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+function quickAddMeal(m){
+  addMeal({date:td(),name:m.name,type:m.type||'Lunch',cal:m.cal||0,protein:m.protein||0,carbs:m.carbs||0,fat:m.fat||0,notes:'',time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});
+  toast(`🍽️ ${m.name} added!`);
+  renderNut();
+}
 function openAddFood(){['fd-name','fd-cal','fd-p','fd-c','fd-f','fd-notes'].forEach(id=>document.getElementById(id).value='');selMealType='Lunch';renderFoodMealTypes();openM('foodScanM')}
 function renderFoodMealTypes(){const el=document.getElementById('fdMealType');el.innerHTML='';MEAL_TYPES.forEach(t=>{const b=document.createElement('button');b.className=`meal-type-btn ${t===selMealType?'sel':''}`;b.textContent=t;b.addEventListener('click',()=>{selMealType=t;renderFoodMealTypes()});el.appendChild(b)})}
 function saveFoodEntry(){const n=document.getElementById('fd-name').value.trim(),cal=parseInt(document.getElementById('fd-cal').value)||0;if(!n&&!cal){toast('Enter name or calories','⚠️');return}addMeal({date:td(),name:n||'Meal',type:selMealType,cal,protein:parseInt(document.getElementById('fd-p').value)||0,carbs:parseInt(document.getElementById('fd-c').value)||0,fat:parseInt(document.getElementById('fd-f').value)||0,notes:document.getElementById('fd-notes').value.trim(),time:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});closeM('foodScanM');toast('🍽️ Saved!');renderNut()}
@@ -3205,7 +3255,7 @@ Respond ONLY with JSON (no markdown):
       {time:'Snack',food:'Greek yogurt + nuts',cal:Math.round(cal*0.1),protein:Math.round(protein*0.1)}
     ],total_cal:cal,tip:'Focus on whole foods and eat protein with every meal.'});
   }
-  btn.disabled=false;btn.textContent='⚡ Generate Meal Plan';
+  btn.disabled=false;btn.textContent='🤖 Generate Meal Plan';
 }
 
 function renderMealPlan(plan){
@@ -3601,10 +3651,27 @@ async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal){
   if(ref&&ref.improve)ctx.push(`Wants to improve: ${ref.improve}`);
   if(h.jnl)ctx.push(`Journal: ${h.jnl}`);
 
-  const prompt=`You are a fitness coach reviewing a client's day. Give a 2-sentence summary and 1 actionable tip. Be specific, encouraging, concise. Data:\n${ctx.join('\n')}\n\nRespond in the same language as the journal/reflection text, or English if none.`;
+  const u=gU();const dn=u?gCD(u.start_date):'?';const st=u?cStrk(u):{c:0};
+  const body=[...gAB()].sort((a,b)=>b.date.localeCompare(a.date))[0]||{};
+
+  const prompt=`You're a personal coach reviewing Day ${dn}/45 of a female client's 45-day challenge. Streak: ${st.c} days.
+
+DATA:
+${ctx.join('\n')}
+${body.weight?`Body: ${body.weight}kg, ${body.body_fat||'?'}% fat, ${body.skeletal_muscle||'?'}kg muscle`:''}
+
+INSTRUCTIONS:
+- Write exactly 3 short lines (not sentences — punchy lines)
+- Line 1: One specific observation about what stands out (reference actual numbers)
+- Line 2: A genuine insight connecting her data points (e.g. sleep→workout correlation, calorie vs habit completion)
+- Line 3: One concrete tip for tomorrow (not generic — based on her actual weak spots today)
+- Be direct and specific. NEVER use generic phrases like "great job" or "keep it up" without context
+- Vary your style: sometimes be analytical, sometimes motivational, sometimes tough-love
+- Reference her actual numbers, not just "good" or "bad"
+- Write in English`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:150,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const text=data.content.map(i=>i.text||'').join('');
     aiText.textContent=text;
@@ -3681,10 +3748,25 @@ function renderTodayPlanInfo(){
   const dayName=DAYS_SHORT[new Date().getDay()===0?6:new Date().getDay()-1];
   const todayPlan=plan.find(d=>d.day===dayName);
   if(!todayPlan){el.innerHTML='';return}
-  if(todayPlan.type==='Rest'||todayPlan.type==='Active Recovery'){
-    el.innerHTML=`<div style="text-align:center;padding:10px;margin-bottom:8px;font-size:.78rem;color:var(--t3)">${todayPlan.icon} Today's plan: <strong>${todayPlan.type}</strong>${todayPlan.focus?' · '+todayPlan.focus:''}</div>`;
+  if(todayPlan.type==='Rest'){
+    el.innerHTML=`<div style="text-align:center;padding:20px 16px;margin-bottom:8px;background:var(--bg3);border-radius:var(--r2)">
+      <div style="font-size:2rem;margin-bottom:8px">😴</div>
+      <div style="font-weight:700;font-size:.95rem;margin-bottom:4px">Rest Day</div>
+      <div style="font-size:.75rem;color:var(--t3);line-height:1.5">Your body recovers and grows on rest days. Stay hydrated, eat well, and get quality sleep tonight.</div>
+    </div>`;
+    // Hide generate button on rest day
+    document.getElementById('genWoBtn').style.display='none';
+    return;
+  }else if(todayPlan.type==='Active Recovery'){
+    el.innerHTML=`<div style="text-align:center;padding:16px;margin-bottom:8px;background:var(--bg3);border-radius:var(--r2)">
+      <div style="font-size:1.5rem;margin-bottom:6px">🧘</div>
+      <div style="font-weight:700;font-size:.88rem;margin-bottom:4px">Active Recovery</div>
+      <div style="font-size:.75rem;color:var(--t3);line-height:1.5">${todayPlan.focus||'Light stretching, yoga, or a walk'}</div>
+    </div>`;
+    document.getElementById('genWoBtn').style.display='';
   }else{
     el.innerHTML=`<div style="text-align:center;padding:10px;margin-bottom:8px;background:var(--accd);border-radius:var(--r1);font-size:.78rem;color:var(--acc);font-weight:600">${todayPlan.icon} Today: <strong>${todayPlan.type}</strong>${todayPlan.focus?' · '+todayPlan.focus:''}</div>`;
+    document.getElementById('genWoBtn').style.display='';
   }
 }
 
@@ -3842,7 +3924,7 @@ Respond ONLY with JSON (no markdown, no backticks):
     toast('Generated workout (offline)','⚡');
     renderTodayWorkout();
   }
-  btn.disabled=false;btn.innerHTML='⚡ Generate Today\'s Workout';
+  btn.disabled=false;btn.innerHTML='🤖 Generate Today\'s Workout';
 }
 
 function generateFallbackWorkout(prof,recovery,todayPlan){
@@ -4131,7 +4213,7 @@ function renderPRTracker(){
     if(recent.length>=2){
       const avgIncrease=recent.length>=3?(recent[recent.length-1].weight-recent[0].weight)/(recent.length-1):2.5;
       const suggestion=Math.round((latest.weight+Math.max(avgIncrease,1.25))*4)/4; // Round to .25
-      html+=`<div class="pr-suggestion"><span class="ps-icon">⚡</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
+      html+=`<div class="pr-suggestion"><span class="ps-icon">🤖</span>Next session: try ${suggestion}kg × ${latest.reps} reps</div>`;
     }
   });
   el.innerHTML=html;
