@@ -11,6 +11,47 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LOCK-IN 45">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+<link rel="apple-touch-icon" id="appIcon">
+<link rel="manifest" id="appManifest">
+<script>
+// Generate app icon using saved preferences
+(function(){
+  const emoji=localStorage.getItem('li_icon_emoji')||'🔒';
+  const colorIdx=parseInt(localStorage.getItem('li_icon_color'))||0;
+  const colors=[
+    {bg1:'#0a0e1a',bg2:'#141828',acc:'#c8ff00'},
+    {bg1:'#0a1628',bg2:'#0e1e38',acc:'#00d4ff'},
+    {bg1:'#1a0a14',bg2:'#281420',acc:'#ff6b9d'},
+    {bg1:'#140a1a',bg2:'#1e1428',acc:'#b388ff'},
+    {bg1:'#1a0e0a',bg2:'#281814',acc:'#ff8a50'},
+    {bg1:'#0a1a14',bg2:'#142820',acc:'#69f0ae'}
+  ];
+  const col=colors[colorIdx]||colors[0];
+  const c=document.createElement('canvas');
+  c.width=180;c.height=180;
+  const ctx=c.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,180,180);
+  g.addColorStop(0,col.bg1);g.addColorStop(1,col.bg2);
+  ctx.fillStyle=g;
+  ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
+  ctx.strokeStyle=col.acc;ctx.lineWidth=4;
+  ctx.beginPath();ctx.roundRect(6,6,168,168,30);ctx.stroke();
+  ctx.fillStyle='#fff';
+  ctx.font='bold 52px -apple-system,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('45',90,65);
+  ctx.fillStyle=col.acc;
+  ctx.font='bold 16px -apple-system,sans-serif';
+  ctx.fillText('LOCK-IN',90,100);
+  ctx.font='36px serif';
+  ctx.fillText(emoji,90,142);
+  const url=c.toDataURL('image/png');
+  document.getElementById('appIcon').href=url;
+  const manifest={name:'LOCK-IN 45',short_name:'LOCK-IN',start_url:'.',display:'standalone',background_color:col.bg1,theme_color:col.bg1,icons:[{src:url,sizes:'180x180',type:'image/png'}]};
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  document.getElementById('appManifest').href=URL.createObjectURL(blob);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&subset=cyrillic,latin&display=swap" rel="stylesheet">
@@ -879,6 +920,13 @@ textarea.f-input{resize:vertical;min-height:60px}
 <!-- ==================== DASHBOARD ==================== -->
 <div class="page active" id="pg-d">
 
+  <!-- DYNAMIC GREETING -->
+  <div id="inlineGreeting" style="text-align:center;padding:8px 0 4px">
+    <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700" id="igTime">☀️ Good morning</div>
+    <div style="font-size:1.1rem;font-weight:800;color:var(--acc);margin:2px 0" id="igName">—</div>
+    <div style="font-size:.72rem;color:var(--t2);font-style:italic;line-height:1.4;max-width:280px;margin:0 auto" id="igMsg">Let's go.</div>
+  </div>
+
   <!-- MOMENTUM BAR -->
   <div class="momentum">
     <div class="momentum-label"><span class="ml-day" id="momDay">Day 1 / 45</span><span class="ml-pct" id="momPct">0%</span></div>
@@ -1007,14 +1055,14 @@ textarea.f-input{resize:vertical;min-height:60px}
       </div>
     </div>
 
-    <!-- Achievements (collapsible) -->
+    <!-- Achievements (open by default) -->
     <div class="insight-group">
       <div class="insight-header" onclick="toggleInsight(this)">
         <div class="ih-left"><span class="ih-icon">🏆</span><span class="ih-title">Achievements</span></div>
-        <span class="ih-badge" id="achCount">0/12</span>
+        <span class="ih-badge" id="achCount">0/20</span>
         <span class="ih-arrow">▾</span>
       </div>
-      <div class="insight-body">
+      <div class="insight-body" style="display:block">
         <div class="insight-body-inner">
           <div class="badges" id="bd1"></div>
         </div>
@@ -1079,6 +1127,7 @@ textarea.f-input{resize:vertical;min-height:60px}
   </div>
 
   <div class="card" id="calChartCard" style="display:none"><div class="card-t">Weekly Calories</div><div class="chart-wrap"><canvas id="calChart"></canvas></div></div>
+  <div class="card" id="calDiffCard" style="display:none"><div class="card-t">📊 Surplus / Deficit vs Target</div><div class="chart-wrap"><canvas id="calDiffChart"></canvas></div></div>
 </div>
 
 <!-- ==================== HISTORY & STATS ==================== -->
@@ -1285,6 +1334,17 @@ textarea.f-input{resize:vertical;min-height:60px}
       <div class="insight-body-inner">
         <div class="f-grp"><label class="f-label">Name</label><input type="text" id="eName" class="f-input"></div>
         <div class="f-grp"><label class="f-label">Start Date</label><input type="date" id="eDate" class="f-input"></div>
+        <div class="f-grp">
+          <label class="f-label">App Icon</label>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
+            <canvas id="iconPreview" width="60" height="60" style="border-radius:14px;border:1px solid var(--brd)"></canvas>
+            <div style="flex:1">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="iconEmojiPicker"></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap" id="iconColorPicker"></div>
+            </div>
+          </div>
+          <button class="btn btn-s btn-sm btn-full" onclick="applyAppIcon()" style="margin-top:8px">Apply Icon (re-add to Home Screen)</button>
+        </div>
         <button class="btn btn-p btn-sm btn-full" onclick="saveProf()">Save</button>
       </div>
     </div>
@@ -1325,6 +1385,8 @@ textarea.f-input{resize:vertical;min-height:60px}
           </div>
           <button class="btn btn-s btn-sm" onclick="testNotification()">🧪 Test Notification</button>
           <button class="btn btn-s btn-sm" onclick="L.r('win_'+td());showDailyWin()">🏆 Test Win Screen</button>
+          <button class="btn btn-p btn-sm btn-full" onclick="fullSync()" id="syncBtn">☁️ Sync to Cloud</button>
+          <div id="syncStatus" style="text-align:center;font-size:.65rem;color:var(--t3);margin-top:4px"></div>
           <button class="btn btn-s btn-sm" onclick="exportCSV()">📥 Export CSV</button>
           <button class="btn btn-d btn-sm" onclick="resetAll()">⚠️ Reset All</button>
         </div>
@@ -1913,7 +1975,6 @@ const DB = {
     if (!sbClient) return L.g(table);
     const uid=authUser?authUser.username:'default';
     try {
-      // Try loading user-specific data first
       const { data, error } = await sbClient.from(table).select('*').eq('id',uid);
       if (error) throw error;
       if (data && data.length > 0 && data[0].data) {
@@ -1921,15 +1982,12 @@ const DB = {
         L.s(table, parsed);
         return parsed;
       }
-      // Fallback: if no user-specific data, try loading 'default' (old data)
       if(uid!=='default'){
         const { data:defData } = await sbClient.from(table).select('*').eq('id','default');
         if (defData && defData.length > 0 && defData[0].data) {
           const parsed = typeof defData[0].data === 'string' ? JSON.parse(defData[0].data) : defData[0].data;
           L.s(table, parsed);
-          // Auto-migrate: save this data under the user's ID
           await sbClient.from(table).upsert({ id: uid, data: JSON.stringify(parsed) }, { onConflict: 'id' }).catch(()=>{});
-          console.log(`📦 Migrated Supabase ${table}: default → ${uid}`);
           return parsed;
         }
       }
@@ -1938,6 +1996,43 @@ const DB = {
       if(e.code !== 'PGRST205') console.warn('Supabase load error:', table, e.message||e);
       return L.g(table);
     }
+  },
+  // Save all date-specific data as one blob per type
+  async saveAllDated(type){
+    if(!sbClient)return;
+    const uid=authUser?authUser.username:'default';
+    const allData={};
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      const prefix='li_'+(authUser?authUser.username+'_':'')+type+'_';
+      if(k&&k.startsWith(prefix)){
+        const dateKey=k.substring(prefix.length);
+        try{allData[dateKey]=JSON.parse(localStorage.getItem(k))}catch{}
+      }
+    }
+    if(Object.keys(allData).length===0)return;
+    try{
+      await sbClient.from('dated_'+type).upsert({id:uid,data:JSON.stringify(allData)},{onConflict:'id'});
+    }catch(e){console.warn('Dated sync error:',type,e)}
+  },
+  // Load all date-specific data from Supabase
+  async loadAllDated(type){
+    if(!sbClient)return;
+    const uid=authUser?authUser.username:'default';
+    try{
+      const{data,error}=await sbClient.from('dated_'+type).select('*').eq('id',uid);
+      if(error)throw error;
+      if(data&&data.length>0&&data[0].data){
+        const parsed=typeof data[0].data==='string'?JSON.parse(data[0].data):data[0].data;
+        Object.entries(parsed).forEach(([dateKey,val])=>{
+          L.s(type+'_'+dateKey,val);
+        });
+        return parsed;
+      }
+    }catch(e){
+      if(e.code!=='PGRST205')console.warn('Dated load error:',type,e.message||e);
+    }
+    return null;
   }
 };
 
@@ -2156,10 +2251,10 @@ function uAch(def){const a=gAch();if(a.find(x=>x.id===def.id))return false;a.pus
 function cStrk(u){const a=gAH();if(!a.length||!u)return{c:0,l:0};const dn=gCD(u.start_date);const dates=dR(u.start_date,dn);let t=0,l=0;const today=td();for(const d of dates){const rec=a.find(h=>h.date===d);const sc=rec?rec.cs:0;const rest=rec?rec.rest:false;if(sc>=TH/HABITS_F().length||rest){t++;l=Math.max(l,t)}else if(d<today){t=0}}return{c:t,l}}
 
 function getDH(date){const saved=L.g('detox_'+date);if(saved)return saved;const def={};DETOX_F().forEach(h=>def[h.id]=false);return def}
-function sDH(date,data){L.s('detox_'+date,data);DB.save('detox',{date,data})}
+function sDH(date,data){L.s('detox_'+date,data);DB.save('detox',{date,data});DB.saveAllDated('detox')}
 
 function getReflection(date){return L.g('ref_'+date)||null}
-function saveReflectionData(date,data){L.s('ref_'+date,data);DB.save('reflections',{date,data})}
+function saveReflectionData(date,data){L.s('ref_'+date,data);DB.save('reflections',{date,data});DB.saveAllDated('ref')}
 
 function getNutSettings(){return L.g('nutset')||null}
 function saveNutSettingsData(d){L.s('nutset',d);DB.save('nutset',d)}
@@ -2173,7 +2268,7 @@ function delMeal(id){const a=(L.g('meals')||[]).filter(m=>m.id!==id);L.s('meals'
 function getGymProfile(){return L.g('gymprof')||null}
 function saveGymProfileData(d){L.s('gymprof',d);DB.save('gymprof',d)}
 function getTodayWo(){return L.g('gym_wo_'+td())||null}
-function saveTodayWo(d){L.s('gym_wo_'+td(),d);DB.save('gymhist_today',{date:td(),data:d})}
+function saveTodayWo(d){L.s('gym_wo_'+td(),d);DB.save('gymhist_today',{date:td(),data:d});DB.saveAllDated('gym_wo')}
 function getWeekPlan(){return L.g('weekplan')||null}
 function saveWeekPlanData(d){L.s('weekplan',d);DB.save('weekplan',d)}
 function getPRs(){return L.g('prs')||[]}
@@ -2199,6 +2294,11 @@ async function syncFromSupabase(){
       const result=await DB.load(t);
       if(result)synced++;
     }catch(e){}
+  }
+  // Load all date-specific data
+  const datedTypes=['ref','detox','gym_wo'];
+  for(const dt of datedTypes){
+    try{await DB.loadAllDated(dt);synced++}catch(e){}
   }
   console.log(`✅ Synced ${synced} tables from Supabase`);
 }
@@ -2277,6 +2377,19 @@ function renderD(){
 
   // Zone 1: Status
   document.getElementById('topBadge').textContent=`Day ${dn} / ${TD}`;
+
+  // Inline greeting
+  const hr=new Date().getHours();
+  let grEmoji,grTime;
+  if(hr>=5&&hr<12){grEmoji='☀️';grTime='Good morning'}
+  else if(hr>=12&&hr<17){grEmoji='🌤️';grTime='Good afternoon'}
+  else if(hr>=17&&hr<21){grEmoji='🌅';grTime='Good evening'}
+  else{grEmoji='🌙';grTime='Night owl mode'}
+  document.getElementById('igTime').textContent=`${grEmoji} ${grTime}`;
+  document.getElementById('igName').textContent=u.name;
+  const dayMsg=DAY_MESSAGES[Math.min(dn-1,44)]||'Keep going.';
+  document.getElementById('igMsg').textContent=dayMsg;
+
   document.getElementById('heroDay').textContent=dn;
   setRing('heroRingFill',0);setTimeout(()=>setRing('heroRingFill',prog),150);
   document.getElementById('hStreak').textContent=st.c;
@@ -2987,7 +3100,14 @@ function renderNut(){const ns=getNutSettings();document.getElementById('nutDate'
   // Saved meals (favorites from past)
   renderSavedMeals();
   renderCalChart()}
-function renderCalChart(){if(charts.calCh){charts.calCh.destroy();delete charts.calCh}const am=getAllMeals();if(am.length<1){document.getElementById('calChartCard').style.display='none';return}document.getElementById('calChartCard').style.display='';const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0])}const ns=getNutSettings();const gC=ns?ns.cal:2000;const cc=chC();const data=days.map(d=>am.filter(m=>m.date===d).reduce((s,m)=>s+(m.cal||0),0));charts.calCh=new Chart(document.getElementById('calChart'),{type:'bar',data:{labels:days.map(d=>fs(d)),datasets:[{data,backgroundColor:data.map(v=>v>gC*1.1?'#ff475799':v>=gC*.8?cc.g+'99':'#ffc10799'),borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cc.grid},ticks:{color:cc.t}},x:{grid:{display:false},ticks:{color:cc.t}}}}})}
+function renderCalChart(){if(charts.calCh){charts.calCh.destroy();delete charts.calCh}if(charts.calDiff){charts.calDiff.destroy();delete charts.calDiff}const am=getAllMeals();if(am.length<1){document.getElementById('calChartCard').style.display='none';document.getElementById('calDiffCard').style.display='none';return}document.getElementById('calChartCard').style.display='';const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0])}const ns=getNutSettings();const gC=ns?ns.cal:2000;const cc=chC();const data=days.map(d=>am.filter(m=>m.date===d).reduce((s,m)=>s+(m.cal||0),0));charts.calCh=new Chart(document.getElementById('calChart'),{type:'bar',data:{labels:days.map(d=>fs(d)),datasets:[{data,backgroundColor:data.map(v=>v>gC*1.1?'#ff475799':v>=gC*.8?cc.g+'99':'#ffc10799'),borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cc.grid},ticks:{color:cc.t}},x:{grid:{display:false},ticks:{color:cc.t}}}}});
+  // Surplus/deficit chart
+  if(ns&&data.some(v=>v>0)){
+    document.getElementById('calDiffCard').style.display='';
+    const diffs=data.map(v=>v>0?v-gC:0);
+    charts.calDiff=new Chart(document.getElementById('calDiffChart'),{type:'bar',data:{labels:days.map(d=>fs(d)),datasets:[{data:diffs,backgroundColor:diffs.map(v=>v>0?'#ff475766':'#51cf6666'),borderColor:diffs.map(v=>v>0?'#ff4757':'#51cf66'),borderWidth:1,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const v=ctx.raw;return v>0?'+'+v+' surplus':v<0?v+' deficit':'On target'}}}},scales:{y:{grid:{color:cc.grid},ticks:{color:cc.t,callback:v=>(v>0?'+':'')+v}},x:{grid:{display:false},ticks:{color:cc.t}}}}});
+  }else{document.getElementById('calDiffCard').style.display='none'}
+}
 function deleteMeal(id){delMeal(id);renderNut();toast('Deleted','🗑️')}
 
 // Favorites system
@@ -3054,7 +3174,7 @@ function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cS
     <div class="stat-card"><div class="s-val" style="font-size:1.5rem">⭐ ${st.l}</div><div class="s-label">Best</div></div>
     <div class="stat-card"><div class="s-val" style="font-size:1.5rem">📅 ${rem}</div><div class="s-label">Days Left</div></div>
     <div class="stat-card"><div class="s-val" style="font-size:1.5rem">📊 ${rate}%</div><div class="s-label">Success Rate</div></div>`;
-  document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');
+  document.getElementById('eName').value=u.name;document.getElementById('eDate').value=u.start_date;renderBdg('bd2');renderIconPickers();updateSyncStatus();
   // Auth user display
   const bar=document.getElementById('authUserBar');
   if(authUser&&authUser.email){bar.style.display='';document.getElementById('authUserEmail').textContent=authUser.email}
@@ -3070,6 +3190,92 @@ function renderProf(){const u=gU();if(!u)return;const dn=gCD(u.start_date),st=cS
   loadNotifSettingsUI();
 }
 function saveProf(){const n=document.getElementById('eName').value.trim(),d=document.getElementById('eDate').value;if(!n){toast('Name?','⚠️');return}const u=gU();u.name=n;u.start_date=d;sU(u);toast('✅ Saved!');renderProf();document.getElementById('topBadge').textContent=`Day ${gCD(d)} / ${TD}`}
+async function fullSync(){
+  const btn=document.getElementById('syncBtn');
+  const status=document.getElementById('syncStatus');
+  if(!sbClient){toast('Supabase not connected','⚠️');return}
+  if(!authUser){toast('Log in first','⚠️');return}
+
+  btn.disabled=true;btn.textContent='☁️ Syncing...';
+  status.textContent='';
+  const uid=authUser.username;
+  let uploaded=0,errors=0;
+
+  // 1. Sync all regular tables
+  const tables=['users','hab','slp','wo','body','ach','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox','fav_meals'];
+  for(const t of tables){
+    const data=L.g(t);
+    if(data){
+      try{
+        await sbClient.from(t).upsert({id:uid,data:JSON.stringify(data)},{onConflict:'id'});
+        uploaded++;
+        status.textContent=`Uploading... ${uploaded} tables`;
+      }catch(e){errors++;console.warn('Sync err:',t,e)}
+    }
+  }
+
+  // 2. Sync all date-specific data (reflections, detox, gym workouts)
+  const datedTypes=['ref','detox','gym_wo'];
+  for(const type of datedTypes){
+    const allData={};
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      const prefix='li_'+uid+'_'+type+'_';
+      if(k&&k.startsWith(prefix)){
+        const dateKey=k.substring(prefix.length);
+        try{allData[dateKey]=JSON.parse(localStorage.getItem(k))}catch{}
+      }
+    }
+    if(Object.keys(allData).length>0){
+      try{
+        await sbClient.from('dated_'+type).upsert({id:uid,data:JSON.stringify(allData)},{onConflict:'id'});
+        uploaded++;
+        status.textContent=`Uploading... ${uploaded} tables`;
+      }catch(e){errors++;console.warn('Dated sync err:',type,e)}
+    }
+  }
+
+  // 3. Save app settings (icon, theme, etc.)
+  const settings={
+    icon_emoji:localStorage.getItem('li_icon_emoji'),
+    icon_color:localStorage.getItem('li_icon_color'),
+    theme:localStorage.getItem('li_th')
+  };
+  try{
+    await sbClient.from('users').upsert({id:uid+'_settings',data:JSON.stringify(settings)},{onConflict:'id'});
+    uploaded++;
+  }catch(e){errors++}
+
+  // Done
+  btn.disabled=false;
+  if(errors===0){
+    btn.textContent='✅ Synced!';
+    status.innerHTML=`<span style="color:var(--acc)">✅ ${uploaded} items uploaded</span> · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}`;
+    toast('☁️ All data synced!','✅');
+    if(navigator.vibrate)navigator.vibrate([30,20,30]);
+  }else{
+    btn.textContent='⚠️ Partial sync';
+    status.innerHTML=`<span style="color:var(--acc)">${uploaded} uploaded</span> · <span style="color:var(--red)">${errors} errors</span>`;
+    toast('Synced with some errors','⚠️');
+  }
+  setTimeout(()=>{btn.textContent='☁️ Sync to Cloud'},3000);
+
+  // Save last sync time
+  L.s('last_sync',new Date().toISOString());
+  updateSyncStatus();
+}
+
+function updateSyncStatus(){
+  const el=document.getElementById('syncStatus');
+  if(!el)return;
+  const lastSync=L.g('last_sync');
+  if(lastSync){
+    const ago=Math.round((Date.now()-new Date(lastSync).getTime())/60000);
+    const timeStr=ago<1?'just now':ago<60?ago+' min ago':Math.round(ago/60)+'h ago';
+    el.innerHTML=`Last synced: ${timeStr}`;
+  }
+}
+
 function resetAll(){if(!confirm('Delete ALL data?'))return;if(!confirm('PERMANENT. Are you sure?'))return;
   // Clear prefixed data (current user)
   ['user','hab','body','ach','slp','wo','meals','nutset','scores','gymprof','weekplan','prs','gymhist','runs','custom_habits','custom_detox'].forEach(k=>L.r(k));
@@ -3943,7 +4149,7 @@ async function generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal,forceNew){
   // Check cache
   if(!forceNew){
     const cached=L.g('histai_'+d);
-    if(cached){aiCard.style.display='';aiText.innerHTML=cached+'<div style="text-align:right;margin-top:6px"><button onclick="regenDaySummary()" style="background:none;border:none;color:var(--t3);font-size:.6rem;cursor:pointer;font-family:var(--fb)">🔄 Regenerate</button></div>';return}
+    if(cached){aiCard.style.display='';aiText.innerHTML=cached+'<div style="text-align:right;margin-top:8px"><button onclick="regenDaySummary()" style="background:var(--bg4);border:1px solid var(--brd);color:var(--t2);font-size:.7rem;cursor:pointer;font-family:var(--fb);padding:5px 12px;border-radius:99px;font-weight:600">🔄 Regenerate</button></div>';return}
   }
 
   const pct=Math.round(habDone/habTotal*100);
@@ -3998,7 +4204,7 @@ INSTRUCTIONS:
     const data=await resp.json();
     const text=(data.content||[]).map(i=>i.text||'').join('');
     if(text){
-      aiText.innerHTML=text+'<div style="text-align:right;margin-top:6px"><button onclick="regenDaySummary()" style="background:none;border:none;color:var(--t3);font-size:.6rem;cursor:pointer;font-family:var(--fb)">🔄 Regenerate</button></div>';
+      aiText.innerHTML=text+'<div style="text-align:right;margin-top:8px"><button onclick="regenDaySummary()" style="background:var(--bg4);border:1px solid var(--brd);color:var(--t2);font-size:.7rem;cursor:pointer;font-family:var(--fb);padding:5px 12px;border-radius:99px;font-weight:600">🔄 Regenerate</button></div>';
       L.s('histai_'+d,text);
     }else{
       aiText.textContent='Could not generate summary.';
@@ -4767,6 +4973,95 @@ function getExHint(name){
     if(key.includes(k))return v;
   }
   return null;
+}
+
+// ==================== APP ICON CUSTOMIZER ====================
+const ICON_EMOJIS=['🔒','💪','🔥','⚡','💎','👑','🏆','🎯','⭐','🦾','🧠','💀','🐺','🦁','🌙','☀️'];
+const ICON_COLORS=[
+  {name:'Dark',bg1:'#0a0e1a',bg2:'#141828',acc:'#c8ff00'},
+  {name:'Ocean',bg1:'#0a1628',bg2:'#0e1e38',acc:'#00d4ff'},
+  {name:'Rose',bg1:'#1a0a14',bg2:'#281420',acc:'#ff6b9d'},
+  {name:'Purple',bg1:'#140a1a',bg2:'#1e1428',acc:'#b388ff'},
+  {name:'Sunset',bg1:'#1a0e0a',bg2:'#281814',acc:'#ff8a50'},
+  {name:'Mint',bg1:'#0a1a14',bg2:'#142820',acc:'#69f0ae'}
+];
+let iconEmoji=localStorage.getItem('li_icon_emoji')||'🔒';
+let iconColorIdx=parseInt(localStorage.getItem('li_icon_color'))||0;
+
+function renderIconPickers(){
+  const ep=document.getElementById('iconEmojiPicker');
+  const cp=document.getElementById('iconColorPicker');
+  if(!ep||!cp)return;
+  ep.innerHTML='';cp.innerHTML='';
+  ICON_EMOJIS.forEach(e=>{
+    const btn=document.createElement('div');
+    btn.style.cssText=`width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:1.1rem;border:2px solid ${e===iconEmoji?'var(--acc)':'transparent'};background:${e===iconEmoji?'var(--accd)':'var(--bg4)'}`;
+    btn.textContent=e;
+    btn.onclick=()=>{iconEmoji=e;renderIconPickers();drawIconPreview()};
+    ep.appendChild(btn);
+  });
+  ICON_COLORS.forEach((c,i)=>{
+    const btn=document.createElement('div');
+    btn.style.cssText=`width:32px;height:32px;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,${c.bg1},${c.bg2});border:2px solid ${i===iconColorIdx?c.acc:'transparent'};position:relative`;
+    btn.innerHTML=`<div style="position:absolute;bottom:2px;right:2px;width:8px;height:8px;border-radius:50%;background:${c.acc}"></div>`;
+    btn.onclick=()=>{iconColorIdx=i;renderIconPickers();drawIconPreview()};
+    cp.appendChild(btn);
+  });
+  drawIconPreview();
+}
+
+function drawIconPreview(){
+  const c=document.getElementById('iconPreview');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  const col=ICON_COLORS[iconColorIdx];
+  const w=c.width;
+  ctx.clearRect(0,0,w,w);
+  const g=ctx.createLinearGradient(0,0,w,w);
+  g.addColorStop(0,col.bg1);g.addColorStop(1,col.bg2);
+  ctx.fillStyle=g;
+  ctx.beginPath();ctx.roundRect(0,0,w,w,w*0.2);ctx.fill();
+  ctx.strokeStyle=col.acc;ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(3,3,w-6,w-6,w*0.17);ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`bold ${w*0.28}px -apple-system,sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('45',w/2,w*0.38);
+  ctx.font=`${w*0.22}px serif`;
+  ctx.fillText(iconEmoji,w/2,w*0.68);
+}
+
+function generateAppIcon(){
+  const c=document.createElement('canvas');
+  c.width=180;c.height=180;
+  const ctx=c.getContext('2d');
+  const col=ICON_COLORS[iconColorIdx];
+  const g=ctx.createLinearGradient(0,0,180,180);
+  g.addColorStop(0,col.bg1);g.addColorStop(1,col.bg2);
+  ctx.fillStyle=g;
+  ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
+  ctx.strokeStyle=col.acc;ctx.lineWidth=4;
+  ctx.beginPath();ctx.roundRect(6,6,168,168,30);ctx.stroke();
+  ctx.fillStyle='#fff';
+  ctx.font='bold 52px -apple-system,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('45',90,65);
+  ctx.fillStyle=col.acc;
+  ctx.font='bold 16px -apple-system,sans-serif';
+  ctx.fillText('LOCK-IN',90,100);
+  ctx.font='36px serif';
+  ctx.fillText(iconEmoji,90,142);
+  return c.toDataURL('image/png');
+}
+
+function applyAppIcon(){
+  localStorage.setItem('li_icon_emoji',iconEmoji);
+  localStorage.setItem('li_icon_color',String(iconColorIdx));
+  const url=generateAppIcon();
+  document.getElementById('appIcon').href=url;
+  const manifest={name:'LOCK-IN 45',short_name:'LOCK-IN',start_url:'.',display:'standalone',background_color:ICON_COLORS[iconColorIdx].bg1,theme_color:ICON_COLORS[iconColorIdx].bg1,icons:[{src:url,sizes:'180x180',type:'image/png'}]};
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  document.getElementById('appManifest').href=URL.createObjectURL(blob);
+  toast('✅ Icon updated! Re-add to Home Screen to see it.','📱');
 }
 
 // ==================== INIT ====================
