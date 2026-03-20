@@ -2300,6 +2300,18 @@ async function syncFromSupabase(){
   for(const dt of datedTypes){
     try{await DB.loadAllDated(dt);synced++}catch(e){}
   }
+  // Load settings (icon, theme)
+  try{
+    const uid=authUser?authUser.username:'default';
+    const{data}=await sbClient.from('users').select('*').eq('id',uid+'_settings');
+    if(data&&data[0]&&data[0].data){
+      const s=typeof data[0].data==='string'?JSON.parse(data[0].data):data[0].data;
+      if(s.icon_emoji)localStorage.setItem('li_icon_emoji',s.icon_emoji);
+      if(s.icon_color)localStorage.setItem('li_icon_color',s.icon_color);
+      if(s.theme)localStorage.setItem('li_th',s.theme);
+      synced++;
+    }
+  }catch(e){}
   console.log(`✅ Synced ${synced} tables from Supabase`);
 }
 
@@ -3235,7 +3247,26 @@ async function fullSync(){
     }
   }
 
-  // 3. Save app settings (icon, theme, etc.)
+  // 3. Save user profile to userdata + users tables
+  const userData=L.g('user');
+  if(userData){
+    try{
+      await sbClient.from('userdata').upsert({username:uid,data:JSON.stringify(userData)},{onConflict:'username'});
+      await sbClient.from('users').upsert({id:uid,data:JSON.stringify(userData)},{onConflict:'id'});
+      uploaded++;
+    }catch(e){errors++;console.warn('User data sync err:',e)}
+  }
+
+  // 4. Save account to accounts table (ensure it exists)
+  const session=L.gRaw('auth_session');
+  if(session){
+    try{
+      await sbClient.from('accounts').upsert({username:uid,pass_hash:session.hash,created:new Date().toISOString()},{onConflict:'username'});
+      uploaded++;
+    }catch(e){errors++;console.warn('Account sync err:',e)}
+  }
+
+  // 5. Save app settings (icon, theme, etc.)
   const settings={
     icon_emoji:localStorage.getItem('li_icon_emoji'),
     icon_color:localStorage.getItem('li_icon_color'),
