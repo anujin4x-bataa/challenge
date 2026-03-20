@@ -1894,8 +1894,9 @@ const TH=4,TD=45;
 // ║  PASTE YOUR SUPABASE CREDENTIALS HERE                    ║
 // ║  Get from Supabase Dashboard → Settings → API          ║
 // ╚══════════════════════════════════════════════════════════════╝
-const SUPABASE_URL = 'https://rjxiewtjvlakimvvwprj.supabase.co';   
-const SUPABASE_KEY = 'sb_publishable_xFaqW8se_oO7jIq0PxswcQ_7qzhIVX7';   
+const SUPABASE_URL = '';   // ← Paste API URL here. Example: 'https://abcdefgh.supabase.co'
+const SUPABASE_KEY = '';   // ← Paste anon key here. Example: 'eyJhbGci...'
+// NEVER paste secret key here!
 
 // Storage mode: 'local' = localStorage only, 'supabase' = Supabase + localStorage cache
 const STORAGE_MODE = SUPABASE_URL && SUPABASE_KEY ? 'supabase' : 'local';
@@ -4240,14 +4241,52 @@ INSTRUCTIONS:
       aiText.textContent='Could not generate summary.';
     }
   }catch(e){
-    // Fallback
-    let summary='';
-    if(pct>=80)summary='Great day! Most habits completed.';
-    else if(pct>=50)summary='Average day. Some habits missed but you showed up.';
-    else summary='Tough day. Tomorrow is a fresh start.';
-    if(sl&&sl.sc&&sl.sc<60)summary+='  Sleep quality was low — try sleeping earlier.';
-    else if(wo)summary+='  Great job working out!';
-    aiText.textContent=summary;
+    // Smart fallback — generate detailed summary locally
+    const lines=[];
+    // Line 1: Habit observation
+    if(pct===100)lines.push(`💯 Perfect ${habDone}/${habTotal} — every single habit crushed.`);
+    else if(pct>=80)lines.push(`${habDone}/${habTotal} habits (${pct}%) — strong day, just ${habTotal-habDone} missed.`);
+    else if(pct>=50)lines.push(`${habDone}/${habTotal} habits (${pct}%) — showing up matters, but there's room to push.`);
+    else if(habDone>0)lines.push(`Only ${habDone}/${habTotal} habits (${pct}%) — a rough one. Identify what blocked you.`);
+    else lines.push(`No habits checked today. Reset and attack tomorrow.`);
+
+    // Line 2: Data insight
+    const insights=[];
+    if(sl&&sl.sc){
+      if(sl.sc>=80)insights.push(`Sleep ${sl.sc}/100 (${sl.dur||'?'}) fueled a solid day`);
+      else if(sl.sc>=60)insights.push(`Sleep ${sl.sc}/100 — decent but ${sl.dur?'aim for 8h':'track your hours'}`);
+      else insights.push(`Sleep ${sl.sc}/100 is dragging performance — prioritize rest tonight`);
+    }
+    if(meals.length>0){
+      const totalCal=meals.reduce((s,m)=>s+(m.cal||0),0);
+      const totalP=meals.reduce((s,m)=>s+(m.protein||0),0);
+      const ns=getNutSettings();
+      if(ns){
+        const diff=totalCal-ns.cal;
+        if(Math.abs(diff)<100)insights.push(`${totalCal} kcal — right on target`);
+        else if(diff>0)insights.push(`${totalCal} kcal is +${diff} over target`);
+        else insights.push(`${totalCal} kcal is ${diff} under your ${ns.cal} target`);
+      }else{
+        insights.push(`${totalCal} kcal from ${meals.length} meals, P${totalP}g`);
+      }
+    }
+    const gymH=getGymHistory().find(g=>g.date===d);
+    if(gymH)insights.push(`Completed ${gymH.title} (${gymH.exercises} exercises)`);
+    if(insights.length)lines.push(insights.join('. ')+'.');
+
+    // Line 3: Actionable tip
+    const tips=[];
+    if(pct<100){
+      const missed=HABITS_F().filter(x=>!h[x.id]);
+      if(missed.length)tips.push(`Tomorrow focus on: ${missed.slice(0,2).map(m=>m.icon+' '+m.name).join(' + ')}`);
+    }
+    if(sl&&sl.sc&&sl.sc<70)tips.push('Set a bedtime alarm 30 min earlier tonight');
+    if(meals.length===0)tips.push('Track your meals — what gets measured gets managed');
+    if(!tips.length)tips.push('Keep this momentum rolling into tomorrow');
+    lines.push('💡 '+tips[0]);
+
+    const summary=lines.join('\n');
+    aiText.innerHTML=summary.replace(/\n/g,'<br>')+'<div style="text-align:right;margin-top:8px"><button onclick="regenDaySummary()" style="background:var(--bg4);border:1px solid var(--brd);color:var(--t2);font-size:.7rem;cursor:pointer;font-family:var(--fb);padding:5px 12px;border-radius:99px;font-weight:600">🔄 Regenerate</button></div>';
     L.s('histai_'+d,summary);
   }
 }
@@ -4255,7 +4294,16 @@ INSTRUCTIONS:
 function regenDaySummary(){
   const d=document.getElementById('histDate').value;
   L.r('histai_'+d);
-  renderHistory();
+  // Get all needed data for this date
+  const habits=HABITS_F();
+  const h=gH(d);
+  const sl=gSl(d);
+  const wo=gWo(d);
+  const meals=getMeals(d);
+  const ref=getReflection(d);
+  const habDone=habits.filter(x=>h[x.id]).length;
+  const habTotal=habits.length;
+  generateHistoryAI(d,h,sl,wo,meals,ref,habDone,habTotal,true);
 }
 
 // Clickable heatmap — clicking a day loads that day's report
