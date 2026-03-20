@@ -2073,34 +2073,43 @@ async function handleAuth(){
   const passHash=simpleHash(pass);
 
   try{
+    // Try Supabase first, then localStorage
+    let foundAccount=null;
+
     if(sbClient){
-      // Supabase mode
-      if(currentAuthMode==='signup'){
-        const{data:existing}=await sbClient.from('accounts').select('*').eq('username',username);
-        if(existing&&existing.length>0){showAuthError('Username already taken. Tap Log In.');btn.disabled=false;btn.textContent=origText;return}
-        const{error}=await sbClient.from('accounts').insert({username,pass_hash:passHash,created:new Date().toISOString()});
-        if(error)throw error;
-        toast('✅ Account created!');
-      }else{
-        const{data,error}=await sbClient.from('accounts').select('*').eq('username',username);
-        if(error)throw error;
-        if(!data||data.length===0){showAuthError('Username not found');btn.disabled=false;btn.textContent=origText;return}
-        if(data[0].pass_hash!==passHash){showAuthError('Wrong password');btn.disabled=false;btn.textContent=origText;return}
-        toast('✅ Logged in!');
+      try{
+        const{data}=await sbClient.from('accounts').select('*').eq('username',username);
+        if(data&&data.length>0)foundAccount=data[0];
+      }catch(e){console.warn('Supabase accounts check failed, trying localStorage',e)}
+    }
+
+    // Fallback: check localStorage
+    if(!foundAccount){
+      const localAccounts=L.gRaw('accounts')||{};
+      if(localAccounts[username])foundAccount={username,pass_hash:localAccounts[username].pass_hash};
+    }
+
+    if(currentAuthMode==='signup'){
+      if(foundAccount){showAuthError('Username already taken. Tap Log In.');btn.disabled=false;btn.textContent=origText;return}
+      const newHash=passHash;
+      // Save to both
+      if(sbClient){
+        try{await sbClient.from('accounts').insert({username,pass_hash:newHash,created:new Date().toISOString()})}catch(e){}
       }
-    }else{
-      // localStorage mode
       const accounts=L.gRaw('accounts')||{};
-      if(currentAuthMode==='signup'){
-        if(accounts[username]){showAuthError('Username already taken');btn.disabled=false;btn.textContent=origText;return}
-        accounts[username]={pass_hash:passHash,created:new Date().toISOString()};
-        L.sRaw('accounts',accounts);
-        toast('✅ Account created!');
-      }else{
-        if(!accounts[username]){showAuthError('Username not found');btn.disabled=false;btn.textContent=origText;return}
-        if(accounts[username].pass_hash!==passHash){showAuthError('Wrong password');btn.disabled=false;btn.textContent=origText;return}
-        toast('✅ Logged in!');
+      accounts[username]={pass_hash:newHash,created:new Date().toISOString()};
+      L.sRaw('accounts',accounts);
+      toast('✅ Account created!');
+    }else{
+      if(!foundAccount){showAuthError('Username not found');btn.disabled=false;btn.textContent=origText;return}
+      if(foundAccount.pass_hash!==passHash){showAuthError('Wrong password');btn.disabled=false;btn.textContent=origText;return}
+      // Ensure account exists in both stores
+      if(sbClient){
+        try{await sbClient.from('accounts').upsert({username,pass_hash:passHash,created:new Date().toISOString()},{onConflict:'username'})}catch(e){}
       }
+      const accounts=L.gRaw('accounts')||{};
+      if(!accounts[username]){accounts[username]={pass_hash:passHash};L.sRaw('accounts',accounts)}
+      toast('✅ Logged in!');
     }
 
     // Auth success — set up user scope
